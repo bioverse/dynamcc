@@ -80,30 +80,30 @@ def GetUserSelection(files):
 	>>> files = GetDataFiles()
 	>>> selection, file_name = PromptUser(files)
 	"""
-	print "Select Data File"
+	print "Select data file: "
 	for i in range(len(files)):
 		print "[", i + 1, "]", " ", get_file_name(files[i])
 	while True:
 		try:
 			selection = int(raw_input())
 			if selection in range(len(files)):
-				print selection
 				return(selection, files[selection - 1],
 						get_file_name(files[selection - 1]))
 			else: 
 				raise ValueError()
 		except ValueError:
 			print("Invalid entry. You must enter an iteger value " +
-			"corresponding to one of the listed Data Files.")
+			"corresponding to one of the listed data files.")
 
 def LoadData():
 	all_files = GetDataFiles()
-	selected_file = GetUserSelection(files)
+	selection_int, file_path, file_name = GetUserSelection(all_files)
 	amino_dict = {}
 	try:
-		open(selected_file)
+		open(file_path)
 	except IOError:
-		print "An error occurred with loading the Data file."
+		print("An error occurred while trying to load the data file." +
+		"Make sure the file is located in your current working directory.")
 	else:
 		pass
 
@@ -128,8 +128,7 @@ For example, G would look like
 """
 
 def main():
-	files = GetDataFiles()
-	GetUserSelection(files)
+	LoadData()
 
 main()
 
