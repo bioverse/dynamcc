@@ -26,7 +26,6 @@ class FileHandlers:
 		self.directory = os.getcwd()
 		self.file_paths = []
 		self.new_file_list = []
-		self.cleaned = []
 		self.filtered_list = []
 
 
@@ -195,6 +194,7 @@ class FileHandlers:
 		... 	cleaned = file_handlers.clean(fields)
 		... 	print cleaned
 		"""
+		cleaned = []
 		for field in values:
-			self.cleaned.append(field.strip())  # strip() takes out white space from front and back of line
-		return(self.cleaned)
+			cleaned.append(field.strip())  # strip() takes out white space from front and back of line
+		return(cleaned)

@@ -96,16 +96,20 @@ def GetUserSelection(files):
 			"corresponding to one of the listed data files.")
 
 def LoadData():
+	file_handlers = FileHandlers()
 	all_files = GetDataFiles()
 	selection_int, file_path, file_name = GetUserSelection(all_files)
 	amino_dict = {}
 	try:
-		open(file_path)
+		for line in open(file_path):
+			fields = line.split("\t")
+			print fields
+			cleaned = file_handlers.clean(fields)
+			print cleaned
 	except IOError:
 		print("An error occurred while trying to load the data file." +
 		"Make sure the file is located in your current working directory.")
-	else:
-		pass
+
 
 
 """
