@@ -95,17 +95,53 @@ def GetUserSelection(files):
 			print("Invalid entry. You must enter an iteger value " +
 			"corresponding to one of the listed data files.")
 
-def LoadData():
+def BuildUsageDict():
+	"""Build a codon usage dictionary based on the user selected codon usage
+	file
+		
+	Useful for downstream calculations involving known codon usage frequencies
+	in a given organism
+
+	Parameters
+	----------
+	none
+
+	Returns
+	-------
+	usage_dict: dict
+		Dictionary of lists of dictionaries for codon usage. Dictionary has the
+		following structure:
+		{
+			F : [{TTT: 0.58}, {TTC: 0.42}],
+			L : [{TTA: 0.14}, {TTG: 0.13}, {CTT: 0.12}, {CTC: 0.1}, 
+					{CTA: 0.04}, {CTG: 0.47}],
+			I : [{ATT: 0.49}, {ATC: 0.39}, {ATA: 0.11}],
+			...
+			...
+			...
+			G : [{GGT: 0.35}, {GGC: 0.37}, {GGA: 0.13}, {GGG: 0.15}]
+		}
+
+	Examples
+	--------
+	>>> usage_dict = BuildUsageDict()
+	"""
 	file_handlers = FileHandlers()
 	all_files = GetDataFiles()
 	selection_int, file_path, file_name = GetUserSelection(all_files)
-	amino_dict = {}
+	usage_dict = {}
 	try:
 		for line in open(file_path):
 			fields = line.split("\t")
-			print fields
 			cleaned = file_handlers.clean(fields)
-			print cleaned
+			if ('Codon' and 'name' and 'prob') in line:
+				pass
+			else:
+				if cleaned[1] in usage_dict:
+					usage_dict[cleaned[1]].append({cleaned[0]: cleaned[2]})
+				else:
+					usage_dict[cleaned[1]] = [{cleaned[0]: cleaned[2]}]
+		return usage_dict
 	except IOError:
 		print("An error occurred while trying to load the data file." +
 		"Make sure the file is located in your current working directory.")
@@ -132,7 +168,8 @@ For example, G would look like
 """
 
 def main():
-	LoadData()
+	usage_dict = BuildUsageDict()
+	print usage_dict
 
 main()
 
