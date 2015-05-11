@@ -53,7 +53,7 @@ def GetDataFiles():
 	files = file_handlers.find_files(file_paths, 'txt')
 	return files
 	
-def PromptUser(files):
+def GetUserSelection(files):
 	"""Ask the user to select which data file (*.txt) to parse
 		
 	Useful when you have several versions of a data file (for example several
@@ -69,9 +69,11 @@ def PromptUser(files):
 	-------
 	selection: int
 		Integer corresponding to list[index + 1] of input list  
+	files[selection - 1]: string
+		String corresponding to path/to/file_name
 	get_file_name(files[selection]): string 
 		String corresponding to the file_name (everything after last backslash
-		character) from string located in list[index]
+		character) from string located in list[selection - 1]
 
 
 	Examples
@@ -82,38 +84,20 @@ def PromptUser(files):
 	print "Select Data File"
 	for i in range(len(files)):
 		print "[", i + 1, "]", " ", get_file_name(files[i])
-	selection = int(input())
-	return selection, get_file_name(files[selection - 1])
 	
-def GetUserSelection(files):
-	"""Call PromptUser to select a file for parsing. Continue promting the
-	user for input until they provide an answer that matches an Integer
-	corresponding to one of the files listed
-		
-	Useful for providing error handling on a user selection step
-
-	Parameters
-	----------
-	files: list
-		List of strings corresponding to the path/to/file.txt for each txt
-		file found in the current directory
-
-	Returns
-	-------
-	files[selection - 1]: int
-		The list[index] of the selected file.
-
-	Examples
-	--------
-	>>> files = GetDataFiles()
-	>>> GetUserSelection(files)
-	"""
-	selection, file_name = PromptUser(files)
-	while selection not in range(len(files)):
-		print "Please select one of the options below. Enter an Integer ",
-				"value."
-		selection = PromptUser(files)
-	return files[selection - 1]
+	
+	while True:
+		try:
+			selection = int(raw_input())
+			if selection in range(len(files)):
+				print selection
+				return(selection, files[selection - 1],
+						get_file_name(files[selection - 1]))
+			else: 
+				raise ValueError()
+		except ValueError:
+			print("Invalid entry. You must enter an iteger value " +
+			"corresponding to one of the listed Data Files.")
 
 def LoadData():
 	all_files = GetDataFiles()
