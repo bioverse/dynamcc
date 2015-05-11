@@ -1,0 +1,55 @@
+label{
+display:inline-block;
+width:200px;
+text-align:left;
+
+}
+
+
+
+fieldset{
+border:none;
+width:500px;
+margin:0px auto;
+}
+
+table{
+border-spacing: 0px;
+}
+
+.introduction
+{
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: justify;
+}
+body
+{
+	width: 55%;
+	margin-left: auto;
+	margin-right: auto
+}
+.invisible
+{
+	display: none;
+}
+.inputButton
+{
+	width: 170px;
+}
+
+.title
+{
+	text-align: center;
+}
+
+.pullDown
+{
+	 width:15em;
+	 margin-left:-3px;
+}
+
+input { margin-bottom: 5px; }
+
+select { margin-bottom: 5px; margin-left:-3px;}

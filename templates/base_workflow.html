@@ -1,0 +1,24 @@
+{%extends base.html%}
+{% block content %}
+
+<div id="wrapper">
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper">
+        <ul class="sidebar-nav" style="padding-top:40px;">
+            <li style="padding-bottom:20px;"><a href="/data_entry/"><span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span>  Deposit</a>
+            </li>
+            <li style="padding-bottom:20px;"><a href="/query/"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>  Search</a>
+            </li>
+            <li style="padding-bottom:20px;"><a href="/terms/"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span>  Analyze</a>
+            </li>
+        </ul>
+    </div
+    <!-- Page content -->
+    <div id="page-content-wrapper">
+        {% block content2 %} {%end%}
+    </div>
+
+
+{%end%}
+
+</div>

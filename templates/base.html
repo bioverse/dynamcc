@@ -1,0 +1,52 @@
+
+<html lang="en">
+
+    <head>
+        <title>LASER Database</title>
+        <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="/static/css/bootstrap-theme.min.css">
+        <link href="/static/css/bootstrap.css" rel="stylesheet">
+        <link href="/static/css/main.css" rel="stylesheet">
+        <link rel="stylesheet" href="/static/css/jquery-ui.css">
+        <link rel="stylesheet" href="/static/css/tabstyle.css">
+
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="/static/js/jquery-1.11.0.min.js"></script>
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="/static/js/bootstrap.min.js"></script>
+        <script src="/static/js/fields.js"></script>
+        <script src="/static/js/jquery.js"></script>
+        <script src="/static/js/jquery-ui.js"></script>
+        <script src="/static/js/stateSavingDE.js"></script>
+        <script src="/static/js/formGeneratorDE.js"></script>
+
+
+
+
+        {%block head%}  {%end%}
+    </head>
+
+    <body>
+        <header class="navbar-inverse" role="banner">
+            <nav role="navigation">
+              <div class="container-fluid">
+                <div class="navbar-header">
+                  <a class="navbar-brand" href="/" style="margin:0 0 20px 0"><img src="http://fontmeme.com/embed.php?text=CODON%20Compression&name=FederationBold.ttf&size=20&style_color=FFFFFF" alt="Star Trek Font"></a>
+                  <!--<a class="navbar-brand laser_logo" href="/" style="margin-right:40px;"></a>-->
+                </div>
+              </div>
+            </nav>
+        </header>
+
+        {% block content %} {%end%}
+
+        {%block footer%} {%end%}
+        <footer style="padding-top:50px;a">
+          <p >&copy; The LASER Project 2015</p>
+        </footer>
+
+    </body>
+</html>
