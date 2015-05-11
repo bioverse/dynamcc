@@ -75,7 +75,6 @@ def GetUserSelection(files):
 		String corresponding to the file_name (everything after last backslash
 		character) from string located in list[selection - 1]
 
-
 	Examples
 	--------
 	>>> files = GetDataFiles()
@@ -84,8 +83,6 @@ def GetUserSelection(files):
 	print "Select Data File"
 	for i in range(len(files)):
 		print "[", i + 1, "]", " ", get_file_name(files[i])
-	
-	
 	while True:
 		try:
 			selection = int(raw_input())
