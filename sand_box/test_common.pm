@@ -54,26 +54,51 @@ sub LoadData {
 	return $Fname;
 }
 
-
-LoadData();
-
-foreach my $key (keys %Aminolist) {
-	say "The key is: " . $key;
-	say "The value is: " . $Aminolist{$key};
-	my $array_ref = $Aminolist{$key};
-	print "The de-referenced value is: ";
-	say @$array_ref;
-	print "The de-referenced hashes are: ";
-	foreach (@$array_ref) {
-		my $hash_ref = $_;
-		print %$hash_ref;
-		print " ";
+#Load Replacment rules
+sub LoadRules {
+	%Rules =(); # instantiate empty hash
+	say %Rules;
+	open (RULES,"Rules.rul") or die "Can't Find Rules: $!"; 
+	my (@title) = split(/\t/,<RULES>);	
+	say @title;
+	for my $line (<RULES>) {
+		$line =~ s/\r?\n$//;		
+		say $line;
+		my @d = split(/\t/,$line);			
+		say @d;
+		say @d[1.. @d-1];
+		say $d[0];
+		say sort(@d[1.. @d-1]);
+		$Rules{join ('',sort(@d[1.. @d-1]))} = $d[0]; #join takes an array and joins them together with a specified string between each element
+		# Binary ".." is the range operator, which is really two different operators depending on the context. Here, it returns a list of values counting (up by ones) from the left to the right value. If the left value is greater than the right value, then it returns an empty list
 	}
-	print "\n";
-	say @{$Aminolist{$key}};
+	say %Rules;
+	say keys %Rules;
+	close RULES;	
 }
 
-say %Aminolist;
+
+#LoadData();
+
+#foreach my $key (keys %Aminolist) {
+#	say "The key is: " . $key;
+#	say "The value is: " . $Aminolist{$key};
+#	my $array_ref = $Aminolist{$key};
+#	print "The de-referenced value is: ";
+#	say @$array_ref;
+#	print "The de-referenced hashes are: ";
+#	foreach (@$array_ref) {
+#		my $hash_ref = $_;
+#		print %$hash_ref;
+#		print " ";
+#	}
+#	print "\n";
+#	say @{$Aminolist{$key}};
+#}
+
+#say %Aminolist;
+
+LoadRules();
 
 
 

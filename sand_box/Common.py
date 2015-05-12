@@ -19,16 +19,16 @@ def get_file_name(file_path):
 		List of strings resulting from spliting the input string at each 
 		backslash character  
 
-    Examples
-    --------
-    >>> for file_path in list_of_file_paths:
-    ... 	print get_file_name(file_path)
+	Examples
+	--------
+	>>> for file_path in list_of_file_paths:
+	... 	print get_file_name(file_path)
 	"""
 
 	path_as_list = file_path.split('/')
 	return path_as_list[-1]
 
-def GetDataFiles():
+def GetDataFiles(extention):
 	"""Get the paths to the .txt files listed in the current directory
 		
 	Useful when you have a set of custom .txt files that need to be loaded and
@@ -50,7 +50,7 @@ def GetDataFiles():
 	"""
 	file_handlers = FileHandlers()
 	file_paths = file_handlers.search_directory()
-	files = file_handlers.find_files(file_paths, 'txt')
+	files = file_handlers.find_files(file_paths, extention)
 	return files
 	
 def GetUserSelection(files):
@@ -127,7 +127,7 @@ def BuildUsageDict():
 	>>> usage_dict = BuildUsageDict()
 	"""
 	file_handlers = FileHandlers()
-	all_files = GetDataFiles()
+	all_files = GetDataFiles('txt')
 	selection_int, file_path, file_name = GetUserSelection(all_files)
 	usage_dict = {}
 	try:
@@ -189,17 +189,68 @@ def SortUsageDict(usage_dict):
 				j += 1
 	return usage_dict # return sorted dictionary
 
+def BuildRulesDict():
+	file_handlers = FileHandlers()
+	rules_file = GetDataFiles('rul')
+	rules_dict = {}
+	try:
+		for line in open(rules_file[0]):
+			fields = line.split("\t")
+			cleaned = file_handlers.clean(fields)
+			if ('this' and 'replace_this') in line:
+				pass
+			else:
+				if ''.join((cleaned[1:])) not in rules_dict:
+					rules_dict[''.join((cleaned[1:]))] = cleaned[0]
+				else:
+					pass
+		return rules_dict
+	except IOError:
+		print("An error occurred while trying to load the rules file." +
+		"Make sure the file is located in your current working directory.")			
 
 def main():
 	usage_dict = BuildUsageDict()
 	sorted_dict = SortUsageDict(usage_dict)
 	print sorted_dict
+	rules_dict = BuildRulesDict()
+	print rules_dict
 
 main()
 
-#my_list = [4, 7, 3, 6, 1, 8, 3]
-#my_list.sort()
-#print my_list
+"""
+Key steps...
+1. Need to create a dictionary of lists of dictionaries.
+{
+	F : [{TTT: 0.58}, {TTC: 0.42}],
+	L : [{TTA: 0.14}, {TTG: 0.13}, {CTT: 0.12}, {CTC: 0.1}, {CTA: 0.04}, {CTG: 0.47}],
+	I : [{ATT: 0.49}, {ATC: 0.39}, {ATA: 0.11}],
+	...
+	G : [{GGT: 0.35}, {GGC: 0.37}, {GGA: 0.13}, {GGG: 0.15}]
+}
+
+2. Then sort the lists in descending order of the values in the contained dictionaries.
+For example, G would look like
+
+	G : [{GGC: 0.37}, {GGT: 0.35}, {GGG: 0.15}, {GGA: 0.13}]
+
+3. Build a dictionary for the "Rules.rul" file. This dictionary will have the following
+format:
+{
+	AG 	: 	R,
+	CT 	: 	Y,
+	AC 	: 	M,
+	GT 	: 	K,
+	CG 	: 	S,
+	AT 	: 	W,
+	ACT : 	H,
+	CGT : 	B,
+	ACG : 	V
+	AGT :  	D
+	ACGT: 	N
+}
+
+"""
 
 
 
