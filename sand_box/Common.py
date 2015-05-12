@@ -146,34 +146,60 @@ def BuildUsageDict():
 		print("An error occurred while trying to load the data file." +
 		"Make sure the file is located in your current working directory.")
 
+def SortUsageDict(usage_dict):
+	"""An ugly implementation of bubble sort.
 
+	Useful for sorting the values in a codon usage dictionary in descending
+	order based on usage frequency. In this context the value is a list: a 
+	list of dictionaries in which each key is a codon and each value is its 
+	usage frequency. The list represents all codons/usage_freq for each amino 
+	acid. 
 
-"""
-Next steps...
-1. Need to create a dictionary of lists of dictionaries.
-{
-	F : [{TTT: 0.58}, {TTC: 0.42}],
-	L : [{TTA: 0.14}, {TTG: 0.13}, {CTT: 0.12}, {CTC: 0.1}, {CTA: 0.04}, {CTG: 0.47}],
-	I : [{ATT: 0.49}, {ATC: 0.39}, {ATA: 0.11}],
-	...
-	G : [{GGT: 0.35}, {GGC: 0.37}, {GGA: 0.13}, {GGG: 0.15}]
-}
+	Parameters
+	----------
+	usage_dict: dict
+		Dictionary of lists of dictionaries for codon usage. For example, the
+		output of BuildUsageDict() would work as input
 
-2. Then sort the lists in descending order of the values in the contained dictionaries.
-For example, G would look like
+	Returns
+	-------
+	usage_dict: dict
+		Dictionary of lists of dictionaries for codon usage. The same format
+		as the input dictionary except that list item for each 
+		sorted_usage_dict[key] is sorted in descending order based on the
+		values of dictionary items in each list.
+	
+	
 
-	G : [{GGC: 0.37}, {GGT: 0.35}, {GGG: 0.15}, {GGA: 0.13}]
+	key is string
+	usage_dict[key] is list
+	item is dict
+	"""
+	for key1 in usage_dict: 										# key1 is string corresponding to AA single letter code
+		for i in range(len(usage_dict[key1]) - 1, -1, -1):			# iterate through dictionary in reverse order. prevents "list index out of range error" in subsquent step
+			j = 0 													# non-pythonic list iteration. Again, preventing "list index out of range error". Allowing for bubble sort
+			while j < i: 											# iterate through list. ignore last item, because it will already be sorted
+				for key2a in usage_dict[key1][j]: 					# key2a is codon at index j
+					for key2b in usage_dict[key1][j + 1]: 			# key2b is codon at index j + 1
+						if(float(usage_dict[key1][j][key2a]) < 		# compare usage frequency for each codon, and swap positions if key2a is less then key2b
+							float(usage_dict[key1][j + 1][key2b])):
+							temp = usage_dict[key1][j + 1]
+							usage_dict[key1][j + 1] = usage_dict[key1][j]
+							usage_dict[key1][j] = temp
+				j += 1
+	return usage_dict # return sorted dictionary
 
-
-"""
 
 def main():
 	usage_dict = BuildUsageDict()
-	print usage_dict
+	sorted_dict = SortUsageDict(usage_dict)
+	print sorted_dict
 
 main()
 
-
+#my_list = [4, 7, 3, 6, 1, 8, 3]
+#my_list.sort()
+#print my_list
 
 
 
