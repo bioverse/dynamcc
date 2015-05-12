@@ -28,7 +28,7 @@ def get_file_name(file_path):
 	path_as_list = file_path.split('/')
 	return path_as_list[-1]
 
-def GetDataFiles(extention):
+def LoadFiles(extention):
 	"""Get the paths to the .txt files listed in the current directory
 		
 	Useful when you have a set of custom .txt files that need to be loaded and
@@ -46,14 +46,14 @@ def GetDataFiles(extention):
 
 	Examples
 	--------
-	>>> all_files = GetDataFiles()
+	>>> all_files = LoadFiles()
 	"""
 	file_handlers = FileHandlers()
 	file_paths = file_handlers.search_directory()
 	files = file_handlers.find_files(file_paths, extention)
 	return files
 	
-def GetUserSelection(files):
+def GetDataFile(files):
 	"""Ask the user to select which data file (*.txt) to parse
 		
 	Useful when you have several versions of a data file (for example several
@@ -77,7 +77,7 @@ def GetUserSelection(files):
 
 	Examples
 	--------
-	>>> files = GetDataFiles()
+	>>> files = LoadFiles()
 	>>> selection, file_name = PromptUser(files)
 	"""
 	print "Select data file: "
@@ -127,8 +127,8 @@ def BuildUsageDict():
 	>>> usage_dict = BuildUsageDict()
 	"""
 	file_handlers = FileHandlers()
-	all_files = GetDataFiles('txt')
-	selection_int, file_path, file_name = GetUserSelection(all_files)
+	all_files = LoadFiles('txt')
+	selection_int, file_path, file_name = GetDataFile(all_files)
 	usage_dict = {}
 	try:
 		for line in open(file_path):
@@ -168,12 +168,11 @@ def SortUsageDict(usage_dict):
 		as the input dictionary except that list item for each 
 		sorted_usage_dict[key] is sorted in descending order based on the
 		values of dictionary items in each list.
-	
-	
 
-	key is string
-	usage_dict[key] is list
-	item is dict
+	Examples
+	--------
+	>>> usage_dict = BuildUsageDict()
+	>>> sorted_dict = SortUsageDict(usage_dict)
 	"""
 	for key1 in usage_dict: 										# key1 is string corresponding to AA single letter code
 		for i in range(len(usage_dict[key1]) - 1, -1, -1):			# iterate through dictionary in reverse order. prevents "list index out of range error" in subsquent step
@@ -191,7 +190,7 @@ def SortUsageDict(usage_dict):
 
 def BuildRulesDict():
 	file_handlers = FileHandlers()
-	rules_file = GetDataFiles('rul')
+	rules_file = LoadFiles('rul')
 	rules_dict = {}
 	try:
 		for line in open(rules_file[0]):
@@ -209,12 +208,58 @@ def BuildRulesDict():
 		print("An error occurred while trying to load the rules file." +
 		"Make sure the file is located in your current working directory.")			
 
+def GetUserSelection(sorted_dict):
+	"""Prompt user for selection of amino acids to remove from list
+
+	Parameters
+	----------
+	sorted_dict: dict
+		Dictionary of lists of dictionaries for codon usage. For example, the
+		output of BuildUsageDict() would work as input. In this case, any 
+		dictionary that has single letter amino acid symbols as keys would
+		work
+
+	Returns
+	-------
+	aa_list: list
+		List of amino acids that the user has entered. Amino acid symbols are
+		converted to uppercase and all white space is removed.
+	
+	Examples
+	--------
+	>>> selection = GetUserSelection()
+	"""	
+	file_handlers = FileHandlers()
+	while True:
+		selection = raw_input("Choose amino acids to remove (multiple amino " +
+							"acids are indicated as a comma-separated list: ")
+		aa_list = file_handlers.clean(selection.split(','))
+		try:
+			for i in range(len(aa_list)):
+				if aa_list[i].upper() in sorted_dict:
+					aa_list[i] = aa_list[i].upper()
+				else:
+					raise ValueError()
+			return aa_list
+		except ValueError:
+				print("Invalid entry. You must enter a letter or series of " +
+				"comma-separated letters corresponding to the amino acids " + 
+				"you wish to omit.")
+
 def main():
 	usage_dict = BuildUsageDict()
 	sorted_dict = SortUsageDict(usage_dict)
-	print sorted_dict
+	#print sorted_dict
 	rules_dict = BuildRulesDict()
-	print rules_dict
+	#print rules_dict
+	print("Available amino acids (count: " + str(len(sorted_dict)) + 
+		"; X represents stop codons)")
+	AA_list = []
+	for key in sorted_dict:
+		AA_list.append(key)
+	print ','.join(AA_list)
+	selection = GetUserSelection(sorted_dict)
+	print selection
 
 main()
 
