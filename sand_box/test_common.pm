@@ -78,7 +78,16 @@ sub LoadRules {
 }
 
 
-#LoadData();
+LoadData();
+LoadRules();
+
+print "Available amino acids (count: ". scalar (keys %Aminolist)." ,X represents stop codons)\n";
+print join( ',', keys %Aminolist )."\n";
+print "Choose amino acids to remove:\n";
+my  $a =  <STDIN>;
+print $a;
+chomp $a; # chomp removes any trailing string that corresponds to the current value of $/. It returns the total number of characters removed from all its arguments. By default $/ is set to newline character
+print $a;
 
 #foreach my $key (keys %Aminolist) {
 #	say "The key is: " . $key;
@@ -98,7 +107,7 @@ sub LoadRules {
 
 #say %Aminolist;
 
-LoadRules();
+#LoadRules();
 
 
 

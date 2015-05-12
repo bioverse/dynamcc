@@ -246,12 +246,42 @@ def GetUserSelection(sorted_dict):
 				"comma-separated letters corresponding to the amino acids " + 
 				"you wish to omit.")
 
+def EditUsageDict(selection, sorted_dict):
+	"""Remove selected key-value pairs from a codon usage dictionary
+
+	Parameters
+	----------
+	selection: list
+		list of single letter amino acids (such as that returned from 
+		GetUserSelection)
+	sorted_dict: dict
+		Dictionary of lists of dictionaries for codon usage. For example, the
+		output of BuildUsageDict() would work as input. In this case, any 
+		dictionary that has single letter amino acid symbols as keys would
+		work
+
+	Returns
+	-------
+	sorted_dict: dict
+		The same dictionary as input except that all key-value pairs with keys
+		that match the user selection are deleted.
+	
+	Examples
+	--------
+	>>> usage_dict = BuildUsageDict()
+	>>> sorted_dict = SortUsageDict(usage_dict)
+	>>> selection = GetUserSelection(sorted_dict)
+	>>> EditUsageDict(selection, sorted_dict)
+	"""	
+	for i in range(len(selection)):
+		if selection[i] in sorted_dict:
+			del sorted_dict[selection[i]]
+	return sorted_dict
+
 def main():
 	usage_dict = BuildUsageDict()
 	sorted_dict = SortUsageDict(usage_dict)
-	#print sorted_dict
 	rules_dict = BuildRulesDict()
-	#print rules_dict
 	print("Available amino acids (count: " + str(len(sorted_dict)) + 
 		"; X represents stop codons)")
 	AA_list = []
@@ -259,7 +289,8 @@ def main():
 		AA_list.append(key)
 	print ','.join(AA_list)
 	selection = GetUserSelection(sorted_dict)
-	print selection
+	edit = EditUsageDict(selection, sorted_dict)
+	print edit
 
 main()
 
