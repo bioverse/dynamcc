@@ -278,6 +278,38 @@ def EditUsageDict(selection, sorted_dict):
 			del sorted_dict[selection[i]]
 	return sorted_dict
 
+def BestList(filtered_dict):
+	"""Returns a list of codons with highest usage frequency given a usage 
+	dictionary
+
+	Parameters
+	----------
+	filtered_dict: dict
+		Dictionary of lists of dictionaries for codon usage. The keys are 
+		single letter amino acid symbols, and the values are a sorted list of 
+		dicts (these dicts have keys corresponsing to codons and values
+		corresponsing to usage freuqency). This list must be sorted in 
+		descending order of usage frequency!
+
+	Returns
+	-------
+	best_list: list
+		A list of codons that are most frequently used
+	
+	Examples
+	--------
+	>>> usage_dict = BuildUsageDict()
+	>>> sorted_dict = SortUsageDict(usage_dict)
+	>>> selection = GetUserSelection(sorted_dict)
+	>>> filtered_dict = EditUsageDict(selection, sorted_dict)
+	>>> BestList(filtered_dict)
+	"""		
+	best_list = []
+	for key1 in filtered_dict:
+		for key2 in filtered_dict[key1][0]:
+			best_list.append(key2)
+	return best_list
+
 def main():
 	usage_dict = BuildUsageDict()
 	sorted_dict = SortUsageDict(usage_dict)
@@ -289,8 +321,9 @@ def main():
 		AA_list.append(key)
 	print ','.join(AA_list)
 	selection = GetUserSelection(sorted_dict)
-	edit = EditUsageDict(selection, sorted_dict)
-	print edit
+	filtered_dict = EditUsageDict(selection, sorted_dict)
+	best_list = BestList(filtered_dict)
+	print best_list
 
 main()
 
@@ -325,6 +358,12 @@ format:
 	AGT :  	D
 	ACGT: 	N
 }
+
+4. Ask user which amino acids to delete, and remove these from the sorted
+codon usage dictionary
+
+5. Generate list of codons with highest frequency (using dict with deleted aa).
+def BestList 
 
 """
 

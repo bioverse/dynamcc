@@ -74,20 +74,57 @@ sub LoadRules {
 	}
 	say %Rules;
 	say keys %Rules;
+	say "\n\n\n";
 	close RULES;	
+}
+
+sub BestList {
+	my @list; # instantiate array structure
+	for my $key (keys %Aminolist) { # iterate through keys in %Aminolist (with deleted aa's selected by user)
+		if ((scalar @{$Aminolist{$key}})>1) { # if there are more than one codon for the amino acid (list length > 1)
+			my $c = {"Ratio"=>0,"Code"=>""}; # new scalar (pointer to 'empty' hash).  
+			say %$c;
+			for my $x (@{$Aminolist{$key}}) { # iterate through the hash items in the list
+				say %$x;
+				say $$x{"Ratio"};
+				say $$c{"Ratio"};
+				if ($$x{"Ratio"}>$$c{"Ratio"} && $$x{"InUse"}==0) { # assign hash c key 'ratio' to highest value codon usage frequency
+					$c=$x;
+				}
+				say $$x{"Ratio"};
+				say $$c{"Ratio"};
+			}
+			say $$c{"Code"};
+			say %$c;
+			say "\n\n\n";
+			if ($$c{"Code"} ne "") { # ne is perl string inequality (equivalent to != for numeric inequality).
+				$$c{"InUse"}=1;
+				push (@list,$$c{"Code"});
+			}
+		}
+		else {
+			my $c = ${$Aminolist{$key}}[0];
+			if ($$c{"InUse"}==0) {
+				$$c{"InUse"}=1;
+				push(@list,$$c{"Code"});
+			}
+		}
+	}
+	return @list;
 }
 
 
 LoadData();
 LoadRules();
+BestList();
 
-print "Available amino acids (count: ". scalar (keys %Aminolist)." ,X represents stop codons)\n";
-print join( ',', keys %Aminolist )."\n";
-print "Choose amino acids to remove:\n";
-my  $a =  <STDIN>;
-print $a;
-chomp $a; # chomp removes any trailing string that corresponds to the current value of $/. It returns the total number of characters removed from all its arguments. By default $/ is set to newline character
-print $a;
+#print "Available amino acids (count: ". scalar (keys %Aminolist)." ,X represents stop codons)\n";
+#print join( ',', keys %Aminolist )."\n";
+#print "Choose amino acids to remove:\n";
+#my  $a =  <STDIN>;
+#print $a;
+#chomp $a; # chomp removes any trailing string that corresponds to the current value of $/. It returns the total number of characters removed from all its arguments. By default $/ is set to newline character
+#print $a;
 
 #foreach my $key (keys %Aminolist) {
 #	say "The key is: " . $key;
