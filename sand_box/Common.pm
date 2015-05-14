@@ -83,11 +83,7 @@ sub Grouping {
 		$g{$_} = join('',sort(@{$g{$_}}));
 	}	
 	return %g;
-	
-	
 }
-
-
 
 #using the groups created by grouping construct a list using the replecment rules
 sub ListFromGroup {

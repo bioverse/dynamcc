@@ -83,40 +83,121 @@ sub BestList {
 	for my $key (keys %Aminolist) { # iterate through keys in %Aminolist (with deleted aa's selected by user)
 		if ((scalar @{$Aminolist{$key}})>1) { # if there are more than one codon for the amino acid (list length > 1)
 			my $c = {"Ratio"=>0,"Code"=>""}; # new scalar (pointer to 'empty' hash).  
-			say %$c;
+			#say %$c;
 			for my $x (@{$Aminolist{$key}}) { # iterate through the hash items in the list
-				say %$x;
-				say $$x{"Ratio"};
-				say $$c{"Ratio"};
+				#say %$x;
+				#say $$x{"Ratio"};
+				#say $$c{"Ratio"};
 				if ($$x{"Ratio"}>$$c{"Ratio"} && $$x{"InUse"}==0) { # assign hash c key 'ratio' to highest value codon usage frequency
-					$c=$x;
+					$c=$x; # set the c hash equal to the x hash (the one with highest frequency usage)
 				}
-				say $$x{"Ratio"};
-				say $$c{"Ratio"};
+				#say $$x{"Ratio"};
+				#say $$c{"Ratio"};
 			}
-			say $$c{"Code"};
-			say %$c;
-			say "\n\n\n";
+			#say $$c{"Code"};
+			#say %$c;
+			#say "\n\n\n";
 			if ($$c{"Code"} ne "") { # ne is perl string inequality (equivalent to != for numeric inequality).
-				$$c{"InUse"}=1;
-				push (@list,$$c{"Code"});
+				$$c{"InUse"}=1; # assign InUse key to 1
+				push (@list,$$c{"Code"}); # append this codon to the array 'list'
 			}
 		}
-		else {
-			my $c = ${$Aminolist{$key}}[0];
+		else { # if there are not more than one entry in the list (i.e. only one codon for that aa)
+			my $c = ${$Aminolist{$key}}[0]; # new scalar (pointer) to hash 'c' that contains key-value pair identical to the single codon.
 			if ($$c{"InUse"}==0) {
-				$$c{"InUse"}=1;
-				push(@list,$$c{"Code"});
+				$$c{"InUse"}=1; # set InUser to 1
+				push(@list,$$c{"Code"}); # append this codon to the array 'list'
 			}
 		}
 	}
-	return @list;
+	return @list; # retun the list of highest frequency usage codons.
 }
+
+sub Grouping {
+	my ($list,$GroupBy) = @_; # $list is the pointer to array passed to Reduce. $GroupBy is an integer 0, 1, 2
+	say "From Grouping: ";
+	say $_[0]; # $_[0] == $list
+	say $_[1]; # $_[1] == $GroupBy
+	my %g=(); # instantiate empty hash
+	for my $x (@{$list}) {	# dereference the array and iterate through it
+		say "From Grouping loop 1: ";
+		say $x; # each element in array
+		my $y = substr($x,$GroupBy,1,''); # substr EXPR, OFFSET, LENGTH, REPLACEMENT. Extracts a substring out of EXPR and returns it. First character is at offset zero. If OFFSET is negative, starts that far back from the end of the string.
+		say $y; # new string (depending on the value of $GroupBy, this gives the first, middle, or last character of string $x)
+		my $InRules=0; # instantiate new scalar
+		say %Rules;
+		foreach my $l (keys %Rules) { # iterate over keys in %Rules
+			say "From Grouping loop 2: ";
+			say $l; # keys from %Rules
+			say $Rules{$l}; # values from %Rules
+			if ($Rules{$l} eq $y) { # if key == $y (sliced string)
+				push (@{$g{$x}},split(//,$l));
+				$InRules = 1;
+			}
+		}
+		push(@{$g{$x}},$y) if (!$InRules);
+		say "End Grouping loop 1: ";
+		say @{$g{$x}};
+		
+	}
+	for (keys %g) {
+		$g{$_} = join('',sort(@{$g{$_}}));
+	}	
+	return %g;	
+}
+
+sub ListFromGroup {
+	my ($g,$index) = @_;
+	my @list;	
+	for my $x  (keys %{$g})  {
+		my $v = $x;							
+		if (length($g->{$x}) >1) {
+			substr($v,$index,0)=$Rules{$g->{$x}};
+		}
+		else {
+			 substr($v,$index,0)=$g->{$x} ;				
+		}
+		push(@list,$v);
+	}
+	return @list;	
+}
+
+sub Reduce {
+	my @a = @_; # @_ is the list that was passed as argument. capturing this as @a (local array)
+	say "from Reduce: ";
+	say $_[0]; # the first index item in the array (which was passed to this function)
+	say @a;
+	print "\n";
+	for my $i (0..2) {	# iterate through integers 0, 1, 2	
+		my %g = Grouping(\@a,$i); # pass @a by reference along with integers 0-2 to the Grouping sub-routine. Capture result in hash %g
+		@a = ListFromGroup(\%g,$i);		
+	}
+	return @a;
+}
+
+sub FindMinList {
+	my @a = Reduce(@_); # Pass the list that was passed to FindMinList to Reduce. capture result in @a 
+	if (join('',@a) ne join('',@_)) {
+		FindMinList(@a);
+	}
+	return @a;		
+}
+
 
 
 LoadData();
 LoadRules();
-BestList();
+
+my @wlist = BestList();
+print @wlist;
+print "\n";
+print "List (" .(scalar @wlist) .")\n";
+print join(", ",@wlist)."\n";
+my @s = FindMinList(@wlist); # pass best list to FindMinList. Capture result in @s
+print @s;
+print "\n";
+
+
 
 #print "Available amino acids (count: ". scalar (keys %Aminolist)." ,X represents stop codons)\n";
 #print join( ',', keys %Aminolist )."\n";

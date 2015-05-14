@@ -39,8 +39,8 @@ do {
 
 
 sub BestList {
-	my @list;
-	for my $key (keys %Aminolist) {
+	my @list; # instantiate array structure
+	for my $key (keys %Aminolist) { # iterate through keys in %Aminolist (with deleted aa's selected by user)
 		if ((scalar @{$Aminolist{$key}})>1) {
 			my $c = {"Ratio"=>0,"Code"=>""};
 			for my $x (@{$Aminolist{$key}}) {
