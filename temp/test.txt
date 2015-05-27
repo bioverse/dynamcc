@@ -1,0 +1,48 @@
+
+
+Choosen List:
+
+AA	Codon	Usage	Rank
+
+M	ATG	1	1
+
+R	AGG	0.11	5
+
+T	ACC	0.38	1
+
+K	AAG	0.71	1
+
+L	CTC	0.15	3
+
+I	ATC	0.47	1
+
+F	TTC	0.63	1
+
+E	GAA	0.33	2
+
+Q	CAA	0.3	2
+
+S	TCC	0.24	2
+
+H	CAT	0.4	2
+
+C	TGC	0.71	1
+
+Y	TAC	0.63	1
+
+P	CCC	0.33	1
+
+D	GAT	0.53	1
+
+Compressed codons:
+
+HYC  -> ACC,ATC,CCC,CTC,TCC,TTC
+
+SAW  -> CAA,CAT,GAA,GAT
+
+ADG  -> AAG,AGG,ATG
+
+TRC  -> TAC,TGC
+
+Finished! Total time: 99 sec 
+

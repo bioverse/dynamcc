@@ -17,10 +17,10 @@ sub GetDataFile {
 	my $Input;
 	my @files = glob("*.txt");
 	do {
-		print "Select Data File\n";
-		for (my $i=0;$i<@files;$i++) {
-			print "[$i] $files[$i] \n";
-		}
+		#print "Select Data File\n";
+		#for (my $i=0;$i<@files;$i++) {
+		#	print "[$i] $files[$i] \n";
+		#}
 		$Input = <STDIN>;	
 	} while (! exists  $files[$Input]);
 	return $files[$Input];

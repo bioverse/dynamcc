@@ -23,19 +23,19 @@ LoadRules();
 
 my @whirley=("-", "\\", "|", "/");
 
-print "Available amino acids (count: ". scalar (keys %Aminolist).")\n";
-print join( ',', keys %Aminolist )."\n";
-print "Choose amino acids to remove\n";
+#print "Available amino acids (count: ". scalar (keys %Aminolist).")\n";
+#print join( ',', keys %Aminolist )."\n";
+#print "Choose amino acids to remove\n";
 my  $Input =  <STDIN>;
 chomp $Input ;
 my @input =map {uc($_)}  split(/,/,$Input);
 delete @Aminolist {@input};
 my $Total = 1;
 $Total*=scalar @{$Aminolist{$_}} foreach (keys %Aminolist);
-print "Total Combinations: $Total\n";
+#print "Total Combinations: $Total\n";
 
 
-do {	print "Remove codon by [R]ank or [U]sage? ";
+do {	#print "Remove codon by [R]ank or [U]sage? ";
 	$Input = <STDIN>;
 	chomp $Input;
 } while ($Input !~ /^[RU]$/i);
@@ -43,14 +43,13 @@ do {	print "Remove codon by [R]ank or [U]sage? ";
 if (uc($Input) eq 'U') {
 	
 	# Remove codont by usage
-	print "Set usage ratio threshold: (must be below: " . FindMinimumThreshold() ." )\n";
+	#print "Set usage ratio threshold: (must be below: " . FindMinimumThreshold() ." )\n";
 	$Input = <STDIN>;
 	chomp $Input;
 	RemoveLowCodons($Input);
 }
 else {
-	#Remove Codons By Rank
-	print "Set codon rank threshold:  ";
+	#Remove Codons By Rank	#print "Set codon rank threshold:  ";
 	$Input = <STDIN>;
 	chomp $Input;
 	RemoveCodonsByRank($Input);
@@ -67,14 +66,14 @@ $Total*=scalar @{$Aminolist{$_}},
 	push(@z,0),
 	push(@l,scalar @{$Aminolist{$_}})  foreach (keys %Aminolist);
 
-print "Total combinations after removing low usage codons = $Total\n";
-print "Set redundency (0 for no redundency at all):  ";
+#print "Total combinations after removing low usage codons = $Total\n";
+#print "Set redundency (0 for no redundency at all):  ";
 $Input = <STDIN>;
 chomp $Input;
 $Redun = $Input;
 
-print "Total Combinations including redundency = ". $Total * ($CodonCount - (scalar keys %Aminolist))**$Redun ."\n";
-print "Number of thread to run (default 1):";
+#print "Total Combinations including redundency = ". $Total * ($CodonCount - (scalar keys %Aminolist))**$Redun ."\n";
+#print "Number of thread to run (default 1):";
 $Input = <STDIN>;
 chomp $Input;
 $NumOfThreads = $Input if ($Input ne "");
@@ -123,7 +122,7 @@ print "Finished! Total time: ". int(time-$GlobalStart)  . " sec \n";
 
 sub DoWork {	
 	my $idx = shift;
-	print "Thread $idx starting \n";
+	#print "Thread $idx starting \n";
 	my ($BestList,$BestReduceSize,$BestIndex,$BestRatio,@BestZ);
 	$BestReduceSize=20;
 	$BestRatio=0;
@@ -178,7 +177,7 @@ sub DoWork {
 		
 		if (($t % 10000)==0) {
 			my $EndTime = time;
-			print "thread $idx finished " .int(100* $t/$Total) ." % @ " . int((time -  $GlobalStart)* 1000) . " ms Best Size: $BestReduceSize , Best Index: $BestIndex, Best Ratio: $BestRatio\n";
+			#print "thread $idx finished " .int(100* $t/$Total) ." % @ " . int((time -  $GlobalStart)* 1000) . " ms Best Size: $BestReduceSize , Best Index: $BestIndex, Best Ratio: $BestRatio\n";
 			$StartTime = $EndTime;
 			#print "Working: " . $whirley[$Spinner];
 		}		
