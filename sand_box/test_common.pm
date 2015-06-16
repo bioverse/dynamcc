@@ -115,72 +115,116 @@ sub BestList {
 
 sub Grouping {
 	my ($list,$GroupBy) = @_; # $list is the pointer to array passed to Reduce. $GroupBy is an integer 0, 1, 2
-	say "From Grouping: ";
-	say $_[0]; # $_[0] == $list
-	say $_[1]; # $_[1] == $GroupBy
+	#say "From Grouping: ";
+	say "best list: ", @{$_[0]}; # $_[0] == $list
+	say "int is: ", $_[1]; # $_[1] == $GroupBy
 	my %g=(); # instantiate empty hash
+	##say "first: ", %g;
 	for my $x (@{$list}) {	# dereference the array and iterate through it
-		say "From Grouping loop 1: ";
-		say $x; # each element in array
+		##say "second: ",  %g;
+		#say "From Grouping loop 1: ";
+		say "Codon is: ", $x; # each element in array
 		my $y = substr($x,$GroupBy,1,''); # substr EXPR, OFFSET, LENGTH, REPLACEMENT. Extracts a substring out of EXPR and returns it. First character is at offset zero. If OFFSET is negative, starts that far back from the end of the string.
-		say $y; # new string (depending on the value of $GroupBy, this gives the first, middle, or last character of string $x)
+		say "x is: ", $x;
+		say "y is: ", $y;
+		##say "third: ", %g;
+		#say "Position is: ", $y; # new string (depending on the value of $GroupBy, this gives the first, middle, or last character of string $x)
 		my $InRules=0; # instantiate new scalar
-		say %Rules;
+		##say "forth: ", %g;
+		#say "Rules hash is: ", %Rules;
 		foreach my $l (keys %Rules) { # iterate over keys in %Rules
-			say "From Grouping loop 2: ";
-			say $l; # keys from %Rules
-			say $Rules{$l}; # values from %Rules
+			##say "fifth: ", %g;
+			say "l is: ", $l;
+			#say "From Grouping loop 2: ";
+			#say "Rules key is: ", $l; # keys from %Rules
+			say "Rules value is: ", $Rules{$l}; # values from %Rules
 			if ($Rules{$l} eq $y) { # if key == $y (sliced string)
-				push (@{$g{$x}},split(//,$l));
+				##say "sixth: ", %g;
+				##say "Rules{l} is: ", $Rules{$l};
+				#say "REALLY WEIRD EXPR: ";
+				#say "split rules key: ", split(//,$l);
+				push (@{$g{$x}},split(//,$l)); # the key of the rules dict is being pushed to an array of 
+				say "seventh: ", %g;
+				#say "unknown hash is: ", %g;
+				foreach my $k (keys %g) {
+					print "$k:  @{$g{$k}}\n";
+				}
 				$InRules = 1;
 			}
 		}
-		push(@{$g{$x}},$y) if (!$InRules);
-		say "End Grouping loop 1: ";
+		#say "InRules: ", $InRules;
+		#say !$InRules;
+		push(@{$g{$x}},$y) if (!$InRules); # 1 is true. g = {x: [y]}. If the key is already in hash, then append the new y to the array
+		##say "eigth: ", %g;
+		foreach my $k (keys %g) {
+			print "$k:  @{$g{$k}}\n";	
+		}
 		say @{$g{$x}};
+		#say "End Grouping loop 1: ";
+		#say @{$g{$x}};
+		#say $y;
 		
 	}
+	say %g;
 	for (keys %g) {
-		$g{$_} = join('',sort(@{$g{$_}}));
+		#say "new for loop";
+		#say @{$g{$_}};
+		$g{$_} = join('',sort(@{$g{$_}})); # sort the values of g = {x: [y]} alphabetically and join them into one string at the same time. now saved as scalar
+	}
+	for my $k (keys %g) {
+		print "$k:  $g{$k}\n";	
 	}	
+	say %g;
 	return %g;	
 }
 
 sub ListFromGroup {
+	say "from ListFromGroup: ";
 	my ($g,$index) = @_;
 	my @list;	
-	for my $x  (keys %{$g})  {
-		my $v = $x;							
-		if (length($g->{$x}) >1) {
-			substr($v,$index,0)=$Rules{$g->{$x}};
+	say %{$g};
+	for my $x  (keys %{$g})  { # iterate through dereferenced hash. keys are x
+		my $v = $x;		# v is now equal to x (the hash key)					
+		#say $g;
+		#say $x;
+		#say $g->{$x};
+		#say length($g->{$x}); # "->" is an infix dereference operator, just as in C and C++. in this case, fetching the $x member (getting the value for the key x) of the $g object
+		if (length($g->{$x}) >1) { # if the value of each key is > 1
+			#say substr($v,$index,0);
+			say $Rules{$g->{$x}};
+			substr($v,$index,0)=$Rules{$g->{$x}}; # take a substring of the original v and save it in v. In the case that this is the first_position, delete the first position and replace with the corresponding letter from the rules hash
 		}
 		else {
 			 substr($v,$index,0)=$g->{$x} ;				
 		}
-		push(@list,$v);
+		push(@list,$v); # populate this list with the single letter code (either the original single letter or the single letter from the rules)
 	}
+	say @list;
 	return @list;	
 }
 
 sub Reduce {
-	my @a = @_; # @_ is the list that was passed as argument. capturing this as @a (local array)
-	say "from Reduce: ";
-	say $_[0]; # the first index item in the array (which was passed to this function)
-	say @a;
-	print "\n";
+	my @a = @_; # @_ is the list that was passed as argument. capturing this as @a (local array) ## @_: within a subroutine the array @_ contains the parameters passed to that subroutine
+	#say "from Reduce: ";
+	#say $_[0]; # the first index item in the array (which was passed to this function)
+	#say @a;
+	#print "\n";
 	for my $i (0..2) {	# iterate through integers 0, 1, 2	
 		my %g = Grouping(\@a,$i); # pass @a by reference along with integers 0-2 to the Grouping sub-routine. Capture result in hash %g
-		@a = ListFromGroup(\%g,$i);		
+		@a = ListFromGroup(\%g,$i);	#pass %g by reference along with integers 0-2 to the ListFromGroup subroutine. Capture result in array @a	
 	}
 	return @a;
 }
 
 sub FindMinList {
-	my @a = Reduce(@_); # Pass the list that was passed to FindMinList to Reduce. capture result in @a 
-	if (join('',@a) ne join('',@_)) {
-		FindMinList(@a);
+	say "from FindMinList: ";
+	say "best_list is: ", @_;
+	my @a = Reduce(@_); # Pass the list that was passed to FindMinList to Reduce (BestList). capture result in @a 
+	say "reduced is: ", @a;
+	if (join('',@a) ne join('',@_)) { # if the list passed to FindMinList (BestList) is != to the result of Reduce
+		FindMinList(@a); # then pass the list back to itself (i.e. back to Reduce for another trial)
 	}
-	return @a;		
+	return @a;	# when the two lists are equal then return the final list
 }
 
 
@@ -193,7 +237,7 @@ print @wlist;
 print "\n";
 print "List (" .(scalar @wlist) .")\n";
 print join(", ",@wlist)."\n";
-my @s = FindMinList(@wlist); # pass best list to FindMinList. Capture result in @s
+my @s = FindMinList(@wlist); # pass best list to FindMinList. Capture result in @a
 print @s;
 print "\n";
 

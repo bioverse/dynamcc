@@ -189,6 +189,39 @@ def SortUsageDict(usage_dict):
 	return usage_dict # return sorted dictionary
 
 def BuildRulesDict():
+	"""Construct a dictionary from the .rul file. Each key-value pair is 
+	constructed from a single line of the .rul file The .rul file has the 
+	following format:
+
+	this	replace_this
+	R	A	G
+	Y	C	T
+	M	A	C
+	K	G	T
+	S	C	G
+	W	A	T
+	H	A	C	T
+	B	C	G	T
+	V	A	C	G
+	D	A	G	T
+	N	A	C	G	T
+
+	Parameters
+	----------
+	none
+
+	Returns
+	-------
+	rules_dict: dict
+		dictionary in which the key is a string resulting from joining the 
+		nucleotides (A, G, C, T) in columns 2-5 of each line from the .rul
+		file and the value corresponds to the string in the first column of
+		each line of the .rul file
+
+	Examples
+	--------
+	>>> rules_dict = BuildRulesDict()
+	"""
 	file_handlers = FileHandlers()
 	rules_file = LoadFiles('rul')
 	rules_dict = {}
@@ -310,10 +343,235 @@ def BestList(filtered_dict):
 			best_list.append(key2)
 	return best_list
 
+class Recursive:
+	def __init__(self, codon_list, rules_dict):
+		"""Initialize the Recursive object with two parameters.
+
+		Parameters
+		----------
+		codon_list: list
+			list of codons that are most frequently used after removing codons 
+			corresponding to amino acids (or stop codon) that the user has 
+			specified they want left out. This list can be the result of 
+			running BestList
+		rules_dict: dict
+			dictionary in which the key is a string resulting from joining the 
+			nucleotides (A, G, C, T) in columns 2-5 of each line from the .rul
+			file and the value corresponds to the string in the first column of
+			each line of the .rul file
+
+		Returns
+		-------
+		none
+		
+		Examples
+		--------
+		>>> recursive = Recursive(best_list, rules_dict)
+		"""			
+		self.codon_list = codon_list
+		self.rules_dict = rules_dict
+		self.reduced = []
+		self.my_dict = {}
+
+	def FindMinList(self, list):
+		"""Recursive algorithm in which the self.codon_list is a list of the
+		most frequently used codons for amino acids that the user wants to 
+		include for compression. self.codon is initially the list passed in
+		when instantiating the Recursive class. This list is copied to the
+		variable temp for downstream comparison. Then, Reduce() is called and
+		the resulting list is captured in the variable reduced_list. The two
+		lists are compared and if not equal, FindMinList recurses by calling
+		itself and passing the new list (captured from Reduce()) in as the
+		argument. When temp and reduced_list are equal, the method returns the
+		updated self.codon_list (this member variable is modified in Reduce())
+
+		Parameters
+		----------
+		list: list
+			This is a codon list, it can correspond to any codon list such as
+			the most frequently used codons staged for compression or the 
+			semi-compressed list resulting from Reduce()
+
+		Returns
+		-------
+		self.codon_list: list
+			The updated codon list. This list represents the most compressed 
+			set of codons remaining after running the recursive algorithm once
+			through. (need better description of this)
+
+		Examples
+		--------
+		>>> recursive = Recursive(best_list, rules_dict)
+		>>> recursive.FindMinList(best_list)
+		"""
+
+		print "from FindMinList: "
+		print "best_list is: ", self.codon_list
+		temp = self.codon_list
+		print "temp is: ", temp
+		reduced_list = self.Reduce()
+		print "reduced is: ", reduced_list
+		if temp != reduced_list:
+			self.FindMinList(reduced_list)
+		return self.codon_list
+
+	def Reduce(self):
+		"""Iterate through each position in the codon. At each position,
+		capture the result of Grouping(int) in self.my_dict. Pass this dict to
+		ListFromGroup(dict, int) and capture the result in self.codon_list. Return
+		self.codon_list after interating through each position in the codon.
+		
+		Parameters
+		----------
+		none
+
+		Returns
+		-------
+		self.codon_list: list
+			The updated codon list. This list represents the most compressed 
+			set of codons remaining after running Grouping(int) and 
+			ListFromGroup(dict, int) for all three codon positions
+
+		Examples
+		--------
+		reduced_list = self.Reduce()
+
+		"""
+		for i in range(3):
+			self.my_dict = self.Grouping(i)
+			self.codon_list = self.ListFromGroup(self.my_dict, i)
+		print "from reduce: ", self.codon_list
+		return self.codon_list
+
+	def Grouping(self, int):
+		"""Grouping initializes an empty dict
+		"""
+		my_dict = {}
+		print "From Grouping: "
+		#print best_list
+		#print int
+		##print "first: ", my_dict
+		print "best list: ", self.codon_list
+		print "int is: ", int
+		for codon in self.codon_list:
+			##print "second: ", my_dict
+			#print "From Grouping loop 1: "
+			##print "codon is: ", codon
+			if int == 0:
+				position = codon[int]
+				remainder = codon[int+1:]
+				##print "x is: ", first_position
+				##print "y is: ", end_of_codon
+				##print "third: ", my_dict
+				InRules = 0
+				##print "forth: ", my_dict
+				#print rules_dict
+				for key in self.rules_dict:
+					##print "fifth: ", my_dict
+					##print "l is: ", key
+					#print "From Grouping loop 2: "
+					#print key
+					#print rules_dict[key]
+					if self.rules_dict[key] == position:
+						##print "sixth: ", my_dict
+						##print "rules_dict[key] is: ", rules_dict[key]
+						#my_dict[codon]
+						##print "seventh: ", my_dict
+						if remainder in my_dict:
+							my_dict[remainder].add(key.split())
+						else:
+							my_dict[remainder] = set(key.split())
+						InRules = 1
+			elif int == 1:
+				position = codon[int]
+				remainder = codon[0] + codon[2]
+				InRules = 0
+				for key in self.rules_dict:
+					if self.rules_dict[key] == position:
+						if remainder in self.my_dict:
+							my_dict[remainder].add(key.split())
+						else:
+							my_dict[remainder] = set(key.split())
+						InRules = 1
+			else:
+				position = codon[int]
+				#print "position: ", position
+				remainder = codon[:2]
+				#print "remainder: ", remainder
+				InRules = 0
+				for key in self.rules_dict:
+					#print "key in rules_dict: ", key
+					if self.rules_dict[key] == position:
+						#print "value in rules_dict", self.rules_dict[key]
+						if remainder in my_dict:
+							#print remainder, my_dict[remainder]
+							my_dict[remainder].add(key.split())
+						else:
+							my_dict[remainder] = set(key.split())
+						InRules = 1
+			if InRules == 0:
+				if remainder in my_dict:
+					#print "remainder in self.my_dict"
+					my_dict[remainder].add(position)
+					#print my_dict[remainder]
+					#print my_dict
+				else:
+					my_dict[remainder] = set(position)
+			#print "eigth: ", my_dict
+		#print my_dict
+		for key in my_dict:
+			my_dict[key] = ''.join(sorted(my_dict[key]))
+		for key, value in my_dict.iteritems():
+			print key, ":", value
+		self.my_dict = my_dict
+		print self.my_dict
+		return self.my_dict
+
+	def ListFromGroup(self, my_dict, int):
+		print "from ListFromGroup: "
+		new_list = []
+		print self.my_dict
+		for key in self.my_dict:
+			print "key is: ", key
+			print "value is: ", my_dict[key]
+			temp = self.my_dict[key]
+			if int == 0:
+				if len(self.my_dict[key]) > 1:
+					new_codon = self.rules_dict[temp] + key
+					print new_codon
+					new_list.append(new_codon)
+				else:
+					new_codon = self.my_dict[key] + key
+					new_list.append(new_codon)
+			elif int == 1:
+				if len(self.my_dict[key]) > 1:
+					nt = self.my_dict[key]
+					print nt
+					print self.rules_dict[temp]
+					new_codon = key[0] + self.rules_dict[temp] + key[1]
+					print new_codon
+					new_list.append(new_codon)
+				else:
+					nt = self.my_dict[key]
+					print nt
+					new_codon = key[0] + self.my_dict[key] + key[1]
+					new_list.append(new_codon)
+			else:
+				if len(self.my_dict[key]) > 1:
+					new_codon =  key + self.rules_dict[temp]
+					print new_codon
+					new_list.append(new_codon)
+				else:
+					new_codon = key + self.my_dict[key]
+					new_list.append(new_codon)
+		print new_list
+		return new_list
+
 def main():
 	usage_dict = BuildUsageDict()
 	sorted_dict = SortUsageDict(usage_dict)
 	rules_dict = BuildRulesDict()
+	print rules_dict
 	print("Available amino acids (count: " + str(len(sorted_dict)) + 
 		"; X represents stop codons)")
 	AA_list = []
@@ -324,6 +582,8 @@ def main():
 	filtered_dict = EditUsageDict(selection, sorted_dict)
 	best_list = BestList(filtered_dict)
 	print best_list
+	recursive = Recursive(best_list, rules_dict)
+	recursive.FindMinList(best_list)
 
 main()
 
@@ -364,6 +624,8 @@ codon usage dictionary
 
 5. Generate list of codons with highest frequency (using dict with deleted aa).
 def BestList 
+
+6. Pass BestList to FindMinList
 
 """
 
