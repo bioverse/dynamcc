@@ -405,12 +405,8 @@ class Recursive:
 		>>> recursive.FindMinList(best_list)
 		"""
 
-		print "from FindMinList: "
-		print "best_list is: ", self.codon_list
 		temp = self.codon_list
-		print "temp is: ", temp
 		reduced_list = self.Reduce()
-		print "reduced is: ", reduced_list
 		if temp != reduced_list:
 			self.FindMinList(reduced_list)
 		return self.codon_list
@@ -440,43 +436,65 @@ class Recursive:
 		for i in range(3):
 			self.my_dict = self.Grouping(i)
 			self.codon_list = self.ListFromGroup(self.my_dict, i)
-		print "from reduce: ", self.codon_list
 		return self.codon_list
 
 	def Grouping(self, int):
-		"""Grouping initializes an empty dict
+		"""This function initializes an empty dict. Then iterates through each
+		codon in self.codon_list. The code then branches depending on which 
+		codon position was passed in (0, 1, or 2). If int == 0, InRules == 0 
+		and the codon is split into two variables ('position' == the first 
+		position and 'remainder' == the rest of the codon). Then it iterates 
+		through the keys in self.rules_dict and checks if the value is equal to
+		the position. If so, then it adds a new key-value pair to the local 
+		my_dict variable. The key corresponds to the "remainder" and the value 
+		is a set that contains the split key from self.rules_dict and the 
+		InRules variable is set to 1. If the value in self.rules_dict is not
+		equivalent to the position, then nothing happens. After exiting the
+		if branch, the script checks whether InRules is 1 or 0. If 0, then
+		my_dict is extended. If a key already exists in this dict with the 
+		same value as the remainder, then the value of that key is (which is 
+		a set) is extended to include the new value of the position variable.
+		If not, then a new key-value pair is added. The logic is the same for 
+		int == 1 and int == 2. The script then iterates through the keys in 
+		my_dict and joins the value's strings.
+
+		Parameters
+		----------
+		int : int
+			This should be a 0, 1, or 2 (depending on what is being passed
+			from Reduce()). Because we are interested in positions in the
+			codons, it does not make sense to have numbers other than 0, 1, 
+			or 2. There should be error handling here.
+
+		Returns
+		-------
+		self.my_dict : dict 
+			A dictionary in which the keys are strings of nucleotides that fall
+			at particular positions in the codon (1,2 or 0,2 or 0,1) and the 
+			values are all the nucleotides that can exist at the remaining 
+			position. Here the key-value pairs represent compressed codons. 
+	
+			For example, the first iteration through looks like:
+			{'AA': 'AGT', 'AC': 'A', 'GT': 'C', 'AG': 'C', 'CC': 'A', 
+			'TT': 'AT', 'CG': 'CG', 'GG': 'T', 'GC': 'AG', 'AT': 'CGT', 
+			'TG': 'ACG'}
+
+			And the last iteration through looks like:
+			{'BA': 'T', 'CG': 'T', 'CA': 'G', 'AM': 'C', 'DA': 'A', 
+			'RG': 'C', 'WT': 'T', 'VT': 'G', 'SC': 'G', 'TG': 'G'}
+
+		Examples
+		--------
+		>>> self.my_dict = self.Grouping(i)
 		"""
 		my_dict = {}
-		print "From Grouping: "
-		#print best_list
-		#print int
-		##print "first: ", my_dict
-		print "best list: ", self.codon_list
-		print "int is: ", int
 		for codon in self.codon_list:
-			##print "second: ", my_dict
-			#print "From Grouping loop 1: "
-			##print "codon is: ", codon
 			if int == 0:
 				position = codon[int]
 				remainder = codon[int+1:]
-				##print "x is: ", first_position
-				##print "y is: ", end_of_codon
-				##print "third: ", my_dict
 				InRules = 0
-				##print "forth: ", my_dict
-				#print rules_dict
 				for key in self.rules_dict:
-					##print "fifth: ", my_dict
-					##print "l is: ", key
-					#print "From Grouping loop 2: "
-					#print key
-					#print rules_dict[key]
 					if self.rules_dict[key] == position:
-						##print "sixth: ", my_dict
-						##print "rules_dict[key] is: ", rules_dict[key]
-						#my_dict[codon]
-						##print "seventh: ", my_dict
 						if remainder in my_dict:
 							my_dict[remainder].add(key.split())
 						else:
@@ -495,50 +513,65 @@ class Recursive:
 						InRules = 1
 			else:
 				position = codon[int]
-				#print "position: ", position
 				remainder = codon[:2]
-				#print "remainder: ", remainder
 				InRules = 0
 				for key in self.rules_dict:
-					#print "key in rules_dict: ", key
 					if self.rules_dict[key] == position:
-						#print "value in rules_dict", self.rules_dict[key]
 						if remainder in my_dict:
-							#print remainder, my_dict[remainder]
 							my_dict[remainder].add(key.split())
 						else:
 							my_dict[remainder] = set(key.split())
 						InRules = 1
 			if InRules == 0:
 				if remainder in my_dict:
-					#print "remainder in self.my_dict"
 					my_dict[remainder].add(position)
-					#print my_dict[remainder]
-					#print my_dict
 				else:
 					my_dict[remainder] = set(position)
-			#print "eigth: ", my_dict
-		#print my_dict
 		for key in my_dict:
 			my_dict[key] = ''.join(sorted(my_dict[key]))
-		for key, value in my_dict.iteritems():
-			print key, ":", value
 		self.my_dict = my_dict
-		print self.my_dict
 		return self.my_dict
 
 	def ListFromGroup(self, my_dict, int):
-		print "from ListFromGroup: "
+		"""This function initializes an empty list. Then iterates through the
+		keys in the member variable self.my_dict (which was modified in 
+		Grouping(int)) and captures the value in the variable temp. The code
+		then branches depending on what integer was passed in (0, 1, or 2).
+		If 0, it checks whether the value (a string) is longer than 1. If it
+		is, then it finds the value from the member variable self.rules_dict 
+		and concatenates it with the key from self.my_dict. The concatenated
+		product is then captured in the variable 'new_codon'. If it is not
+		longer than one (i.e. only one nucleotide will work at that particular
+		position in the compressed codon), then the value at self.my_dict[key]
+		is concatenated with the key from self.my_dict and this concatenated
+		product is captured in the variable 'new_codon'. new_codon is then
+		added to the new_list. Logic is similar for int values of 1 or 2. 
+
+		Parameters
+		----------
+		my_dict : dict
+			This dictionary has a string as the key and string as value. The
+			dictionary should be the same format as the output from Grouping()
+		int : int
+			This should be a 0, 1, or 2. Because we are interested in positions
+			in the codons, it does not make sense to have numbers other than 
+			0, 1, or 2. There should be error handling here.
+		
+		Returns
+		-------
+		new_list : list
+			A list of compressed codons
+
+		Examples
+		--------
+		>>> self.codon_list = self.ListFromGroup(self.my_dict, i)
+		"""
 		new_list = []
-		print self.my_dict
 		for key in self.my_dict:
-			print "key is: ", key
-			print "value is: ", my_dict[key]
 			temp = self.my_dict[key]
 			if int == 0:
 				if len(self.my_dict[key]) > 1:
 					new_codon = self.rules_dict[temp] + key
-					print new_codon
 					new_list.append(new_codon)
 				else:
 					new_codon = self.my_dict[key] + key
@@ -546,25 +579,19 @@ class Recursive:
 			elif int == 1:
 				if len(self.my_dict[key]) > 1:
 					nt = self.my_dict[key]
-					print nt
-					print self.rules_dict[temp]
 					new_codon = key[0] + self.rules_dict[temp] + key[1]
-					print new_codon
 					new_list.append(new_codon)
 				else:
 					nt = self.my_dict[key]
-					print nt
 					new_codon = key[0] + self.my_dict[key] + key[1]
 					new_list.append(new_codon)
 			else:
 				if len(self.my_dict[key]) > 1:
 					new_codon =  key + self.rules_dict[temp]
-					print new_codon
 					new_list.append(new_codon)
 				else:
 					new_codon = key + self.my_dict[key]
 					new_list.append(new_codon)
-		print new_list
 		return new_list
 
 def main():
@@ -583,7 +610,9 @@ def main():
 	best_list = BestList(filtered_dict)
 	print best_list
 	recursive = Recursive(best_list, rules_dict)
-	recursive.FindMinList(best_list)
+	compressed_list = recursive.FindMinList(best_list)
+	print('Reduced List (' + str(len(compressed_list)) + ')')
+	print compressed_list 
 
 main()
 
