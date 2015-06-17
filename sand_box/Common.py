@@ -558,7 +558,7 @@ class Recursive:
 				InRules = 0
 				for key in self.rules_dict:
 					if self.rules_dict[key] == position:
-						if remainder in self.my_dict:
+						if remainder in my_dict:
 							my_dict[remainder].add(key.split())
 						else:
 							my_dict[remainder] = set(key.split())
@@ -680,19 +680,54 @@ def main():
 	for key in sorted_dict:
 		AA_list.append(key)
 	print ','.join(AA_list)
+	
 	selection = GetUserSelection(sorted_dict)
 	filtered_dict = EditUsageDict(selection, sorted_dict)
 	InUse_dict = ReformatUsageDict(filtered_dict)
-	best_list = BestList(filtered_dict)
-	print best_list
-	in_use = FlagInUse(best_list, InUse_dict)
-	recursive = Recursive(best_list, rules_dict)
-	compressed_list = recursive.FindMinList(best_list)
+	#best_list = BestList(filtered_dict)
+	#print('List (' + str(len(best_list)) + ')')
+	#print best_list
+	codon_list = BestList(filtered_dict)
+	print('List (' + str(len(codon_list)) + ')')
+	print codon_list
+	
+	#in_use = FlagInUse(best_list, InUse_dict)
+	in_use = FlagInUse(codon_list, InUse_dict)
+	
+	#recursive = Recursive(best_list, rules_dict)
+	#compressed_list = recursive.FindMinList(best_list)
+	#print('Reduced List (' + str(len(compressed_list)) + ')')
+	#print compressed_list
+
+	recursive = Recursive(codon_list, rules_dict)
+	compressed_list = recursive.FindMinList(codon_list)
 	print('Reduced List (' + str(len(compressed_list)) + ')')
 	print compressed_list
-	temp_dict, next_best_list = NextBestList(best_list, in_use) 
-	in_use = FlagInUse(next_best_list, in_use)
-	print TestTempDict(temp_dict)
+	
+	#temp_dict, next_best_list = NextBestList(best_list, in_use) 
+	#in_use = FlagInUse(next_best_list, in_use)
+	#print('List (' + str(len(next_best_list)) + ')')
+	#print next_best_list
+
+	temp_dict, codon_list = NextBestList(codon_list, in_use) 
+	in_use = FlagInUse(codon_list, in_use)
+	print('List (' + str(len(codon_list)) + ')')
+	print codon_list
+	recursive = Recursive(codon_list, rules_dict)
+	compressed_list = recursive.FindMinList(codon_list)
+	print('Reduced List (' + str(len(compressed_list)) + ')')
+	print compressed_list
+
+
+	while TestTempDict(temp_dict) == 1:
+		temp_dict, codon_list = NextBestList(codon_list, in_use) 
+		in_use = FlagInUse(codon_list, in_use)
+		print('List (' + str(len(codon_list)) + ')')
+		print codon_list
+		recursive = Recursive(codon_list, rules_dict)
+		compressed_list = recursive.FindMinList(codon_list)
+		print('Reduced List (' + str(len(compressed_list)) + ')')
+		print compressed_list
 
 main()
 
