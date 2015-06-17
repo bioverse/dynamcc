@@ -188,6 +188,47 @@ def SortUsageDict(usage_dict):
 				j += 1
 	return usage_dict # return sorted dictionary
 
+def ReformatUsageDict(usage_dict):
+	"""Reformat the usage dict such that the output will
+
+	Parameters
+	----------
+
+	Returns
+	-------
+	usage_dict : dict
+		dictionary with the following format:
+		{
+			F : [{Codon: TTT, Frequency : 0.58, InUse : 0}, 
+					{Codon: TTC, Frequency : 0.42, InUse : 0}],
+			L : [{Codon : TTA, Frequency : 0.14, InUse : 0}, 
+					{Codon : TTG, Frequency : 0.13, InUse : 0}, 
+					{Codon : CTT, Frequency : 0.12, InUse : 0}, 
+					{Codon : CTC, Frequency : 0.1, InUse : 0}, 
+					{CTA: 0.04}, {CTG: 0.47}],
+			I : [{Codon : ATT, Frequency : 0.49, InUse : 0}, 
+					{Codon : ATC, Frequency : 0.39, InUse : 0}, 
+					{Codon : ATA, Frequency : 0.11, InUse : 0}],
+			...
+			...
+			...
+			G : [{Codon : GGT, Frequency : 0.35, InUse : 0}, 
+					{Codon : GGC, Frequency : 0.37, InUse : 0}, 
+					{Codon : GGA, Frequency : 0.13, InUse : 0}, 
+					{Codon : GGG, Frequency : 0.15, InUse : 0}]
+		}
+
+
+	"""
+	new_dict = {}
+	for key in usage_dict:
+		new_dict[key] = []
+		for item in usage_dict[key]:
+			for key1 in item:
+				new_dict[key].append({'Codon' : key1, 'Frequency' : item[key1], 
+										'InUse' : 0})
+	return new_dict
+
 def BuildRulesDict():
 	"""Construct a dictionary from the .rul file. Each key-value pair is 
 	constructed from a single line of the .rul file The .rul file has the 
@@ -342,6 +383,17 @@ def BestList(filtered_dict):
 		for key2 in filtered_dict[key1][0]:
 			best_list.append(key2)
 	return best_list
+
+
+def Flag(best_list, formatted_dict):
+	"""Set InUse = 1 for codons in "best_list"
+	"""
+	for key in formatted_dict:
+		for item in formatted_dict[key]:
+			if item['Codon'] in best_list:
+				item['InUse'] = 1
+	return formatted_dict
+
 
 class Recursive:
 	def __init__(self, codon_list, rules_dict):
@@ -598,7 +650,6 @@ def main():
 	usage_dict = BuildUsageDict()
 	sorted_dict = SortUsageDict(usage_dict)
 	rules_dict = BuildRulesDict()
-	print rules_dict
 	print("Available amino acids (count: " + str(len(sorted_dict)) + 
 		"; X represents stop codons)")
 	AA_list = []
@@ -607,8 +658,10 @@ def main():
 	print ','.join(AA_list)
 	selection = GetUserSelection(sorted_dict)
 	filtered_dict = EditUsageDict(selection, sorted_dict)
+	InUse_dict = ReformatUsageDict(filtered_dict)
 	best_list = BestList(filtered_dict)
 	print best_list
+	flag_InUse = Flag(best_list, InUse_dict)
 	recursive = Recursive(best_list, rules_dict)
 	compressed_list = recursive.FindMinList(best_list)
 	print('Reduced List (' + str(len(compressed_list)) + ')')
