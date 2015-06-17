@@ -385,8 +385,8 @@ def BestList(filtered_dict):
 	return best_list
 
 
-def Flag(best_list, formatted_dict):
-	"""Set InUse = 1 for codons in "best_list"
+def FlagInUse(best_list, formatted_dict):
+	"""For all codons in best_list, set InUse flag to 1 in InUse dict
 	"""
 	for key in formatted_dict:
 		for item in formatted_dict[key]:
@@ -646,6 +646,30 @@ class Recursive:
 					new_list.append(new_codon)
 		return new_list
 
+def NextBestList(best_list, InUse):
+	"""Find the codon in flag_InUse with the highest Frequency value that is
+	not currently InUse. Add this Codon to best_list. Return the updated list.
+	"""
+	temp_dict = {'Codon' : '', 'Frequency' : 0}
+	for key in InUse:
+		for item in InUse[key]:
+			if item['Frequency'] > temp_dict['Frequency'] and item['InUse'] != 1:
+				temp_dict['Frequency'] = item['Frequency']
+				temp_dict['Codon'] = item['Codon']
+	best_list.append(temp_dict['Codon'])
+	return temp_dict, best_list
+
+def TestTempDict(temp_dict):
+	"""Return 0 if temp_dict 'Codon' is empty string and return 1 if not an
+	empty string
+	"""
+	for key in temp_dict:
+		if temp_dict['Codon'] == '':
+			return 0
+		else:
+			return 1
+
+
 def main():
 	usage_dict = BuildUsageDict()
 	sorted_dict = SortUsageDict(usage_dict)
@@ -661,11 +685,14 @@ def main():
 	InUse_dict = ReformatUsageDict(filtered_dict)
 	best_list = BestList(filtered_dict)
 	print best_list
-	flag_InUse = Flag(best_list, InUse_dict)
+	in_use = FlagInUse(best_list, InUse_dict)
 	recursive = Recursive(best_list, rules_dict)
 	compressed_list = recursive.FindMinList(best_list)
 	print('Reduced List (' + str(len(compressed_list)) + ')')
-	print compressed_list 
+	print compressed_list
+	temp_dict, next_best_list = NextBestList(best_list, in_use) 
+	in_use = FlagInUse(next_best_list, in_use)
+	print TestTempDict(temp_dict)
 
 main()
 
