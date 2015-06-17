@@ -116,8 +116,8 @@ sub BestList {
 sub Grouping {
 	my ($list,$GroupBy) = @_; # $list is the pointer to array passed to Reduce. $GroupBy is an integer 0, 1, 2
 	#say "From Grouping: ";
-	say "best list: ", @{$_[0]}; # $_[0] == $list
-	say "int is: ", $_[1]; # $_[1] == $GroupBy
+	#say "best list: ", @{$_[0]}; # $_[0] == $list
+	#say "int is: ", $_[1]; # $_[1] == $GroupBy
 	my %g=(); # instantiate empty hash
 	##say "first: ", %g;
 	for my $x (@{$list}) {	# dereference the array and iterate through it
@@ -125,8 +125,8 @@ sub Grouping {
 		#say "From Grouping loop 1: ";
 		say "Codon is: ", $x; # each element in array
 		my $y = substr($x,$GroupBy,1,''); # substr EXPR, OFFSET, LENGTH, REPLACEMENT. Extracts a substring out of EXPR and returns it. First character is at offset zero. If OFFSET is negative, starts that far back from the end of the string.
-		say "x is: ", $x;
-		say "y is: ", $y;
+		#say "x is: ", $x;
+		#say "y is: ", $y;
 		##say "third: ", %g;
 		#say "Position is: ", $y; # new string (depending on the value of $GroupBy, this gives the first, middle, or last character of string $x)
 		my $InRules=0; # instantiate new scalar
@@ -134,17 +134,17 @@ sub Grouping {
 		#say "Rules hash is: ", %Rules;
 		foreach my $l (keys %Rules) { # iterate over keys in %Rules
 			##say "fifth: ", %g;
-			say "l is: ", $l;
+			#say "l is: ", $l;
 			#say "From Grouping loop 2: ";
 			#say "Rules key is: ", $l; # keys from %Rules
-			say "Rules value is: ", $Rules{$l}; # values from %Rules
+			#say "Rules value is: ", $Rules{$l}; # values from %Rules
 			if ($Rules{$l} eq $y) { # if key == $y (sliced string)
 				##say "sixth: ", %g;
 				##say "Rules{l} is: ", $Rules{$l};
 				#say "REALLY WEIRD EXPR: ";
 				#say "split rules key: ", split(//,$l);
 				push (@{$g{$x}},split(//,$l)); # the key of the rules dict is being pushed to an array of 
-				say "seventh: ", %g;
+				#say "seventh: ", %g;
 				#say "unknown hash is: ", %g;
 				foreach my $k (keys %g) {
 					print "$k:  @{$g{$k}}\n";
@@ -159,13 +159,13 @@ sub Grouping {
 		foreach my $k (keys %g) {
 			print "$k:  @{$g{$k}}\n";	
 		}
-		say @{$g{$x}};
+		#say @{$g{$x}};
 		#say "End Grouping loop 1: ";
 		#say @{$g{$x}};
 		#say $y;
 		
 	}
-	say %g;
+	#say %g;
 	for (keys %g) {
 		#say "new for loop";
 		#say @{$g{$_}};
@@ -174,15 +174,15 @@ sub Grouping {
 	for my $k (keys %g) {
 		print "$k:  $g{$k}\n";	
 	}	
-	say %g;
+	#say %g;
 	return %g;	
 }
 
 sub ListFromGroup {
-	say "from ListFromGroup: ";
+	#say "from ListFromGroup: ";
 	my ($g,$index) = @_;
 	my @list;	
-	say %{$g};
+	#say %{$g};
 	for my $x  (keys %{$g})  { # iterate through dereferenced hash. keys are x
 		my $v = $x;		# v is now equal to x (the hash key)					
 		#say $g;
@@ -191,7 +191,7 @@ sub ListFromGroup {
 		#say length($g->{$x}); # "->" is an infix dereference operator, just as in C and C++. in this case, fetching the $x member (getting the value for the key x) of the $g object
 		if (length($g->{$x}) >1) { # if the value of each key is > 1
 			#say substr($v,$index,0);
-			say $Rules{$g->{$x}};
+			#say $Rules{$g->{$x}};
 			substr($v,$index,0)=$Rules{$g->{$x}}; # take a substring of the original v and save it in v. In the case that this is the first_position, delete the first position and replace with the corresponding letter from the rules hash
 		}
 		else {
@@ -199,7 +199,7 @@ sub ListFromGroup {
 		}
 		push(@list,$v); # populate this list with the single letter code (either the original single letter or the single letter from the rules)
 	}
-	say @list;
+	#say @list;
 	return @list;	
 }
 
@@ -217,16 +217,47 @@ sub Reduce {
 }
 
 sub FindMinList {
-	say "from FindMinList: ";
-	say "best_list is: ", @_;
+	#say "from FindMinList: ";
+	#say "best_list is: ", @_;
 	my @a = Reduce(@_); # Pass the list that was passed to FindMinList to Reduce (BestList). capture result in @a 
-	say "reduced is: ", @a;
+	#say "reduced is: ", @a;
 	if (join('',@a) ne join('',@_)) { # if the list passed to FindMinList (BestList) is != to the result of Reduce
 		FindMinList(@a); # then pass the list back to itself (i.e. back to Reduce for another trial)
 	}
 	return @a;	# when the two lists are equal then return the final list
 }
 
+sub NextBestList { # The best list (@wlist) was passed by reference to this script
+	say 'input list: ';
+	say @{ $_[0] };
+	my $list = shift; # here @wlist is dereferenced by shift, and the reference to the resulting array is captured in $list	
+	say 'shift output reference: ';
+	say $list;
+	say 'shift output dereferenced: ';
+	say @$list;
+	my $c = {"Ratio"=>0,"Code"=>""};
+	say %$c; 
+	for my $amino (keys %Aminolist) {
+		say $amino;
+		#say @{$Aminolist{$amino}};
+		for my $x (@{$Aminolist{$amino}}) {
+			say %$x;
+			if ($x->{"Ratio"}>$c->{"Ratio"} && $x->{"InUse"}==0) {
+				$c=$x;
+			}
+		}
+	}
+	if ($c->{"Code"} ne "") {
+		$c->{"InUse"}=1;
+		push (@$list,$c->{"Code"});
+		
+		return 1;
+	}
+	else {
+		return 0;
+	}	
+	
+}
 
 
 LoadData();
@@ -241,6 +272,10 @@ my @s = FindMinList(@wlist); # pass best list to FindMinList. Capture result in 
 print @s;
 print "\n";
 
+say 'best list: ';
+say @wlist;
+
+print "NextBestList: " . NextBestList(\@wlist) # 0 is false and 1 is true
 
 
 #print "Available amino acids (count: ". scalar (keys %Aminolist)." ,X represents stop codons)\n";
