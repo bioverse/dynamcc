@@ -647,8 +647,25 @@ class Recursive:
 		return new_list
 
 def NextBestList(best_list, InUse):
-	"""Find the codon in flag_InUse with the highest Frequency value that is
-	not currently InUse. Add this Codon to best_list. Return the updated list.
+	"""Find the codon in InUse with the highest Frequency value that is
+	not currently 'InUse'. Add this Codon to best_list. Return the updated 
+	list.
+
+	Parameters
+	----------
+	best_list : list
+		The current codon list (this changes as the program runs and will 
+		eventually include all the degenerate codons for amino acids that the 
+		user has specified they want to include)
+	InUse : dict
+		This is the dictionary that results from running 
+		ReformatUsageDict(usage_dict)
+
+	Returns
+	-------
+	temp_dict : dict
+		
+	best_list : list
 	"""
 	temp_dict = {'Codon' : '', 'Frequency' : 0}
 	for key in InUse:
@@ -656,7 +673,10 @@ def NextBestList(best_list, InUse):
 			if item['Frequency'] > temp_dict['Frequency'] and item['InUse'] != 1:
 				temp_dict['Frequency'] = item['Frequency']
 				temp_dict['Codon'] = item['Codon']
-	best_list.append(temp_dict['Codon'])
+	if temp_dict['Codon'] != '':
+		best_list.append(temp_dict['Codon'])
+	else:
+		pass
 	return temp_dict, best_list
 
 def TestTempDict(temp_dict):
@@ -665,9 +685,9 @@ def TestTempDict(temp_dict):
 	"""
 	for key in temp_dict:
 		if temp_dict['Codon'] == '':
-			return 0
+			return False
 		else:
-			return 1
+			return True
 
 
 def main():
@@ -718,8 +738,7 @@ def main():
 	print('Reduced List (' + str(len(compressed_list)) + ')')
 	print compressed_list
 
-
-	while TestTempDict(temp_dict) == 1:
+	while TestTempDict(temp_dict):
 		temp_dict, codon_list = NextBestList(codon_list, in_use) 
 		in_use = FlagInUse(codon_list, in_use)
 		print('List (' + str(len(codon_list)) + ')')
@@ -728,6 +747,7 @@ def main():
 		compressed_list = recursive.FindMinList(codon_list)
 		print('Reduced List (' + str(len(compressed_list)) + ')')
 		print compressed_list
+
 
 main()
 

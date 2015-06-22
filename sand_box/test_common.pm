@@ -228,35 +228,36 @@ sub FindMinList {
 }
 
 sub NextBestList { # The best list (@wlist) was passed by reference to this script
-	say 'input list: ';
-	say @{ $_[0] };
+	#say 'input list: ';
+	#say @{ $_[0] };
 	my $list = shift; # here @wlist is dereferenced by shift, and the reference to the resulting array is captured in $list	
-	say 'shift output reference: ';
-	say $list;
-	say 'shift output dereferenced: ';
-	say @$list;
-	my $c = {"Ratio"=>0,"Code"=>""};
+	#say 'shift output reference: ';
+	#say $list;
+	#say 'shift output dereferenced: ';
+	#say @$list;
+	my $c = {"Ratio"=>0,"Code"=>""}; # initializing a new hash (as reference)
 	say %$c; 
-	for my $amino (keys %Aminolist) {
+	for my $amino (keys %Aminolist) { # iterate through keys in Aminolist hash
 		say $amino;
 		#say @{$Aminolist{$amino}};
-		for my $x (@{$Aminolist{$amino}}) {
+		for my $x (@{$Aminolist{$amino}}) { # iterate through the items in array (values in Aminolist)
 			say %$x;
-			if ($x->{"Ratio"}>$c->{"Ratio"} && $x->{"InUse"}==0) {
-				$c=$x;
+			if ($x->{"Ratio"}>$c->{"Ratio"} && $x->{"InUse"}==0) { # arrow is dereferencing. test whether the ratio (usage frequency) is greater than the current value of "Ratio" && if InUse == 0
+				$c=$x; # copy the "Codon", "Ratio", and "InUse" values to the new hash %c
 			}
 		}
+		say %$c;
 	}
-	if ($c->{"Code"} ne "") {
-		$c->{"InUse"}=1;
+	if ($c->{"Code"} ne "") { # examine the final %c. this should contain the codon with the next highest use compared to the current 'best list'
+		$c->{"InUse"}=1; # set InUse to 1
+		say %$c;
 		push (@$list,$c->{"Code"});
-		
-		return 1;
+		say @$list;
+		return 1; # true
 	}
 	else {
-		return 0;
-	}	
-	
+		return 0; # false
+	}
 }
 
 
@@ -275,7 +276,9 @@ print "\n";
 say 'best list: ';
 say @wlist;
 
-print "NextBestList: " . NextBestList(\@wlist) # 0 is false and 1 is true
+print "NextBestList: " . NextBestList(\@wlist) . "\n"; # 0 is false and 1 is true
+
+say @wlist;
 
 
 #print "Available amino acids (count: ". scalar (keys %Aminolist)." ,X represents stop codons)\n";
