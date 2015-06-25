@@ -1,6 +1,3 @@
-# for the correct perl version use:: /perl5/perlbrew/perls/perl-5.22.0/bin/perl
-
-
 #!/opt/local/bin/python2.7
 
 from util import FileHandlers
@@ -693,183 +690,6 @@ def TestTempDict(temp_dict):
 			return True
 
 
-def CalcCombinations(filtered_dict):
-	"""Calculates the total combinations of codons possible. This is n! for
-	all combinations of codons in the filtered_dict.
-
-	Parameters
-	----------
-	filtered_dict : dict
-		Dictionary formatted in the same way as EditUsageDict(). Dictionary of 
-		lists of dictionaries for codon usage. Technically, any 
-		dictionary that has single letter amino acid symbols as keys would
-		work
-
-	Returns
-	-------
-	total : int
-		This is the total number of combinations of codons that are possible
-		after the user has selected which codon(s) to remove.
-
-	Examples
-	--------
-	>>> CalcCombinations(filtered_dict)
-	"""
-	total = 1
-	for key in filtered_dict:
-		total *= len(filtered_dict[key])
-	print 'Total combinations: ', total
-	return total
-
-def RemoveCodonBy():
-	"""Ask user whether they want to remove codons by rank or by usage. 
-	The script checks for errors in user input (only r, R, u, or U are allowed)
-
-	Parameters
-	----------
-	none
-
-	Returns
-	-------
-	selection.upper() : str
-		The string corresponding to the user input. This will always output 
-		an 'R' or 'U'
-
-	Examples
-	--------
-	>>> selection = RemoveCodonBy()
-	"""
-	while True:
-		try:
-			selection = raw_input("Remove codon by [R]ank or [U]sage?")
-			if selection.upper() == 'U' or selection.upper() == 'R':
-				return selection.upper()
-			else: 
-				raise ValueError()
-		except ValueError:
-			print("Invalid entry. You must enter either 'R' or 'U'.")
-
-def FindMinimumThreshold(filtered_dict):
-	"""Iterates through filtered_dict and builds a list of all the codons with
-	the hightest usage (because the list of codons is ordered by usage, 
-	this script just grabs the first index of each value's list). Then the 
-	script returns the lowest number in the list. This number will be the
-	minimum threshold (i.e. users should select a cut-off below this number
-	otherwise they will be omitting codons that they did not intend to omit).
-
-	Parameters
-	----------
-	filtered_dict : dict
-		Dictionary formatted in the same way as EditUsageDict(). Dictionary of 
-		lists of dictionaries for codon usage. Technically, any 
-		dictionary that has single letter amino acid symbols as keys would
-		work
-
-	Returns
-	-------
-	float(min(usage_list)) : float
-		Among all the codons remaing (after the user has thrown out particular
-		residues), this number represents the lowest usage frequency of all
-		codons with the highest usage frequency. In other words, given a list
-		of the highest usage frequency for each codon, return the minimum 
-		number.
-
-	Examples
-	--------
-	>>> min_threshold = FindMinimumThreshold(filtered_dict)
-	"""
-	usage_list = []
-	for key in filtered_dict:
-		highest_usage = filtered_dict[key][0]
-		for codon in highest_usage:
-			usage_list.append(highest_usage[codon])
-	return float(min(usage_list))
-
-def RemoveLowCodons(threshold, filtered_dict):
-	"""Given the user input for the codon usage threshold (i.e. the user
-	would like to remove all codons with a usage frequency below the threshold)
-	the script builds a new dictionary (in the same format as the input
-	dictionary) that does not contain the codons with usage frequency below
-	threshold.
-
-	Parameters
-	----------
-	threshold : float
-		This is the codon usage frequency input by the user that specifies 
-		which codons to remove based on usage frequency.
-	filtered_dict : dict
-		Dictionary formatted in the same way as EditUsageDict(). Dictionary of 
-		lists of dictionaries for codon usage. Technically, any 
-		dictionary that has single letter amino acid symbols as keys would
-		work
-
-	Returns
-	-------
-	new_dict : dict
-		Dictionary formatted the same as input except that the codons with 
-		usage frequency below user specified threshold have been removed
-
-	Examples
-	--------
-	>>> RemoveLowCodons(threshold, filtered_dict)
-	"""
-	new_dict = {}
-	for key1 in filtered_dict:
-		temp_list = []
-		for item in filtered_dict[key1]:
-			for key2 in item:
-				if float(item[key2]) > threshold:
-					temp_list.append(item)
-				else:
-					pass
-		new_dict[key1] = temp_list
-	return new_dict
-
-def RemoveCodonByRank(rank, filtered_dict):
-	"""This script builds a new dictionary with the same format as the input
-	dictionary except that is will not contain codons below the 'rank' 
-	specified by the user. In this case, rank is an integer that corresponds
-	to 1 + the index of a list of codons ordered by usage frequency. In other
-	words, given a list of codon, the codon with the highest usage frequency
-	will be given rank 1 and the codon with the lowest usage frequency will be
-	given the highest number (depending on how many codons code for the 
-	particular amino acid).
-
-	Parameters
-	----------
-	 
-	"""
-	new_dict = {}
-	for key in filtered_dict:
-		temp_list = []
-		if len(filtered_dict[key]) > rank:
-			for i in range(rank - 1):
-				temp_list.append(filtered_dict[key][i])
-			new_dict[key] = temp_list
-		else:
-			new_dict[key] = filtered_dict[key]
-	return new_dict
-
-def ByUsage(filtered_dict):
-	min_threshold = FindMinimumThreshold(filtered_dict)
-	while True:
-		try:
-			threshold = float(raw_input("Set usage frequency threshold: " +
-								" (must be below: " +
-								str(min_threshold) + ")"))
-			if threshold < min_threshold:
-				RemoveLowCodons(threshold, filtered_dict)
-				break
-			else:
-				raise ValueError()
-		except ValueError:
-			print("Invalid entry. Set usage frequency threshold: (must be "
-					+ "below: " + str(min_threshold) + ")")
-
-def ByRank(filtered_dict):
-	rank = int(raw_input("Set codon rank threshold: "))
-	RemoveCodonByRank(rank, filtered_dict)
-
 def main():
 	usage_dict = BuildUsageDict()
 	sorted_dict = SortUsageDict(usage_dict)
@@ -883,27 +703,101 @@ def main():
 	
 	selection = GetUserSelection(sorted_dict)
 	filtered_dict = EditUsageDict(selection, sorted_dict)
-
-	CalcCombinations(filtered_dict)
-	selection = RemoveCodonBy()
-	if selection == 'R':
-		ByRank(filtered_dict)
-	else:
-		ByUsage(filtered_dict)
-
-
-
-
-
-	#InUse_dict = ReformatUsageDict(filtered_dict)
-	#codon_list = BestList(filtered_dict)
-	#print('List (' + str(len(codon_list)) + ')')
-	#print codon_list
+	InUse_dict = ReformatUsageDict(filtered_dict)
+	#best_list = BestList(filtered_dict)
+	#print('List (' + str(len(best_list)) + ')')
+	#print best_list
+	codon_list = BestList(filtered_dict)
+	print('List (' + str(len(codon_list)) + ')')
+	print codon_list
 	
-	#in_use = FlagInUse(codon_list, InUse_dict)
+	#in_use = FlagInUse(best_list, InUse_dict)
+	in_use = FlagInUse(codon_list, InUse_dict)
+	
+	#recursive = Recursive(best_list, rules_dict)
+	#compressed_list = recursive.FindMinList(best_list)
+	#print('Reduced List (' + str(len(compressed_list)) + ')')
+	#print compressed_list
+
+	recursive = Recursive(codon_list, rules_dict)
+	compressed_list = recursive.FindMinList(codon_list)
+	print('Reduced List (' + str(len(compressed_list)) + ')')
+	print compressed_list
+	
+	#temp_dict, next_best_list = NextBestList(best_list, in_use) 
+	#in_use = FlagInUse(next_best_list, in_use)
+	#print('List (' + str(len(next_best_list)) + ')')
+	#print next_best_list
+
+	temp_dict, codon_list = NextBestList(codon_list, in_use) 
+	in_use = FlagInUse(codon_list, in_use)
+	print('List (' + str(len(codon_list)) + ')')
+	print codon_list
+	recursive = Recursive(codon_list, rules_dict)
+	compressed_list = recursive.FindMinList(codon_list)
+	print('Reduced List (' + str(len(compressed_list)) + ')')
+	print compressed_list
+
+	while TestTempDict(temp_dict):
+		temp_dict, codon_list = NextBestList(codon_list, in_use) 
+		in_use = FlagInUse(codon_list, in_use)
+		print('List (' + str(len(codon_list)) + ')')
+		print codon_list
+		recursive = Recursive(codon_list, rules_dict)
+		compressed_list = recursive.FindMinList(codon_list)
+		print('Reduced List (' + str(len(compressed_list)) + ')')
+		print compressed_list
 
 
 main()
+
+"""
+Key steps...
+1. Need to create a dictionary of lists of dictionaries.
+{
+	F : [{TTT: 0.58}, {TTC: 0.42}],
+	L : [{TTA: 0.14}, {TTG: 0.13}, {CTT: 0.12}, {CTC: 0.1}, {CTA: 0.04}, {CTG: 0.47}],
+	I : [{ATT: 0.49}, {ATC: 0.39}, {ATA: 0.11}],
+	...
+	G : [{GGT: 0.35}, {GGC: 0.37}, {GGA: 0.13}, {GGG: 0.15}]
+}
+
+2. Then sort the lists in descending order of the values in the contained dictionaries.
+For example, G would look like
+
+	G : [{GGC: 0.37}, {GGT: 0.35}, {GGG: 0.15}, {GGA: 0.13}]
+
+3. Build a dictionary for the "Rules.rul" file. This dictionary will have the following
+format:
+{
+	AG 	: 	R,
+	CT 	: 	Y,
+	AC 	: 	M,
+	GT 	: 	K,
+	CG 	: 	S,
+	AT 	: 	W,
+	ACT : 	H,
+	CGT : 	B,
+	ACG : 	V
+	AGT :  	D
+	ACGT: 	N
+}
+
+4. Ask user which amino acids to delete, and remove these from the sorted
+codon usage dictionary
+
+5. Generate list of codons with highest frequency (using dict with deleted aa).
+def BestList 
+
+6. Pass BestList to FindMinList
+
+"""
+
+
+
+
+
+
 
 
 

@@ -1,6 +1,3 @@
-# for the correct perl version use:: /perl5/perlbrew/perls/perl-5.22.0/bin/perl
-
-
 #!/opt/local/bin/python2.7
 
 from util import FileHandlers
@@ -191,47 +188,6 @@ def SortUsageDict(usage_dict):
 				j += 1
 	return usage_dict # return sorted dictionary
 
-def ReformatUsageDict(usage_dict):
-	"""Reformat the usage dict such that the output will
-
-	Parameters
-	----------
-
-	Returns
-	-------
-	usage_dict : dict
-		dictionary with the following format:
-		{
-			F : [{Codon: TTT, Frequency : 0.58, InUse : 0}, 
-					{Codon: TTC, Frequency : 0.42, InUse : 0}],
-			L : [{Codon : TTA, Frequency : 0.14, InUse : 0}, 
-					{Codon : TTG, Frequency : 0.13, InUse : 0}, 
-					{Codon : CTT, Frequency : 0.12, InUse : 0}, 
-					{Codon : CTC, Frequency : 0.1, InUse : 0}, 
-					{CTA: 0.04}, {CTG: 0.47}],
-			I : [{Codon : ATT, Frequency : 0.49, InUse : 0}, 
-					{Codon : ATC, Frequency : 0.39, InUse : 0}, 
-					{Codon : ATA, Frequency : 0.11, InUse : 0}],
-			...
-			...
-			...
-			G : [{Codon : GGT, Frequency : 0.35, InUse : 0}, 
-					{Codon : GGC, Frequency : 0.37, InUse : 0}, 
-					{Codon : GGA, Frequency : 0.13, InUse : 0}, 
-					{Codon : GGG, Frequency : 0.15, InUse : 0}]
-		}
-
-
-	"""
-	new_dict = {}
-	for key in usage_dict:
-		new_dict[key] = []
-		for item in usage_dict[key]:
-			for key1 in item:
-				new_dict[key].append({'Codon' : key1, 'Frequency' : item[key1], 
-										'InUse' : 0})
-	return new_dict
-
 def BuildRulesDict():
 	"""Construct a dictionary from the .rul file. Each key-value pair is 
 	constructed from a single line of the .rul file The .rul file has the 
@@ -387,17 +343,6 @@ def BestList(filtered_dict):
 			best_list.append(key2)
 	return best_list
 
-
-def FlagInUse(best_list, formatted_dict):
-	"""For all codons in best_list, set InUse flag to 1 in InUse dict
-	"""
-	for key in formatted_dict:
-		for item in formatted_dict[key]:
-			if item['Codon'] in best_list:
-				item['InUse'] = 1
-	return formatted_dict
-
-
 class Recursive:
 	def __init__(self, codon_list, rules_dict):
 		"""Initialize the Recursive object with two parameters.
@@ -460,8 +405,12 @@ class Recursive:
 		>>> recursive.FindMinList(best_list)
 		"""
 
+		print "from FindMinList: "
+		print "best_list is: ", self.codon_list
 		temp = self.codon_list
+		print "temp is: ", temp
 		reduced_list = self.Reduce()
+		print "reduced is: ", reduced_list
 		if temp != reduced_list:
 			self.FindMinList(reduced_list)
 		return self.codon_list
@@ -491,6 +440,7 @@ class Recursive:
 		for i in range(3):
 			self.my_dict = self.Grouping(i)
 			self.codon_list = self.ListFromGroup(self.my_dict, i)
+		print "from reduce: ", self.codon_list
 		return self.codon_list
 
 	def Grouping(self, int):
@@ -524,32 +474,46 @@ class Recursive:
 		Returns
 		-------
 		self.my_dict : dict 
-			A dictionary in which the keys are strings of nucleotides that fall
-			at particular positions in the codon (1,2 or 0,2 or 0,1) and the 
-			values are all the nucleotides that can exist at the remaining 
-			position. Here the key-value pairs represent compressed codons. 
-	
-			For example, the first iteration through looks like:
-			{'AA': 'AGT', 'AC': 'A', 'GT': 'C', 'AG': 'C', 'CC': 'A', 
-			'TT': 'AT', 'CG': 'CG', 'GG': 'T', 'GC': 'AG', 'AT': 'CGT', 
-			'TG': 'ACG'}
-
-			And the last iteration through looks like:
-			{'BA': 'T', 'CG': 'T', 'CA': 'G', 'AM': 'C', 'DA': 'A', 
-			'RG': 'C', 'WT': 'T', 'VT': 'G', 'SC': 'G', 'TG': 'G'}
+			A dictionary in which the keys are positions in the codon (1,2 or
+			0,2 or 0,1) and the values are all the nucleotides that can exist
+			at the remaining position. Here the key-value pairs represent 
+			compressed codons. 
 
 		Examples
 		--------
 		>>> self.my_dict = self.Grouping(i)
 		"""
 		my_dict = {}
+		print "From Grouping: "
+		#print best_list
+		#print int
+		##print "first: ", my_dict
+		print "best list: ", self.codon_list
+		print "int is: ", int
 		for codon in self.codon_list:
+			##print "second: ", my_dict
+			#print "From Grouping loop 1: "
+			##print "codon is: ", codon
 			if int == 0:
 				position = codon[int]
 				remainder = codon[int+1:]
+				##print "x is: ", first_position
+				##print "y is: ", end_of_codon
+				##print "third: ", my_dict
 				InRules = 0
+				##print "forth: ", my_dict
+				#print rules_dict
 				for key in self.rules_dict:
+					##print "fifth: ", my_dict
+					##print "l is: ", key
+					#print "From Grouping loop 2: "
+					#print key
+					#print rules_dict[key]
 					if self.rules_dict[key] == position:
+						##print "sixth: ", my_dict
+						##print "rules_dict[key] is: ", rules_dict[key]
+						#my_dict[codon]
+						##print "seventh: ", my_dict
 						if remainder in my_dict:
 							my_dict[remainder].add(key.split())
 						else:
@@ -561,72 +525,59 @@ class Recursive:
 				InRules = 0
 				for key in self.rules_dict:
 					if self.rules_dict[key] == position:
-						if remainder in my_dict:
+						if remainder in self.my_dict:
 							my_dict[remainder].add(key.split())
 						else:
 							my_dict[remainder] = set(key.split())
 						InRules = 1
 			else:
 				position = codon[int]
+				#print "position: ", position
 				remainder = codon[:2]
+				#print "remainder: ", remainder
 				InRules = 0
 				for key in self.rules_dict:
+					#print "key in rules_dict: ", key
 					if self.rules_dict[key] == position:
+						#print "value in rules_dict", self.rules_dict[key]
 						if remainder in my_dict:
+							#print remainder, my_dict[remainder]
 							my_dict[remainder].add(key.split())
 						else:
 							my_dict[remainder] = set(key.split())
 						InRules = 1
 			if InRules == 0:
 				if remainder in my_dict:
+					#print "remainder in self.my_dict"
 					my_dict[remainder].add(position)
+					#print my_dict[remainder]
+					#print my_dict
 				else:
 					my_dict[remainder] = set(position)
+			#print "eigth: ", my_dict
+		#print my_dict
 		for key in my_dict:
 			my_dict[key] = ''.join(sorted(my_dict[key]))
+		for key, value in my_dict.iteritems():
+			print key, ":", value
 		self.my_dict = my_dict
+		print self.my_dict
 		return self.my_dict
 
 	def ListFromGroup(self, my_dict, int):
-		"""This function initializes an empty list. Then iterates through the
-		keys in the member variable self.my_dict (which was modified in 
-		Grouping(int)) and captures the value in the variable temp. The code
-		then branches depending on what integer was passed in (0, 1, or 2).
-		If 0, it checks whether the value (a string) is longer than 1. If it
-		is, then it finds the value from the member variable self.rules_dict 
-		and concatenates it with the key from self.my_dict. The concatenated
-		product is then captured in the variable 'new_codon'. If it is not
-		longer than one (i.e. only one nucleotide will work at that particular
-		position in the compressed codon), then the value at self.my_dict[key]
-		is concatenated with the key from self.my_dict and this concatenated
-		product is captured in the variable 'new_codon'. new_codon is then
-		added to the new_list. Logic is similar for int values of 1 or 2. 
-
-		Parameters
-		----------
-		my_dict : dict
-			This dictionary has a string as the key and string as value. The
-			dictionary should be the same format as the output from Grouping()
-		int : int
-			This should be a 0, 1, or 2. Because we are interested in positions
-			in the codons, it does not make sense to have numbers other than 
-			0, 1, or 2. There should be error handling here.
-		
-		Returns
-		-------
-		new_list : list
-			A list of compressed codons
-
-		Examples
-		--------
-		>>> self.codon_list = self.ListFromGroup(self.my_dict, i)
 		"""
+		"""
+		print "from ListFromGroup: "
 		new_list = []
+		print self.my_dict
 		for key in self.my_dict:
+			print "key is: ", key
+			print "value is: ", my_dict[key]
 			temp = self.my_dict[key]
 			if int == 0:
 				if len(self.my_dict[key]) > 1:
 					new_codon = self.rules_dict[temp] + key
+					print new_codon
 					new_list.append(new_codon)
 				else:
 					new_codon = self.my_dict[key] + key
@@ -634,276 +585,94 @@ class Recursive:
 			elif int == 1:
 				if len(self.my_dict[key]) > 1:
 					nt = self.my_dict[key]
+					print nt
+					print self.rules_dict[temp]
 					new_codon = key[0] + self.rules_dict[temp] + key[1]
+					print new_codon
 					new_list.append(new_codon)
 				else:
 					nt = self.my_dict[key]
+					print nt
 					new_codon = key[0] + self.my_dict[key] + key[1]
 					new_list.append(new_codon)
 			else:
 				if len(self.my_dict[key]) > 1:
 					new_codon =  key + self.rules_dict[temp]
+					print new_codon
 					new_list.append(new_codon)
 				else:
 					new_codon = key + self.my_dict[key]
 					new_list.append(new_codon)
+		print new_list
 		return new_list
-
-def NextBestList(best_list, InUse):
-	"""Find the codon in InUse with the highest Frequency value that is
-	not currently 'InUse'. Add this Codon to best_list. Return the updated 
-	list.
-
-	Parameters
-	----------
-	best_list : list
-		The current codon list (this changes as the program runs and will 
-		eventually include all the degenerate codons for amino acids that the 
-		user has specified they want to include)
-	InUse : dict
-		This is the dictionary that results from running 
-		ReformatUsageDict(usage_dict)
-
-	Returns
-	-------
-	temp_dict : dict
-		
-	best_list : list
-	"""
-	temp_dict = {'Codon' : '', 'Frequency' : 0}
-	for key in InUse:
-		for item in InUse[key]:
-			if item['Frequency'] > temp_dict['Frequency'] and item['InUse'] != 1:
-				temp_dict['Frequency'] = item['Frequency']
-				temp_dict['Codon'] = item['Codon']
-	if temp_dict['Codon'] != '':
-		best_list.append(temp_dict['Codon'])
-	else:
-		pass
-	return temp_dict, best_list
-
-def TestTempDict(temp_dict):
-	"""Return 0 if temp_dict 'Codon' is empty string and return 1 if not an
-	empty string
-	"""
-	for key in temp_dict:
-		if temp_dict['Codon'] == '':
-			return False
-		else:
-			return True
-
-
-def CalcCombinations(filtered_dict):
-	"""Calculates the total combinations of codons possible. This is n! for
-	all combinations of codons in the filtered_dict.
-
-	Parameters
-	----------
-	filtered_dict : dict
-		Dictionary formatted in the same way as EditUsageDict(). Dictionary of 
-		lists of dictionaries for codon usage. Technically, any 
-		dictionary that has single letter amino acid symbols as keys would
-		work
-
-	Returns
-	-------
-	total : int
-		This is the total number of combinations of codons that are possible
-		after the user has selected which codon(s) to remove.
-
-	Examples
-	--------
-	>>> CalcCombinations(filtered_dict)
-	"""
-	total = 1
-	for key in filtered_dict:
-		total *= len(filtered_dict[key])
-	print 'Total combinations: ', total
-	return total
-
-def RemoveCodonBy():
-	"""Ask user whether they want to remove codons by rank or by usage. 
-	The script checks for errors in user input (only r, R, u, or U are allowed)
-
-	Parameters
-	----------
-	none
-
-	Returns
-	-------
-	selection.upper() : str
-		The string corresponding to the user input. This will always output 
-		an 'R' or 'U'
-
-	Examples
-	--------
-	>>> selection = RemoveCodonBy()
-	"""
-	while True:
-		try:
-			selection = raw_input("Remove codon by [R]ank or [U]sage?")
-			if selection.upper() == 'U' or selection.upper() == 'R':
-				return selection.upper()
-			else: 
-				raise ValueError()
-		except ValueError:
-			print("Invalid entry. You must enter either 'R' or 'U'.")
-
-def FindMinimumThreshold(filtered_dict):
-	"""Iterates through filtered_dict and builds a list of all the codons with
-	the hightest usage (because the list of codons is ordered by usage, 
-	this script just grabs the first index of each value's list). Then the 
-	script returns the lowest number in the list. This number will be the
-	minimum threshold (i.e. users should select a cut-off below this number
-	otherwise they will be omitting codons that they did not intend to omit).
-
-	Parameters
-	----------
-	filtered_dict : dict
-		Dictionary formatted in the same way as EditUsageDict(). Dictionary of 
-		lists of dictionaries for codon usage. Technically, any 
-		dictionary that has single letter amino acid symbols as keys would
-		work
-
-	Returns
-	-------
-	float(min(usage_list)) : float
-		Among all the codons remaing (after the user has thrown out particular
-		residues), this number represents the lowest usage frequency of all
-		codons with the highest usage frequency. In other words, given a list
-		of the highest usage frequency for each codon, return the minimum 
-		number.
-
-	Examples
-	--------
-	>>> min_threshold = FindMinimumThreshold(filtered_dict)
-	"""
-	usage_list = []
-	for key in filtered_dict:
-		highest_usage = filtered_dict[key][0]
-		for codon in highest_usage:
-			usage_list.append(highest_usage[codon])
-	return float(min(usage_list))
-
-def RemoveLowCodons(threshold, filtered_dict):
-	"""Given the user input for the codon usage threshold (i.e. the user
-	would like to remove all codons with a usage frequency below the threshold)
-	the script builds a new dictionary (in the same format as the input
-	dictionary) that does not contain the codons with usage frequency below
-	threshold.
-
-	Parameters
-	----------
-	threshold : float
-		This is the codon usage frequency input by the user that specifies 
-		which codons to remove based on usage frequency.
-	filtered_dict : dict
-		Dictionary formatted in the same way as EditUsageDict(). Dictionary of 
-		lists of dictionaries for codon usage. Technically, any 
-		dictionary that has single letter amino acid symbols as keys would
-		work
-
-	Returns
-	-------
-	new_dict : dict
-		Dictionary formatted the same as input except that the codons with 
-		usage frequency below user specified threshold have been removed
-
-	Examples
-	--------
-	>>> RemoveLowCodons(threshold, filtered_dict)
-	"""
-	new_dict = {}
-	for key1 in filtered_dict:
-		temp_list = []
-		for item in filtered_dict[key1]:
-			for key2 in item:
-				if float(item[key2]) > threshold:
-					temp_list.append(item)
-				else:
-					pass
-		new_dict[key1] = temp_list
-	return new_dict
-
-def RemoveCodonByRank(rank, filtered_dict):
-	"""This script builds a new dictionary with the same format as the input
-	dictionary except that is will not contain codons below the 'rank' 
-	specified by the user. In this case, rank is an integer that corresponds
-	to 1 + the index of a list of codons ordered by usage frequency. In other
-	words, given a list of codon, the codon with the highest usage frequency
-	will be given rank 1 and the codon with the lowest usage frequency will be
-	given the highest number (depending on how many codons code for the 
-	particular amino acid).
-
-	Parameters
-	----------
-	 
-	"""
-	new_dict = {}
-	for key in filtered_dict:
-		temp_list = []
-		if len(filtered_dict[key]) > rank:
-			for i in range(rank - 1):
-				temp_list.append(filtered_dict[key][i])
-			new_dict[key] = temp_list
-		else:
-			new_dict[key] = filtered_dict[key]
-	return new_dict
-
-def ByUsage(filtered_dict):
-	min_threshold = FindMinimumThreshold(filtered_dict)
-	while True:
-		try:
-			threshold = float(raw_input("Set usage frequency threshold: " +
-								" (must be below: " +
-								str(min_threshold) + ")"))
-			if threshold < min_threshold:
-				RemoveLowCodons(threshold, filtered_dict)
-				break
-			else:
-				raise ValueError()
-		except ValueError:
-			print("Invalid entry. Set usage frequency threshold: (must be "
-					+ "below: " + str(min_threshold) + ")")
-
-def ByRank(filtered_dict):
-	rank = int(raw_input("Set codon rank threshold: "))
-	RemoveCodonByRank(rank, filtered_dict)
 
 def main():
 	usage_dict = BuildUsageDict()
 	sorted_dict = SortUsageDict(usage_dict)
 	rules_dict = BuildRulesDict()
+	print rules_dict
 	print("Available amino acids (count: " + str(len(sorted_dict)) + 
 		"; X represents stop codons)")
 	AA_list = []
 	for key in sorted_dict:
 		AA_list.append(key)
 	print ','.join(AA_list)
-	
 	selection = GetUserSelection(sorted_dict)
 	filtered_dict = EditUsageDict(selection, sorted_dict)
-
-	CalcCombinations(filtered_dict)
-	selection = RemoveCodonBy()
-	if selection == 'R':
-		ByRank(filtered_dict)
-	else:
-		ByUsage(filtered_dict)
-
-
-
-
-
-	#InUse_dict = ReformatUsageDict(filtered_dict)
-	#codon_list = BestList(filtered_dict)
-	#print('List (' + str(len(codon_list)) + ')')
-	#print codon_list
-	
-	#in_use = FlagInUse(codon_list, InUse_dict)
-
+	best_list = BestList(filtered_dict)
+	print best_list
+	recursive = Recursive(best_list, rules_dict)
+	recursive.FindMinList(best_list)
 
 main()
+
+"""
+Key steps...
+1. Need to create a dictionary of lists of dictionaries.
+{
+	F : [{TTT: 0.58}, {TTC: 0.42}],
+	L : [{TTA: 0.14}, {TTG: 0.13}, {CTT: 0.12}, {CTC: 0.1}, {CTA: 0.04}, {CTG: 0.47}],
+	I : [{ATT: 0.49}, {ATC: 0.39}, {ATA: 0.11}],
+	...
+	G : [{GGT: 0.35}, {GGC: 0.37}, {GGA: 0.13}, {GGG: 0.15}]
+}
+
+2. Then sort the lists in descending order of the values in the contained dictionaries.
+For example, G would look like
+
+	G : [{GGC: 0.37}, {GGT: 0.35}, {GGG: 0.15}, {GGA: 0.13}]
+
+3. Build a dictionary for the "Rules.rul" file. This dictionary will have the following
+format:
+{
+	AG 	: 	R,
+	CT 	: 	Y,
+	AC 	: 	M,
+	GT 	: 	K,
+	CG 	: 	S,
+	AT 	: 	W,
+	ACT : 	H,
+	CGT : 	B,
+	ACG : 	V
+	AGT :  	D
+	ACGT: 	N
+}
+
+4. Ask user which amino acids to delete, and remove these from the sorted
+codon usage dictionary
+
+5. Generate list of codons with highest frequency (using dict with deleted aa).
+def BestList 
+
+6. Pass BestList to FindMinList
+
+"""
+
+
+
+
+
+
 
 
 
