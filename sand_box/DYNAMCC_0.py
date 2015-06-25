@@ -785,6 +785,7 @@ def FindMinimumThreshold(filtered_dict):
 			usage_list.append(highest_usage[codon])
 	return float(min(usage_list))
 
+
 def RemoveLowCodons(threshold, filtered_dict):
 	"""Given the user input for the codon usage threshold (i.e. the user
 	would like to remove all codons with a usage frequency below the threshold)
@@ -837,7 +838,26 @@ def RemoveCodonByRank(rank, filtered_dict):
 
 	Parameters
 	----------
+	rank : int
+		the user specified codon rank that has been chosen as a cutoff value 
+		(i.e. codons with a rank below the specified rank will not be
+		included)
+	filtered_dict : dict
+		Dictionary formatted in the same way as EditUsageDict(). Dictionary of 
+		lists of dictionaries for codon usage. Technically, any 
+		dictionary that has single letter amino acid symbols as keys would
+		work
+
+	Returns
+	-------
+	new_dict : dict
+		Dictionary formatted the same as input except that the codons with 
+		usage frequency below user specified rank have been removed
 	 
+	Examples
+	--------
+	>>> rank = int(raw_input("Set codon rank threshold: "))
+	>>> RemoveCodonByRank(rank, filtered_dict)
 	"""
 	new_dict = {}
 	for key in filtered_dict:
@@ -851,6 +871,36 @@ def RemoveCodonByRank(rank, filtered_dict):
 	return new_dict
 
 def ByUsage(filtered_dict):
+	"""This script is called when the user decides to remove codons by usage
+	frequency. To determine the minimum usage frequency that can be accepted
+	as input without inadvertently omitting codons, the script calls 
+	FindMinimumThreshold. Then, the script prompts the user for a cutoff 
+	threshold. If the entry passes error checking, the threshold is passed
+	to RemoveLowCodons.
+
+	Parameters
+	----------
+	filtered_dict : dict
+		Dictionary formatted in the same way as EditUsageDict(). Dictionary of 
+		lists of dictionaries for codon usage. Technically, any 
+		dictionary that has single letter amino acid symbols as keys would
+		work
+
+	Returns
+	-------
+	null : null
+		The script accepts user input, checks for an acceptable entry (must
+		be below a stated max as determined in FindMinimumThreshold), and
+		funnels the entry to RemoveLowCodons
+
+	Examples
+	--------
+	>>> selection = RemoveCodonBy()
+	>>> if selection == 'R':
+	>>> 	ByRank(filtered_dict)
+	>>> else:
+	>>> 	ByUsage(filtered_dict)
+	"""
 	min_threshold = FindMinimumThreshold(filtered_dict)
 	while True:
 		try:
@@ -867,6 +917,30 @@ def ByUsage(filtered_dict):
 					+ "below: " + str(min_threshold) + ")")
 
 def ByRank(filtered_dict):
+	"""This script is called when the user decides to remove codons by rank. 
+	User selection is then passed to RemoveCodonByRank.
+
+	Parameters
+	----------
+	filtered_dict : dict
+		Dictionary formatted in the same way as EditUsageDict(). Dictionary of 
+		lists of dictionaries for codon usage. Technically, any 
+		dictionary that has single letter amino acid symbols as keys would
+		work
+
+	Returns
+	-------
+	null : null
+		The script accepts user input, and funnels the entry to RemoveLowCodons
+
+	Examples
+	--------
+	>>> selection = RemoveCodonBy()
+	>>> if selection == 'R':
+	>>> 	ByRank(filtered_dict)
+	>>> else:
+	>>> 	ByUsage(filtered_dict)
+	"""
 	rank = int(raw_input("Set codon rank threshold: "))
 	RemoveCodonByRank(rank, filtered_dict)
 
