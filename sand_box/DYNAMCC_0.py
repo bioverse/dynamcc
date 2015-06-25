@@ -718,8 +718,48 @@ def CalcCombinations(filtered_dict):
 	total = 1
 	for key in filtered_dict:
 		total *= len(filtered_dict[key])
-	print 'Total combinations: ', total
 	return total
+
+def CalcSum(filtered_dict):
+	"""Calculates the total number of codons Available
+	
+	Parameters
+	----------
+	filtered_dict : dict
+		Dictionary formatted in the same way as EditUsageDict(). Dictionary of 
+		lists of dictionaries for codon usage. Technically, any 
+		dictionary that has single letter amino acid symbols as keys would
+		work
+	
+	Returns
+	-------
+	total : int
+		The sum total of all codons left after user specified filters are
+		applied
+
+	Examples
+	--------
+	CalcSum(filtered_dict)
+	"""
+	total = 0
+	for key in filtered_dict:
+		total += len(filtered_dict[key])
+	return total
+
+def BuildCodonCount(new_dict):
+	"""Iterate through a codon usage dictionary, and build a list that contains
+	the sum of number of codons for each key (amino acid) at the indices
+	"""
+	codon_count = []
+	for key in new_dict:
+		codon_count.append(len(new_dict[key]))
+	return codon_count
+
+def BuildEmptyList(new_dict):
+	empty_list = []
+	for i in range(len(new_dict)):
+		empty_list.append(0)
+	return empty_list
 
 def RemoveCodonBy():
 	"""Ask user whether they want to remove codons by rank or by usage. 
@@ -826,7 +866,7 @@ def RemoveLowCodons(threshold, filtered_dict):
 		new_dict[key1] = temp_list
 	return new_dict
 
-def RemoveCodonByRank(rank, filtered_dict):
+def RemoveCodonByRank(rank, sorted_dict):
 	"""This script builds a new dictionary with the same format as the input
 	dictionary except that is will not contain codons below the 'rank' 
 	specified by the user. In this case, rank is an integer that corresponds
@@ -842,7 +882,7 @@ def RemoveCodonByRank(rank, filtered_dict):
 		the user specified codon rank that has been chosen as a cutoff value 
 		(i.e. codons with a rank below the specified rank will not be
 		included)
-	filtered_dict : dict
+	sorted_dict : dict
 		Dictionary formatted in the same way as EditUsageDict(). Dictionary of 
 		lists of dictionaries for codon usage. Technically, any 
 		dictionary that has single letter amino acid symbols as keys would
@@ -860,14 +900,14 @@ def RemoveCodonByRank(rank, filtered_dict):
 	>>> RemoveCodonByRank(rank, filtered_dict)
 	"""
 	new_dict = {}
-	for key in filtered_dict:
+	for key in sorted_dict:
 		temp_list = []
-		if len(filtered_dict[key]) > rank:
-			for i in range(rank - 1):
-				temp_list.append(filtered_dict[key][i])
+		if len(sorted_dict[key]) > rank:
+			for i in range(rank):
+				temp_list.append(sorted_dict[key][i])
 			new_dict[key] = temp_list
 		else:
-			new_dict[key] = filtered_dict[key]
+			new_dict[key] = sorted_dict[key]
 	return new_dict
 
 def ByUsage(filtered_dict):
@@ -888,10 +928,11 @@ def ByUsage(filtered_dict):
 
 	Returns
 	-------
-	null : null
+	new_dict : dict
 		The script accepts user input, checks for an acceptable entry (must
-		be below a stated max as determined in FindMinimumThreshold), and
-		funnels the entry to RemoveLowCodons
+		be below a stated max as determined in FindMinimumThreshold), and 
+		funnels the entry to RemoveLowCodons, and returns the new_dict from 
+		RemoveLowCodons
 
 	Examples
 	--------
@@ -908,7 +949,7 @@ def ByUsage(filtered_dict):
 								" (must be below: " +
 								str(min_threshold) + ")"))
 			if threshold < min_threshold:
-				RemoveLowCodons(threshold, filtered_dict)
+				return RemoveLowCodons(threshold, filtered_dict)
 				break
 			else:
 				raise ValueError()
@@ -916,13 +957,13 @@ def ByUsage(filtered_dict):
 			print("Invalid entry. Set usage frequency threshold: (must be "
 					+ "below: " + str(min_threshold) + ")")
 
-def ByRank(filtered_dict):
+def ByRank(sorted_dict):
 	"""This script is called when the user decides to remove codons by rank. 
 	User selection is then passed to RemoveCodonByRank.
 
 	Parameters
 	----------
-	filtered_dict : dict
+	sorted_dict : dict
 		Dictionary formatted in the same way as EditUsageDict(). Dictionary of 
 		lists of dictionaries for codon usage. Technically, any 
 		dictionary that has single letter amino acid symbols as keys would
@@ -930,8 +971,9 @@ def ByRank(filtered_dict):
 
 	Returns
 	-------
-	null : null
-		The script accepts user input, and funnels the entry to RemoveLowCodons
+	new_dict : dict
+		The script accepts user input, funnels the entry to RemoveCodonByRank,
+		and returns the new_dict from RemoveCodonByRank
 
 	Examples
 	--------
@@ -942,7 +984,17 @@ def ByRank(filtered_dict):
 	>>> 	ByUsage(filtered_dict)
 	"""
 	rank = int(raw_input("Set codon rank threshold: "))
-	RemoveCodonByRank(rank, filtered_dict)
+	return RemoveCodonByRank(rank, sorted_dict)
+
+def SetRedundancy():
+	redundancy = int(raw_input("Set redundancy" + 
+									" (0 for no redundancy at all): "))
+	return redundancy
+
+def CalcTotCombinations(combinations, codon_count, new_dict, redundancy):
+	tot_combinations = (combinations * 
+						(codon_count - len(new_dict))**redundancy)
+	return tot_combinations
 
 def main():
 	usage_dict = BuildUsageDict()
@@ -958,12 +1010,34 @@ def main():
 	selection = GetUserSelection(sorted_dict)
 	filtered_dict = EditUsageDict(selection, sorted_dict)
 
-	CalcCombinations(filtered_dict)
+	combinations = CalcCombinations(sorted_dict)
+	print 'Total combinations: ', combinations
 	selection = RemoveCodonBy()
 	if selection == 'R':
-		ByRank(filtered_dict)
+		new_dict = ByRank(sorted_dict)
 	else:
-		ByUsage(filtered_dict)
+		new_dict = ByUsage(sorted_dict)
+
+	NumOfThreads = 3
+
+	combinations = CalcCombinations(new_dict)
+
+	print("Total combinations after removing low usage codons = " +
+			str(combinations))
+	codon_sum = CalcSum(new_dict)
+	codon_count = BuildCodonCount(new_dict)
+	empty_list = BuildEmptyList(new_dict)
+
+	redundancy = SetRedundancy()
+	tot_combinations = CalcTotCombinations(combinations, 
+											codon_sum, 
+											new_dict, 
+											redundancy)
+
+	print("Total combinations including redundancy = " + str(tot_combinations))
+
+	
+
 
 
 

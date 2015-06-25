@@ -75,6 +75,61 @@ else {
 	RemoveCodonsByRank($Input);
 }
 
+my $NumOfThreads =3;
+my $Redun=0;
+
+my (@z,@l); # instantiate two new lists
+my $CodonCount = 0; # initiate CodonCount to 0
+$Total = 1; # initiate Total to 1
+
+
+
+#say $Total;
+#say %Aminolist;
+#foreach my $key (keys %Aminolist) {
+#	say 'key: ' . $key;
+#	say 'value: ';
+#	say @{$Aminolist{$key}};
+#	say scalar @{$Aminolist{$key}};
+#	#say scalar @{$Aminolist{$_}};
+#	foreach my $hash (@{$Aminolist{$key}}) {
+#		say 'index: ';
+#		say %$hash;
+#	}
+#}
+
+$Total*=scalar @{$Aminolist{$_}}, # compute n! for remaining codons
+	$CodonCount+=scalar @{$Aminolist{$_}}, # compute sum of remaining codons
+	push(@z,0),
+	push(@l,scalar @{$Aminolist{$_}})  foreach (keys %Aminolist);
+
+#say $Total;
+#say @z;
+#say $CodonCount;
+#say @l;
+
+
+print "Total combinations after removing low usage codons = $Total\n";
+
+print "Set redundency (0 for no redundency at all):  ";
+$Input = <STDIN>;
+chomp $Input;
+$Redun = $Input;
+
+
+print "Total Combinations including redundency = ". $Total * ($CodonCount - (scalar keys %Aminolist))**$Redun ."\n";
+
+
+print "Number of thread to run (default 1):";
+$Input = <STDIN>;
+chomp $Input;
+$NumOfThreads = $Input if ($Input ne "");
+
+
+my $GlobalStart = time;
+
+
+
 sub RemoveLowCodons {
 	my $Threshold = shift;
 	foreach my $key (keys %Aminolist) {
