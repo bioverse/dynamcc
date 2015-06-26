@@ -128,6 +128,209 @@ $NumOfThreads = $Input if ($Input ne "");
 
 my $GlobalStart = time;
 
+#Start Thread
+
+my @threads;
+for (my $i=0;$i<$NumOfThreads;$i++) {
+	my $th = threads->new(\&DoWork,$i);
+	push( @threads,$th);
+}
+
+
+
+#collect resouts from threads
+
+my @res;
+push(@res,$_->join())  foreach (@threads);
+
+
+#find the best list from all threads
+
+my $best;
+foreach my $x (@res) {
+	if (! defined $best) {
+		$best = $x;
+	} else {
+		if (($$x{"ReduceSize"}<$$best{"ReduceSize"}) || ($$x{"ReduceSize"}==$$best{"ReduceSize"} && $$x{"Ratio"} > $$best{"Ratio"})) {
+			$best = $x;
+		}
+	}
+}
+
+
+#Extract final Codon List
+
+my @Final = @{${$$best{"BestList"}}[0]};
+
+print "\nChoosen List:\n";
+print "AA\tCodon\tUsage\tRank\n";
+
+
+print join("\t",GetCodonData($_)) ."\n" foreach (@Final);
+
+print "Compressed codons:\n";
+print "$_  -> " . join(',',ExpandCodon($_)) . "\n" foreach (Reduce(@Final)) ;
+
+
+print "Finished! Total time: ". int(time-$GlobalStart)  . " sec \n";
+
+
+sub DoWork {	
+	my $idx = shift;
+	print "Thread $idx starting \n";
+	my ($BestList,$BestReduceSize,$BestIndex,$BestRatio,@BestZ);
+	$BestReduceSize=20;
+	$BestRatio=0;
+	$BestIndex=0;
+	my $StartTime = time;
+	my $t=0;
+	my $stop=0;
+	do {
+		say $t;
+		say $NumOfThreads;
+		say $idx;
+		if (($t % $NumOfThreads ) == $idx) {
+			#Create List , reduce and check agains the current best
+			say 'running';
+			say @z;
+			my @x = CreateListFromIndex(@z); # this returns a list that contains two references. the first is a reference to the list that contains the codons and the second is a list that contains the frequencies
+			
+			if ($Redun!=0) {
+				my @RedunIndeces = GetRestOfIndeces(@z);				
+				my $comb = Math::Combinatorics->new(count => $Redun ,data=>[@RedunIndeces]);
+				while (my @rz = $comb->next_combination) {
+					my @y = CreateListFromIndex(@z);
+					foreach (@rz) {
+						my @tt = split(//,$_);						
+						my @cl = @{$Aminolist{$tt[0]}};
+						my $c = $cl[$tt[1]];
+						push (@{$y[0]},$$c{"Code"});
+						push (@{$y[1]},$$c{"Ratio"});
+					}								
+					my @r = Reduce(@{$y[0]});
+					my $ratio=0;
+					$ratio+= $_ for (@{$y[1]});
+					if (((scalar @r) < $BestReduceSize) || ((scalar @r) == $BestReduceSize) && ($ratio > $BestRatio) ) {				
+						$BestList = \@y;
+						$BestReduceSize = (scalar @r);
+						$BestIndex = $t;
+						$BestRatio = $ratio;
+						@BestZ = @z;
+					}						
+				}
+			}	else {		
+				my @r = Reduce(@{$x[0]});
+				say @r;
+				my $ratio=0;
+				$ratio+= $_ for (@{$x[1]});
+				say $ratio;
+				if (((scalar @r) < $BestReduceSize) || ((scalar @r) == $BestReduceSize) && ($ratio > $BestRatio) ) {				
+					$BestList = \@x;
+					$BestReduceSize = (scalar @r);
+					$BestIndex = $t;
+					$BestRatio = $ratio;
+					@BestZ = @z;
+				}	
+			}
+		}
+		
+
+		#print a report evey 1000 iter
+		
+		if (($t % 10000)==0) {
+			my $EndTime = time;
+			print "thread $idx finished " .int(100* $t/$Total) ." % @ " . int((time -  $GlobalStart)* 1000) . " ms Best Size: $BestReduceSize , Best Index: $BestIndex, Best Ratio: $BestRatio\n";
+			$StartTime = $EndTime;
+			#print "Working: " . $whirley[$Spinner];
+		}		
+							
+
+		
+		# advance the index
+		
+		my $i=0;
+		while ((!$stop) && (($z[$i] = ($z[$i]+1) % $l[$i]))==0) {		
+			$stop =1 if (++$i>$#z)
+		}
+		
+		$t++;
+		
+	} while (!$stop);
+	my %c = ("BestList" => $BestList, "ReduceSize" => $BestReduceSize,"Ratio" => $BestRatio);
+	return \%c;
+}
+
+
+sub CreateListFromIndex {
+	my @z = @_;
+	#say @z;
+	my (@codes,@Ratios);
+	my $i=0;
+	foreach my $key (keys %Aminolist) {
+		my @t = @{$Aminolist{$key}}; 
+		#say %{$t[$z[$i]]};
+		push (@codes, $t[$z[$i]]->{"Code"});
+		push (@Ratios, $t[$z[$i]]->{"Ratio"});
+		$i++;
+	}
+	#say scalar @codes;
+	#say scalar @Ratios;
+	my @res =  (\@codes,\@Ratios);
+		
+	
+	
+	return  @res;
+	
+}
+
+
+sub GetRestOfIndeces {
+	my @z = @_;
+	my $i=0;
+	my @res;
+	foreach my $a (keys %Aminolist) {
+		my @t = @{$Aminolist{$a}};
+		if (@t>1) {
+			my @k = (0..$#t);			
+			splice @k,$z[$i],1;		
+			push (@res, map {$a.$_} @k);
+		}
+		$i++;
+	}
+	return @res;
+}
+
+
+#Start Thread
+
+my @threads;
+for (my $i=0;$i<$NumOfThreads;$i++) {
+	my $th = threads->new(\&DoWork,$i);
+	push( @threads,$th);
+}
+
+
+
+#collect resouts from threads
+
+my @res;
+push(@res,$_->join())  foreach (@threads);
+
+
+#find the best list from all threads
+
+my $best;
+foreach my $x (@res) {
+	if (! defined $best) {
+		$best = $x;
+	} else {
+		if (($$x{"ReduceSize"}<$$best{"ReduceSize"}) || ($$x{"ReduceSize"}==$$best{"ReduceSize"} && $$x{"Ratio"} > $$best{"Ratio"})) {
+			$best = $x;
+		}
+	}
+}
+
+
 
 
 sub RemoveLowCodons {

@@ -4,6 +4,8 @@
 #!/opt/local/bin/python2.7
 
 from util import FileHandlers
+from time import time
+import multiprocessing
 
 def get_file_name(file_path):
 	"""Get the names of files in the current directory
@@ -470,7 +472,7 @@ class Recursive:
 		"""Iterate through each position in the codon. At each position,
 		capture the result of Grouping(int) in self.my_dict. Pass this dict to
 		ListFromGroup(dict, int) and capture the result in self.codon_list. Return
-		self.codon_list after interating through each position in the codon.
+		self.codon_list after iterating through each position in the codon.
 		
 		Parameters
 		----------
@@ -996,6 +998,69 @@ def CalcTotCombinations(combinations, codon_count, new_dict, redundancy):
 						(codon_count - len(new_dict))**redundancy)
 	return tot_combinations
 
+def SetProcesses():
+	processes = int(raw_input("Number of thread to run (default 1): "))
+	return processes
+
+def DoWork(idx, processes, empty_list, new_dict, redundancy, rules_dict, tot_combinations, GlobalStart):
+	"""
+	Parameters
+	----------
+	idx : int
+		probably short for index. this is the process number we are on
+	"""
+	print("Thread " + str(processes) + " starting")
+	BestReduceSize = 20
+	BestRatio = 0
+	BestIndex = 0
+	StartTime = time()
+	t = 0
+	stop = 0
+	while stop == 0:
+		if t % processes == idx:
+			codons, ratios = CreateListFromIndex(empty_list, new_dict)
+			if redundancy != 0:
+				pass
+			else:
+				recursive = Recursive(codons, rules_dict)
+				reduced_list = recursive.Reduce()
+				total_usage_frequency = 0
+				for frequency in ratios:
+					total_usage_frequency += float(frequency)
+				if len(reduced_list) <= BestReduceSize and total_usage_frequency > BestRatio:
+					BestList = [codons, ratios]
+					BestReduceSize = len(reduced_list)
+					BestIndex = t 
+					BestRatio = total_usage_frequency
+					BestZ = empty_list
+		#print report every 1000 iter
+		if t % 1000 == 0:
+			EndTime = time()
+			print("thread " + str(processes) + 
+					" finished " + 
+					str(int(100 * t/tot_combinations)) + 
+					" % @ " + 
+					str(int((time()- GlobalStart) * 1000)) +
+					" ms Best Size: " +
+					str(BestReduceSize) +
+					", Best Index: " +
+					str(BestIndex) +
+					", Best Ratio: " +
+					str(BestRatio))
+			stop = 1
+		#advance the index
+
+
+def CreateListFromIndex(empty_list, new_dict):
+	codons = []
+	ratios = []
+	i = 0
+	for key1 in new_dict:
+		for key2 in new_dict[key1][i]:
+			codons.append(key2)
+			ratios.append(new_dict[key1][empty_list[i]][key2])
+	return codons, ratios
+
 def main():
 	usage_dict = BuildUsageDict()
 	sorted_dict = SortUsageDict(usage_dict)
@@ -1018,7 +1083,7 @@ def main():
 	else:
 		new_dict = ByUsage(sorted_dict)
 
-	NumOfThreads = 3
+	#NumOfThreads = 3
 
 	combinations = CalcCombinations(new_dict)
 
@@ -1036,7 +1101,18 @@ def main():
 
 	print("Total combinations including redundancy = " + str(tot_combinations))
 
+	#codon_list = BestList(new_dict)
+	#temp_dict, codon_list = NextBestList(codon_list, in_use)
+	#recursive = Recursive(codon_list, rules_dict)
+
+	processes = SetProcesses()
+	idx = 0 # this will change to index loop when multiprocessing is added
+	GlobalStart = time()
+	DoWork(idx, processes, empty_list, new_dict, redundancy, rules_dict, tot_combinations, GlobalStart)
+	#codes, ratios = CreateListFromIndex(empty_list, new_dict)
 	
+
+		
 
 
 
