@@ -751,6 +751,20 @@ def CalcSum(filtered_dict):
 def BuildCodonCount(new_dict):
 	"""Iterate through a codon usage dictionary, and build a list that contains
 	the sum of number of codons for each key (amino acid) at the indices
+	
+	Parameters
+	----------
+	new_dict : dict 
+		This is the dictionary returned by either RemoveCodonByRank or 
+		ByUsage. The dictionary formatted the same as EditUsageDict(). 
+		Dictionary of lists of dictionaries except that the codons with 
+		usage frequency below user specified rank or usage have been removed
+
+	Returns
+	-------
+	codon_count : int
+		The sum of the number of codons for each amino acid (remaining after
+		user specified codons have been removed)
 	"""
 	codon_count = []
 	for key in new_dict:
@@ -758,6 +772,23 @@ def BuildCodonCount(new_dict):
 	return codon_count
 
 def BuildEmptyList(new_dict):
+	"""Builds a list containing a 0 at each index for each amino acid that the
+	user wants to keep.
+
+	Parameters
+	----------
+	new_dict : dict 
+		This is the dictionary returned by either RemoveCodonByRank or 
+		ByUsage. The dictionary formatted the same as EditUsageDict(). 
+		Dictionary of lists of dictionaries except that the codons with 
+		usage frequency below user specified rank or usage have been removed
+
+	Returns
+	-------
+	empty_list : list
+		List that is the same length as the input dictionary. Every index 
+		contains a 0.
+	"""
 	empty_list = []
 	for i in range(len(new_dict)):
 		empty_list.append(0)
