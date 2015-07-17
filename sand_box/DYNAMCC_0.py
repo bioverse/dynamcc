@@ -1020,16 +1020,47 @@ def ByRank(sorted_dict):
 	return RemoveCodonByRank(rank, sorted_dict)
 
 def SetRedundancy():
+	"""
+	Parameters
+	----------
+	none
+
+	Returns
+	-------
+	redundancy : int
+		Return the integer entered by the user
+	"""
 	redundancy = int(raw_input("Set redundancy" + 
 									" (0 for no redundancy at all): "))
 	return redundancy
 
 def CalcTotCombinations(combinations, codon_count, new_dict, redundancy):
+	"""
+	Parameters
+	----------
+	combinations : int 
+	codon_count : int
+	new_dict : dict
+	redundancy : int
+
+	Returns
+	-------
+	tot_combinations : int
+	"""
 	tot_combinations = (combinations * 
 						(codon_count - len(new_dict))**redundancy)
 	return tot_combinations
 
 def SetProcesses():
+	"""
+	Parameters
+	----------
+	none
+
+	Returns
+	-------
+	processes : int
+	"""
 	processes = int(raw_input("Number of thread to run (default 1): "))
 	return processes
 
@@ -1055,6 +1086,7 @@ def DoWork(idx, processes, empty_list, new_dict, redundancy, rules_dict, tot_com
 			else:
 				recursive = Recursive(codons, rules_dict)
 				reduced_list = recursive.Reduce()
+				print reduced_list
 				total_usage_frequency = 0
 				for frequency in ratios:
 					total_usage_frequency += float(frequency)
@@ -1115,6 +1147,7 @@ def main():
 		new_dict = ByUsage(sorted_dict)
 
 	#NumOfThreads = 3
+	#Redun = 0
 
 	combinations = CalcCombinations(new_dict)
 
