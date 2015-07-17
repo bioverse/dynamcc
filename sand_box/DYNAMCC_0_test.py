@@ -1080,79 +1080,67 @@ def DoWork(codon_count, idx, processes, empty_list, new_dict, redundancy, rules_
 	stop = 0
 	
 	while stop == 0:
+		#i = 0
+		#while i <= len(empty_list):
 		for i in range(len(empty_list)):
-			#print 'i: ', i
+			print 'i: ', i
 			for j in range(0, i + 1): 
-				#print 'at beginning: '
-				#print 'i: ', i
-				#print 'j: ', j
-				#print 'empty_list: ', empty_list
-				#print 'codon_count[j]', codon_count[j]
+				print 'at beginning: '
+				print 'i: ', i
+				print 'j: ', j
+				print 'empty_list: ', empty_list
+				print 'codon_count[j]', codon_count[j]
 				if (empty_list[j] + 1) % codon_count[j] != 0:
 					if t % processes == idx:
 						codons, ratios = CreateListFromIndex(empty_list, new_dict)
-						#print codons
-						#print ratios
+						print codons
+						print ratios
 						if redundancy != 0:
 							pass
 						else:
 							recursive = Recursive(codons, rules_dict)
 							reduced_list = recursive.Reduce()
-							#print reduced_list
+							print reduced_list
 							total_usage_frequency = 0
 							for frequency in ratios:
 								total_usage_frequency += float(frequency)
-							#print len(reduced_list)
-							#print BestReduceSize
-							#print total_usage_frequency
-							#print BestRatio
-							if len(reduced_list) < BestReduceSize or (len(reduced_list) == BestReduceSize and total_usage_frequency > BestRatio):
+							print len(reduced_list)
+							print BestReduceSize
+							print total_usage_frequency
+							if len(reduced_list) <= BestReduceSize and total_usage_frequency > BestRatio:
 								BestList = [codons, ratios]
-								#print BestList
 								BestReduceSize = len(reduced_list)
-								#print BestReduceSize
 								BestIndex = t 
-								#print BestIndex
 								BestRatio = total_usage_frequency
-								#print BestRatio
 								BestZ = empty_list
-								#print BestZ
 					#print report every 1000 iter
-					if t % 10000 == 0:
+					if t % 1000 == 0:
 						EndTime = time()
-						print("thread " + str(processes) + 
-								" finished " + 
-								str(int(100 * t/tot_combinations)) + 
-								" % @ " + 
-								str(int((time()- GlobalStart) * 1000)) +
-								" ms Best Size: " +
-								str(BestReduceSize) +
-								", Best Index: " +
-								str(BestIndex) +
-								", Best Ratio: " +
-								str(BestRatio))
+						print("thread " + str(processes) + " finished " + str(int(100 * t/tot_combinations)) + " % @ " + str(int((time()- GlobalStart) * 1000)) +" ms Best Size: " +str(BestReduceSize) +", Best Index: " +str(BestIndex) +", Best Ratio: " +str(BestRatio))
 						StartTime = EndTime
 					#advance the index
-					#print 'empty list: ', empty_list
-					#print 'codon_count[i]:', codon_count[j]
-					#print 'i: ', i
-					#print 'j: ', j
+					print 'empty list: ', empty_list
+					print 'codon_count[i]:', codon_count[j]
+					print 'i: ', i
+					print 'j: ', j
 					empty_list[j] += 1
 					t += 1
 					
 				else:
-					#print 'true'
+					print 'true'
 					empty_list[j] = 0
 					t += 1
 
-				#print 'final'
-				#print 'empty list: ', empty_list
-				#print 'codon_count[j]:', codon_count[j]
-				#print 'i: ', i
-				#print 'j: ', j
-	
+				print 'final'
+				print 'empty list: ', empty_list
+				print 'codon_count[j]:', codon_count[j]
+				print 'i: ', i
+				print 'j: ', j
+				
 				if i == len(empty_list):
-					stop = 1		
+					stop = 1
+
+			#i += 1		
 
 	information_dict = {
 	"BestList" : BestList,
@@ -1163,19 +1151,19 @@ def DoWork(codon_count, idx, processes, empty_list, new_dict, redundancy, rules_
 
 
 def CreateListFromIndex(empty_list, new_dict):
-	#print 'from CreateListFromIndex'
+	print 'from CreateListFromIndex'
 	codons = []
 	ratios = []
 	i = 0
 	while i < len(empty_list):
 		for key1 in new_dict:
-			#print key1
-			#print new_dict[key1]
+			print key1
+			print new_dict[key1]
 			for key2 in new_dict[key1][empty_list[i]]:
 				codons.append(key2)
-				#print codons
+				print codons
 				ratios.append(new_dict[key1][empty_list[i]][key2])
-				#print ratios
+				print ratios
 			i += 1
 	return codons, ratios
 
@@ -1201,9 +1189,10 @@ def main():
 	else:
 		new_dict = ByUsage(sorted_dict)
 
-
 	#NumOfThreads = 3
 	#Redun = 0
+
+	print new_dict
 
 	combinations = CalcCombinations(new_dict)
 

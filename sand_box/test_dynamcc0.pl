@@ -13,9 +13,6 @@ use threads;
 use Math::Combinatorics;
 
 $|++;
-say $|++;
-say $|++;
-say $|++;
 
 our %Aminolist;
 our %Rules;
@@ -130,9 +127,9 @@ my $GlobalStart = time;
 
 #Start Thread
 
-my @threads;
-for (my $i=0;$i<$NumOfThreads;$i++) {
-	my $th = threads->new(\&DoWork,$i);
+my @threads; # instantiate empty array 'threads'
+for (my $i=0;$i<$NumOfThreads;$i++) { # iterate through the number of threads specified
+	my $th = threads->new(\&DoWork,$i); # start a worker for each thread specified
 	push( @threads,$th);
 }
 
@@ -186,15 +183,19 @@ sub DoWork {
 	my $t=0;
 	my $stop=0;
 	do {
-		say $t;
-		say $NumOfThreads;
-		say $idx;
+		#say $t;
+		#say $NumOfThreads;
+		#say $idx;
+		#say $t % $NumOfThreads;
+		#say $idx;
 		if (($t % $NumOfThreads ) == $idx) {
 			#Create List , reduce and check agains the current best
-			say 'running';
-			say @z;
+			#say 'running';
+			#say @z;
 			my @x = CreateListFromIndex(@z); # this returns a list that contains two references. the first is a reference to the list that contains the codons and the second is a list that contains the frequencies
-			
+			#say @{@x[0]};
+			#say @{@x[1]};
+
 			if ($Redun!=0) {
 				my @RedunIndeces = GetRestOfIndeces(@z);				
 				my $comb = Math::Combinatorics->new(count => $Redun ,data=>[@RedunIndeces]);
@@ -220,16 +221,26 @@ sub DoWork {
 				}
 			}	else {		
 				my @r = Reduce(@{$x[0]});
-				say @r;
+				#say @r;
 				my $ratio=0;
 				$ratio+= $_ for (@{$x[1]});
-				say $ratio;
+				#say $ratio;
+				#say scalar @r;
+				#say $BestReduceSize;
+				#say $ratio;
+				#say $BestRatio;
 				if (((scalar @r) < $BestReduceSize) || ((scalar @r) == $BestReduceSize) && ($ratio > $BestRatio) ) {				
+					#say 'true';
 					$BestList = \@x;
+					#say $BestList;
 					$BestReduceSize = (scalar @r);
+					#say $BestReduceSize;
 					$BestIndex = $t;
+					#say $BestIndex;
 					$BestRatio = $ratio;
+					#say $BestRatio;
 					@BestZ = @z;
+					#say @BestZ;
 				}	
 			}
 		}
@@ -249,28 +260,50 @@ sub DoWork {
 		# advance the index
 		
 		my $i=0;
-		while ((!$stop) && (($z[$i] = ($z[$i]+1) % $l[$i]))==0) {		
-			$stop =1 if (++$i>$#z)
+		#say $z[$i];
+		#say @z;
+		#say ($z[$i]+1);
+		#say @z;
+		#say 'here';
+		#say (($z[$i] = ($z[$i]+1) % $l[$i]));
+		#say 'first i is';
+		#say $i;
+		#say @z;
+		while ((!$stop) && (($z[$i] = ($z[$i]+1) % $l[$i]))==0) {	# $l is reference to @l which is the array that holds the number of codons for each amino acid remaining after trimming	
+			#say 'hello';
+			#++$i;
+			#say 'third i is';
+			#say $i;
+			$stop =1 if (++$i>$#z) # asking of the current index i is greater than the last index of the array
 		}
-		
+		#say 'second i is';
+		#say $i;
+		#say @z;
 		$t++;
 		
 	} while (!$stop);
 	my %c = ("BestList" => $BestList, "ReduceSize" => $BestReduceSize,"Ratio" => $BestRatio);
+	#say %c;
+
 	return \%c;
 }
 
 
 sub CreateListFromIndex {
+	#say 'from CreateListFromIndex';
 	my @z = @_;
 	#say @z;
 	my (@codes,@Ratios);
 	my $i=0;
 	foreach my $key (keys %Aminolist) {
-		my @t = @{$Aminolist{$key}}; 
+		#say $key;
+		my @t = @{$Aminolist{$key}};
+		#say @t; 
 		#say %{$t[$z[$i]]};
 		push (@codes, $t[$z[$i]]->{"Code"});
+		#say @codes;
 		push (@Ratios, $t[$z[$i]]->{"Ratio"});
+		#say @Ratios;
 		$i++;
 	}
 	#say scalar @codes;
