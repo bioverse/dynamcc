@@ -1,0 +1,176 @@
+{% extends base_workflow.html %}
+{%block head%}
+
+{%end%}
+
+{% block content2%}
+
+<div style="margin:10px 30px 10px 30px;">
+<div style="margin-bottom:30px;">
+  <h3>DYNAMCC_0</h3>
+</div>
+
+<div>
+
+<form method = "post" action="/dynamcc_0/">
+
+<div class="row">
+	<div class = "col-sm-8">
+	<div class="panel panel-default">
+		<div class="panel-heading">Choose your organism:</div>
+		<div class="panel-body">
+			<div class="col-sm-4">
+				<input type="radio" name="usage_table" value="Ecoli" style="margin-right:10px;" required>
+				<label><em>E. coli</em></label>
+			</div>
+			<div class="col-sm-4">
+				<input type="radio" name="usage_table" value="yeast" style="margin-right:10px;">
+				<label>yeast</label>
+			</div>
+			<div class="col-sm-4">
+				<input type="radio" name="usage_table" value="human" style="margin-right:10px;">
+				<label>human</label>
+			</div>
+			<div class="col-sm-4">
+				<input type="radio" name="usage_table" value="mouse" style="margin-right:10px;">
+				<label>mouse</label>
+			</div>
+			<div class="col-sm-4">
+				<input type="radio" name="usage_table" value="Dmel" style="margin-right:10px;">
+				<label><em>D. melanogaster</em></label>
+			</div>
+			<div class="col-sm-4">
+				<input type="radio" name="usage_table" value="Cele" style="margin-right:10px;">
+				<label><em>C. elegans</em></label>
+			</div>
+			<div class="col-sm-6">
+				<input id="custom_usage" type="radio" name="usage_table" value="custom" style="margin-right:10px;">
+				<label>Select custom usage table</label>
+				<div id="custom_table" style="display:none">
+					<input type="file" name="custom_codon_usage">
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class = "col-sm-8">
+	<div class="panel panel-default">
+		<div class="panel-heading">Choose the amino acids to remove from the pool:</div>
+		<div class="panel-body">
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="A" style="margin-right:10px;">
+				<label>A</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="R" style="margin-right:10px;">
+				<label>R</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="D" style="margin-right:10px;">
+				<label>D</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="C" style="margin-right:10px;">
+				<label>C</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="Q" style="margin-right:10px;">
+				<label>Q</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="E" style="margin-right:10px;">
+				<label>E</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="G" style="margin-right:10px;">
+				<label>G</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="H" style="margin-right:10px;">
+				<label>H</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="I" style="margin-right:10px;">
+				<label>I</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="L" style="margin-right:10px;">
+				<label>L</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="K" style="margin-right:10px;">
+				<label>K</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="M" style="margin-right:10px;">
+				<label>M</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="F" style="margin-right:10px;">
+				<label>F</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="P" style="margin-right:10px;">
+				<label>P</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="S" style="margin-right:10px;">
+				<label>S</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="T" style="margin-right:10px;">
+				<label>T</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="W" style="margin-right:10px;">
+				<label>W</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="Y" style="margin-right:10px;">
+				<label>Y</label>
+			</div>
+			<div class="col-sm-2">
+				<input type="checkbox" name="aa" value="V" style="margin-right:10px;">
+				<label>V</label>
+			</div>
+			<div class="col-sm-4">
+				<input type="checkbox" name="aa" value="X" style="margin-right:10px;">
+				<label>STOP</label>
+			</div>
+		</div>
+	</div>
+
+	<div class="panel panel-default">
+		<div class="panel-heading">Compress by:</div>
+		<div class="panel-body">
+			<div class="col-sm-6">
+				<input value="rank" id="rank" type="radio" name="compression_method" style="margin-right:10px;" required>
+				<label>Rank</label>
+				<div id="input_rank" style="display:none">
+					<input type="text" name="input_rank">
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<input value="usage" id="usage" type="radio" name="compression_method" style="margin-right:10px;">
+				<label>Usage</label>
+				<div id="input_usage" style="display:none">
+					<input type="text" name="input_rank">
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<button type="submit" class="btn btn-default">Compress Codons</button>
+	</div>
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+{%end%}

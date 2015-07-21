@@ -13,7 +13,8 @@ from tornado.options import define, options, parse_command_line
 from handlers.base_handlers import (
     IndexHandler
     )
-
+from handlers.dynamcc_handlers import (
+    Dynamcc0Handler, DynamccRHandler)
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -27,7 +28,9 @@ class Application(tornado.web.Application):
                 (r"/results/(.*)", tornado.web.StaticFileHandler,
                  {"path": RES_PATH}),
                 (r"/static/(.*)", tornado.web.StaticFileHandler,
-                 {"path": STATIC_PATH})
+                 {"path": STATIC_PATH}),
+                (r"/dynamcc_0/", Dynamcc0Handler),
+                (r"/dynamcc_R/", DynamccRHandler)
                 ]
         settings = {
             "template_path": TEMPLATE_PATH,
@@ -39,7 +42,7 @@ class Application(tornado.web.Application):
 
 
 def main():
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5050))
     parse_command_line()
     http_server = HTTPServer(Application())
     http_server.listen(port)
