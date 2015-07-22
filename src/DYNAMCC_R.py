@@ -72,6 +72,8 @@ def BestList(filtered_dict):
     """
     best_list = []
     for key1 in filtered_dict:
+
+        print filtered_dict[key1]
         best_tuple = filtered_dict[key1][0]
         best_list.append(best_tuple[0])
     return best_list
@@ -151,8 +153,7 @@ def execute_algorithm(codon_list, in_use, rules_dict, inverse_dict):
         if(TestTempDict(temp_dict) == False):
             break
 
-    results = sorted(results, key=lambda x: len(x), reverse=False)
-    return results[0]
+    return results[-1]
 
 
 def main():
@@ -161,7 +162,7 @@ def main():
     sorted_dict = util.BuildUsageDict('ecoli.txt')
     rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
 
-    selection = ['L','I','T']
+    selection = ['A','C','G','F','I','X','Y','V','W','T','S','P','L','M']
 
     filtered_dict = util.EditUsageDict(selection, sorted_dict)
 
