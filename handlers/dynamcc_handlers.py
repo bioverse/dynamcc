@@ -21,6 +21,8 @@ organism_names = {
 	"Cele"	: "C. elegans"
 }
 
+aa = set(['A', 'R', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V', 'N', 'X'])
+
 class Dynamcc0Handler(RequestHandler):
     def get(self):
         self.render("dynamcc_0.html")
@@ -33,7 +35,11 @@ class Dynamcc0Handler(RequestHandler):
     	else:
     		pass
     	rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
-    	remove_aa = self.get_arguments('aa')
+    	if self.get_argument("keep_or_remove") == 'remove':
+            remove_aa = self.get_arguments('aa')
+        else:
+            selected_aa = self.get_arguments('aa')
+            remove_aa = list(aa.difference(selected_aa))
     	filtered_dict = util.EditUsageDict(remove_aa, sorted_dict)
     	selection = self.get_argument("compression_method")
     	if selection == 'rank':
@@ -61,13 +67,17 @@ class DynamccRHandler(RequestHandler):
 
     def post(self):
     	seletect_organism = self.get_argument("usage_table")
-    	if seletect_organism in organism_mapping:
+        if seletect_organism in organism_mapping:
     		sorted_dict = util.BuildUsageDict(organism_mapping[seletect_organism])
     		organism_name = organism_names[seletect_organism]
     	else:
     		pass
     	rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
-    	remove_aa = self.get_arguments('aa')
+    	if self.get_argument("keep_or_remove") == 'remove':
+            remove_aa = self.get_arguments('aa')
+        else:
+            selected_aa = self.get_arguments('aa')
+            remove_aa = list(aa.difference(selected_aa))
     	filtered_dict = util.EditUsageDict(remove_aa, sorted_dict)
     	InUse_dict = ReformatUsageDict(filtered_dict)
     	codon_list = BestList(filtered_dict)
