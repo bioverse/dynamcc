@@ -17,7 +17,7 @@
 <div class="row">
 	<div class = "col-sm-8">
 	<div class="panel panel-default">
-		<div class="panel-heading">Choose your organism:</div>
+		<div class="panel-heading">Choose your organism: </div>
 		<div class="panel-body">
 			<div class="col-sm-4">
 				<input type="radio" name="usage_table" value="Ecoli" style="margin-right:10px;" required>
@@ -58,7 +58,10 @@
 <div class="row">
 	<div class = "col-sm-8">
 	<div class="panel panel-default">
-		<div class="panel-heading">Choose the amino acids to remove from the pool:</div>
+		<div class="panel-heading">Choose amino acids:
+		<input type="radio" name="keep_or_remove" value="remove" style="margin:0 5px 0 10px;">To remove from the pool
+		<input type="radio" name="keep_or_remove" value="keep" style="margin:0 5px 0 10px;">To keep in the pool
+		</div>
 		<div class="panel-body">
 			<div class="col-sm-2">
 				<input type="checkbox" name="aa" value="A" style="margin-right:10px;">
