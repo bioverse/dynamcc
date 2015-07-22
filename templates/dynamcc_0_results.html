@@ -176,9 +176,9 @@
 
 </form>
 
-<p>
-	{% raw best_result %}
-</p>
+<p>Selected organism usage table: {{organism}}</p>
+<p>Amino acids removed from the compressed codon pool: {% for aa in remove_aa %} {{aa}} {% end %}</p>
+<p>Compressed codons: {% for codon in best_result['BestReducedList'] %} {{codon}} {% end %}</p>
 
 </div>
 
