@@ -58,7 +58,7 @@ class Dynamcc0Handler(RequestHandler):
     	redundancy = 0
 
     	best_result = start_multiprocessing(new_dict,rules_dict,codon_count, redundancy, processes = 3)
-    	self.render("dynamcc_0_results.html", best_result=best_result)
+    	self.render("dynamcc_0_results.html", organism=organism_name, remove_aa=remove_aa, best_result=best_result)
 
 
 class DynamccRHandler(RequestHandler):
