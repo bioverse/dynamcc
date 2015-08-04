@@ -216,13 +216,17 @@ def codon_exploder(codon_count):
     combinations = itertools.product(*temp_list)
     return combinations
 
-def start_multiprocessing(new_dict, rules_dict, codon_count, redundancy, processes = 3):
+def start_multiprocessing(new_dict, rules_dict, selection, codon_count, redundancy, processes = 3):
+
+    if(selection != 'R' and selection != 'U'):
+        print 'Unknown ranking method selected.'
+        return
 
     worker_array = []
     output_queue = multiprocessing.Queue(maxsize=3)
     for thread in range(0,processes):
         input_queue = multiprocessing.Queue()
-        w = CodonWorker(input_queue, output_queue, new_dict, rules_dict, redundancy)
+        w = CodonWorker(input_queue, output_queue, new_dict, rules_dict, selection, redundancy)
         worker_array.append(w)
 
     for w in worker_array:
@@ -236,7 +240,7 @@ def start_multiprocessing(new_dict, rules_dict, codon_count, redundancy, process
         worker_array[cyclical_adder.next()].push(combo)
 
     for worker in worker_array:
-        worker.kill_worker()
+        worker.push(None)
 
     output = []
     while(len(output) != len(worker_array)):
@@ -249,10 +253,15 @@ def start_multiprocessing(new_dict, rules_dict, codon_count, redundancy, process
 
     for result in output:
 
-        reduced_list = result['BestReducedList']
-        total_usage_frequency = result['Ratio']
+        print result
 
-        if len(reduced_list) < BestReduceSize or (len(reduced_list) == BestReduceSize and total_usage_frequency > BestRatio):
+        reduced_list = result['BestReducedList']
+        total_ratio = result['Ratio']
+
+        if selection == 'R' and  len(reduced_list) < BestReduceSize or (len(reduced_list) == BestReduceSize and total_ratio < BestRatio):
+            best_result = result
+
+        elif selection == 'U' and len(reduced_list) < BestReduceSize or (len(reduced_list) == BestReduceSize and total_ratio > BestRatio):
             best_result = result
 
     for key in best_result:
@@ -265,22 +274,19 @@ def main():
 
     sorted_dict = util.BuildUsageDict('ecoli.txt')
     rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
-    #print("Available amino acids (count: " + str(len(sorted_dict)) +"; X represents stop codons)")
-
-    #selection = GetUserSelection(sorted_dict)
-
-    selection = ['A','C','E']
+    
+    selection = ['X','A']
 
     filtered_dict = util.EditUsageDict(selection, sorted_dict)
 
     selection = 'R'
 
     if selection == 'R':
-        threshold = 2
+        threshold = 3
         new_dict = RemoveCodonByRank(threshold, filtered_dict)
     else:
         threshold = 0.04
-        new_dict = RemoveCodonByRank(threshold, filtered_dict)
+        new_dict = RemoveLowCodons(threshold, filtered_dict)
 
     codon_order = new_dict.keys()
 
@@ -288,7 +294,7 @@ def main():
 
     redundancy = 0
 
-    start_multiprocessing(new_dict,rules_dict,codon_count, redundancy, processes = 3)
+    start_multiprocessing(new_dict,rules_dict, selection, codon_count, redundancy, processes = 2)
 
 if(__name__ == '__main__'):
     main()
