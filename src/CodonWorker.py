@@ -7,7 +7,7 @@ import multiprocessing
 
 class CodonWorker(multiprocessing.Process):
 
-    def __init__(self, input_queue, output_queue, new_dict, rules_dict, redundancy):
+    def __init__(self, input_queue, output_queue, new_dict, rules_dict, method, redundancy):
 
         super(CodonWorker, self).__init__()
 
@@ -15,6 +15,7 @@ class CodonWorker(multiprocessing.Process):
         self.output_queue = output_queue
         self.position_cache = defaultdict(dict)
 
+        self.method = method
         self.new_dict = new_dict
         self.rules_dict = rules_dict
         self.redundancy = redundancy
@@ -23,10 +24,6 @@ class CodonWorker(multiprocessing.Process):
 
         self.input_queue.put(combination)
 
-    def kill_worker(self):
-
-        self.input_queue.put(None)
-
     def run(self):
 
         new_dict = self.new_dict
@@ -34,7 +31,12 @@ class CodonWorker(multiprocessing.Process):
         redundancy = self.redundancy
 
         BestReduceSize = 20
-        BestRatio = 0
+
+        if(self.method == 'R'):
+            BestRatio = 1000000
+        elif(self.method == 'U'):
+            BestRatio = 0
+
         BestList = []
         BestReducedList = []
         t = 0
@@ -51,7 +53,6 @@ class CodonWorker(multiprocessing.Process):
             combo = self.input_queue.get(block=True)
 
             if(combo == None):
-                print 'Worker terminated'
                 break
 
             codons, ratios = CodonWorker.CreateListFromIndex(combo, new_dict)
@@ -62,19 +63,25 @@ class CodonWorker(multiprocessing.Process):
                 pass
             else:
                 recursive = Recursive(codons, rules_dict, inverse_rule_dict)
-                reduced_list = recursive.Reduce(self.position_cache)
+                reduced_list = recursive.Reduce(None)
+
                 total_usage_frequency = 0
                 for frequency in ratios:
                     total_usage_frequency += frequency
-                if len(reduced_list) < BestReduceSize or (len(reduced_list) == BestReduceSize and total_usage_frequency > BestRatio):
+
+                total_ranking_sum = sum(combo)
+
+                if(self.method == 'R' and (len(reduced_list) < BestReduceSize or (len(reduced_list) == BestReduceSize and total_ranking_sum < BestRatio))):
+                    BestList = [codons, ratios]
+                    BestReduceSize = len(reduced_list)
+                    BestRatio = total_ranking_sum
+                    BestReducedList = reduced_list
+
+                elif self.method == 'U' and (len(reduced_list) < BestReduceSize or (len(reduced_list) == BestReduceSize and total_usage_frequency > BestRatio)):
                     BestList = [codons, ratios]
                     BestReduceSize = len(reduced_list)
                     BestRatio = total_usage_frequency
                     BestReducedList = reduced_list
-
-            if(t % 10000 == 0):
-                print 'Current best reduced list is',BestReducedList
-                print t
 
         information_dict = {
             "BestReducedList":BestReducedList,
