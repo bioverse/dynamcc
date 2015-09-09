@@ -62,7 +62,7 @@ class Dynamcc0Handler(RequestHandler):
     	selection = self.get_argument("compression_method")
         print selection
     	if selection == 'rank':
-    	    print selection
+    	    Selection = 'R'
     	    threshold = 2
     	    new_dict = RemoveCodonByRank(threshold, filtered_dict)
     	else:
@@ -76,7 +76,7 @@ class Dynamcc0Handler(RequestHandler):
 
     	redundancy = 0
 
-    	best_result = start_multiprocessing(new_dict,rules_dict,codon_count, redundancy, processes = 3)
+    	best_result = start_multiprocessing(new_dict,rules_dict, Selection, codon_count, redundancy, processes = 3)
 
         ## exploding codons
         exploded_codons = {}
