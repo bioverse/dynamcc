@@ -4,7 +4,7 @@ import os
 from os.path import dirname, join
 from base64 import b64encode
 from uuid import uuid4
-
+import webbrowser
 import tornado.web
 from tornado.ioloop import IOLoop
 from tornado.httpserver import HTTPServer
@@ -47,6 +47,7 @@ def main():
     http_server = HTTPServer(Application())
     http_server.listen(port)
     print "Tornado started on port", port
+    webbrowser.open("localhost:%d" % port)
     IOLoop.instance().start()
 
 

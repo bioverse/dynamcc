@@ -1,23 +1,64 @@
 {% extends base_workflow.html %}
 {%block head%}
+<script type="text/javascript">
+
+function ExplodeCodons() {
+	var exploded_codons = {};
+	{% for codon in exploded_codons %} 
+	exploded_codons.{{codon}} = [];
+		{% for item in exploded_codons[codon] %}
+		console.log('{{item}}');
+		exploded_codons['{{codon}}'].push('{{item}}');
+		{% end %}
+	{% end %}
+
+	console.log(exploded_codons);
+	
+	var html = '<table border="1">';
+	html += '<th style="padding:10px;">Compressed</th><th style="padding:10px;">Exploded</th>'
+	
+	for (var key in exploded_codons) 
+	{
+		html += '<tr>';
+		html += '<td style="padding:10px;">' + key + '</td>';
+		html += '<td style="padding:10px;">';
+		for (i = 0; i < exploded_codons[key].length; i++) 
+		{
+			html += exploded_codons[key][i];
+			html += ' ';	
+		}
+		html += '</td>';
+		html += '</tr>';
+	};
+
+	html += '</table>'
+	$('#exploded_codons').append(html);
+}
+
+
+</script>
 
 {%end%}
 
 {% block content2%}
 
-<div style="margin:10px 30px 10px 30px;">
-<div style="margin-bottom:30px;">
+<body onload="ExplodeCodons();">
+
+<div class="row" style="margin-bottom:30px;">
   <h3>DYNAMCC_0</h3>
 </div>
 
-<div>
+<div class= "row">
 
-<p>Selected organism usage table: {{organism}}</p>
+<p>Selected organism usage table: <em>{{organism}}</em></p>
 <p>Amino acids removed from the compressed codon pool: {% for aa in remove_aa %} {{aa}} {% end %}</p>
-<p>Compressed codons: {% for codon in best_result['BestReducedList'] %} {{codon}} {% end %}</p>
+<p>The resulting compressed codons are optimized for usage in <em>{{organism}}</em>: </p>
+
+<!--<p>Compressed codons: {% for codon in best_result['BestReducedList'] %} {{codon}} {% end %}</p>-->
+
+<div id="exploded_codons"></div>
 
 </div>
 
-</div>
-
+</body>
 {%end%}

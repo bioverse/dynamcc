@@ -5,12 +5,12 @@
 
 {% block content2%}
 
-<div style="margin:10px 30px 10px 30px;">
-<div style="margin-bottom:30px;">
+<div>
+<div class="row" style="margin-bottom:30px;">
   <h3>DYNAMCC_R</h3>
 </div>
 
-<div>
+<div class = "row">
 
 <p>Selected organism usage table: {{organism}}</p>
 <p>Amino acids removed from the compressed codon pool: {% for aa in remove_aa %} {{aa}} {% end %}</p>

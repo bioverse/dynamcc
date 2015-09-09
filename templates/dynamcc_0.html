@@ -1,12 +1,59 @@
 {% extends base_workflow.html %}
 {%block head%}
 
+<script type="text/javascript">
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+$(function () {
+  $('[data-toggle="popover"]').popover()
+})
+
+
+function ShowHide() {
+	document.getElementById("input_rank").style.display = 'none';
+	document.getElementById("input_usage").style.display = 'none';
+
+	$("#rank").click(function() {
+		$("#input_rank").show();
+		$("#input_usage").hide();
+	});
+	$("#usage").click(function() {
+		$("#input_rank").hide();
+		$("#input_usage").show();
+	});
+}
+
+</script>
+
 {%end%}
 
 {% block content2%}
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Sign this petition!</h4>
+      </div>
+      <div class="modal-body">
+        <p>Fields for the signatures here, take some from the facebook API</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Sign now!</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
-<div style="margin:10px 30px 10px 30px;">
-<div style="margin-bottom:30px;">
+
+
+<body onload="ShowHide();">
+
+<div>
+<div class="row" style="margin-bottom:30px;">
   <h3>DYNAMCC_0</h3>
 </div>
 
@@ -204,21 +251,17 @@
 	</div>
 
 	<div class="panel panel-default">
-		<div class="panel-heading">Compress by:</div>
+		<div class="panel-heading">Enter codon <a tabindex="0" role="button" id="rank_popover" data-toggle="popover" data-trigger="focus" title="Rank" data-content="And here's some amazing content. It's very engaging. Right?">rank</a> or <a tabindex="0" role="button" id="usage_popover" data-toggle="popover" data-trigger="focus" title="Usage" data-content="Different content goes here.">usage</a> cutoff:</div>
 		<div class="panel-body">
 			<div class="col-sm-6">
-				<input value="rank" id="rank" type="radio" name="compression_method" style="margin-right:10px;" required>
+				<input type="radio" value="rank" name="compression_method" id="rank" required>
 				<label>Rank</label>
-				<div id="input_rank" style="display:none">
-					<input type="text" name="input_rank">
-				</div>
+				<input type="text" name="input_rank" id="input_rank">
 			</div>
 			<div class="col-sm-6">
-				<input value="usage" id="usage" type="radio" name="compression_method" style="margin-right:10px;">
+				<input type="radio" value="usage" name="compression_method" id="usage">
 				<label>Usage</label>
-				<div id="input_usage" style="display:none">
-					<input type="text" name="input_rank">
-				</div>
+				<input type="text" name="input_usage" id="input_usage">
 			</div>
 		</div>
 	</div>	
@@ -232,5 +275,7 @@
 </div>
 
 </div>
+
+</body>
 
 {%end%}

@@ -1,3 +1,4 @@
+import itertools
 from tornado.web import RequestHandler
 from src.DYNAMCC_0 import *
 from src.DYNAMCC_R import *
@@ -23,6 +24,23 @@ organism_names = {
 
 aa = set(['A', 'R', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V', 'N', 'X'])
 
+rules = {   'R' : ['A', 'G'],
+            'Y' : ['C', 'T'],
+            'M' : ['A', 'C'],
+            'K' : ['G', 'T'],
+            'S' : ['C', 'G'],
+            'W' : ['A', 'T'],
+            'H' : ['A', 'C', 'T'],
+            'B' : ['C', 'G', 'T'],
+            'V' : ['A', 'C', 'G'],
+            'D' : ['A', 'G', 'T'],
+            'N' : ['A', 'C', 'G', 'T'],
+            'A' : ['A'],
+            'C' : ['C'],
+            'G' : ['G'],
+            'T' : ['T']
+        }
+
 class Dynamcc0Handler(RequestHandler):
     def get(self):
         self.render("dynamcc_0.html")
@@ -42,6 +60,7 @@ class Dynamcc0Handler(RequestHandler):
             remove_aa = list(aa.difference(selected_aa))
     	filtered_dict = util.EditUsageDict(remove_aa, sorted_dict)
     	selection = self.get_argument("compression_method")
+        print selection
     	if selection == 'rank':
     	    print selection
     	    threshold = 2
@@ -58,7 +77,37 @@ class Dynamcc0Handler(RequestHandler):
     	redundancy = 0
 
     	best_result = start_multiprocessing(new_dict,rules_dict,codon_count, redundancy, processes = 3)
-    	self.render("dynamcc_0_results.html", organism=organism_name, remove_aa=remove_aa, best_result=best_result)
+
+        ## exploding codons
+        exploded_codons = {}
+        codon_list = []
+        for codon in best_result['BestReducedList']:
+            exploded_codons[codon] = list(codon)
+            codon_list.append(list(codon))
+        exploded_codons_copy1 = {}
+        for key in exploded_codons:
+            exploded_codons_copy1[key] = []
+        for codon in exploded_codons:
+            for j in range(len(exploded_codons[codon])):
+                exploded_codons_copy1[codon].append(rules[exploded_codons[codon][j]])
+
+        exploded_codons_copy2 = {}
+        for key in exploded_codons:
+            exploded_codons_copy2[key] = []
+        for codon in exploded_codons_copy1:
+            combos = list(itertools.product(*exploded_codons_copy1[codon]))
+            for combo in combos:
+                exploded_codons_copy2[codon].append(combo)
+
+        exploded_codons = {}
+        for key in exploded_codons_copy2:
+            exploded_codons[key] = []
+            for value in exploded_codons_copy2[key]:
+                joined_codon = ''.join(list(value))
+                exploded_codons[key].append(joined_codon)
+        print exploded_codons
+
+    	self.render("dynamcc_0_results.html", organism=organism_name, remove_aa=remove_aa, best_result=best_result, exploded_codons=exploded_codons)
 
 
 class DynamccRHandler(RequestHandler):
