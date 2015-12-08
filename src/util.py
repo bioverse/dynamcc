@@ -98,6 +98,33 @@ def BuildUsageDict(filename):
 
     return usage_dict
 
+def BuildCodonDict(usage_dict):
+	"""
+	-------
+	codon_dict: dict
+		Dictionary describing usage, rank, and aa for each codon. Dictionary has the
+		following structure:
+		{
+			TTT: (1, 0.58, F), 
+			TTC: (2, 0.42, F),
+			TTA: (1, 0.14, L),
+			TTG: (2, 0.13, L),
+			CTT: (3, 0.12, L),
+			CTC: (4, 0.1, L),
+			...
+			...
+			...
+			GGG: (4, 0.15, G)
+		}
+	--------
+	"""
+	codon_dict = {}
+	
+	for residue in usage_dict:
+		for i in range(len(usage_dict[residue])):
+			codon_dict[usage_dict[residue][i][0]] = (str(i + 1), usage_dict[residue][i][1], residue)
+	return codon_dict
+
 def BuildRulesDict(rule_file):
     """Construct a dictionary from the .rul file. Each key-value pair is
     constructed from a single line of the .rul file The .rul file has the

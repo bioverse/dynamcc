@@ -19,7 +19,10 @@
         <script src="/static/js/jquery.js"></script>
         <script src="/static/js/jquery-ui.js"></script>
         <script src="/static/js/bootstrap.min.js"></script>
+        <script src="/static/js/underscore-min.js"></script>
+        <script src="/static/js/underscore.js"></script>
         <script src="/static/js/formValidation.js"></script>
+        <script src="/static/js/usage_tables.js"></script>
 
         {%block head%}  {%end%}
     </head>
@@ -38,6 +41,16 @@
                   </a>
                   <!--<a class="navbar-brand laser_logo" href="/" style="margin-right:40px;"></a>-->
                 </div>
+
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                  <ul class="nav navbar-nav">
+                    <li style="margin-top:15px;"><span>Select your compression algorithm: </span></li>
+                    <li><a href="/dynamcc_R/">DYNAMCC_R</a></li>
+                    <li><a href="/dynamcc_0/">DYNAMCC_0</a></li>
+                  </ul>
+                </div><!-- /.navbar-collapse -->
+
+
               </div>
             </nav>
         </header>

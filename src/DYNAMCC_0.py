@@ -173,6 +173,40 @@ def RemoveCodonByRank(rank, sorted_dict):
 
     return new_dict
 
+def ByUsage(filtered_dict, max_threshold):
+    """This script is called when the user decides to remove codons by usage
+    frequency. To determine the minimum usage frequency that can be accepted
+    as input without inadvertently omitting codons, the script calls 
+    FindMinimumThreshold. Then, the script prompts the user for a cutoff 
+    threshold. If the entry passes error checking, the threshold is passed
+    to RemoveLowCodons.
+
+    Parameters
+    ----------
+    filtered_dict : dict
+        Dictionary formatted in the same way as EditUsageDict(). Dictionary of 
+        lists of dictionaries for codon usage. Technically, any 
+        dictionary that has single letter amino acid symbols as keys would
+        work
+
+    Returns
+    -------
+    new_dict : dict
+        The script accepts user input, checks for an acceptable entry (must
+        be below a stated max as determined in FindMinimumThreshold), and 
+        funnels the entry to RemoveLowCodons, and returns the new_dict from 
+        RemoveLowCodons
+
+    Examples
+    --------
+    >>> selection = RemoveCodonBy()
+    >>> if selection == 'R':
+    >>>     ByRank(filtered_dict)
+    >>> else:
+    >>>     ByUsage(filtered_dict)
+    """
+    return RemoveLowCodons(threshold, filtered_dict)
+
 def SetRedundancy():
     """
     Parameters

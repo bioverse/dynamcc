@@ -47,7 +47,8 @@ def main():
     http_server = HTTPServer(Application())
     http_server.listen(port)
     print "Tornado started on port", port
-    webbrowser.open("localhost:%d" % port)
+    chrome_path = 'open -a /Applications/Google\ Chrome.app %s'
+    webbrowser.get(chrome_path).open("http://localhost:%d" % port)
     IOLoop.instance().start()
 
 

@@ -1,16 +1,16 @@
-{% extends base_workflow.html %}
+{% extends base.html %}
 {%block head%}
 
 {%end%}
 
-{% block content2%}
+{% block content%}
 
 <div>
 <div class="row" style="padding-top:40px;">
   <h3>Welcome to the Codon Compression web tool</h3>
 </div>
 
-<div class="row" style="padding:10px 10px 30px 0px;"><p>Saturation mutagenesis is employed in protein engineering and genome-editing efforts to generate libraries that span amino acid design space. Our codon compression web tool allows users to compress degenerate codons in a user specified manner. The output provided will be a unique collection of codons for any desired amino acids. <br><br>
+<div class="row" style="padding:10px 10px 30px 0px"><p style="font-size:16px;">Saturation mutagenesis is employed in protein engineering and genome-editing efforts to generate libraries that span amino acid design space. Our codon compression web tool allows users to compress degenerate codons in a user specified manner. The output provided will be a unique collection of codons for any desired amino acids. <br><br>
 
 This tool’s purpose is to eliminate undesired amino acids, stop codons and redundancy (or bias) from the generated diversity, as occurs in the commonly used NNK codon (that includes 32 codons for 20 amino acids and includes also stop codon). <br><br>
 
@@ -18,12 +18,12 @@ The resulting compressed codons are optimized for the target organism codon usag
 
 This tool contains 2 different compression approaches:<br><br> 
 
-<u>DYNAMCC_0</u>:
+<u><a href="/dynamcc_R/">DYNAMCC_0</a></u>:
 This algorithm calculates the minimal set of degenerate codons for any desired set of amino acids, without redundancy. Note that the compressed codons may be ranked according to codon usage, or according to their usage rank, which may result in different results.<br><br>
  
 For example: to include all amino acids, without redundancy and without any stop codon, optimized for E. coli, the compressed codon list is: VHG, NRT, WTT and TGG<br><br>
 
-<u>DYNAMCC_R</u>:<br><br>
+<u><a href="/dynamcc_0/">DYNAMCC_R</a></u>:
 This algorithm helps in finding compressed codons with various levels of redundancy. Due to the large solution space, the algorithm compresses the “best List” according to usage that constitutes a single codon for each amino acid, and then adds more codons ordered by their specific usage, until complete redundancy is achieved.<br><br>
 For example: to include all amino acids, without any stop codon, optimized for E. coli, the compressed and fully redundant codon list is: NYA, NBG, VRA, NNY and VAG<br><br>
  

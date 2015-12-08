@@ -73,6 +73,7 @@ class CodonWorker(multiprocessing.Process):
 
                 if(self.method == 'R' and (len(reduced_list) < BestReduceSize or (len(reduced_list) == BestReduceSize and total_ranking_sum < BestRatio))):
                     BestList = [codons, ratios]
+                    #BestList = [codons, ratios, ranks]
                     BestReduceSize = len(reduced_list)
                     BestRatio = total_ranking_sum
                     BestReducedList = reduced_list
@@ -95,6 +96,7 @@ class CodonWorker(multiprocessing.Process):
     def CreateListFromIndex(empty_list, new_dict):
         codons = []
         ratios = []
+        #ranks = []
 
         counter = 0
 
@@ -103,6 +105,7 @@ class CodonWorker(multiprocessing.Process):
             (codon, ratio) = new_dict[aa][empty_list[counter]]
             codons.append(codon)
             ratios.append(ratio)
+            #ranks.append(counter + 1) ## need the index of ...
             counter+=1
 
         return codons, ratios

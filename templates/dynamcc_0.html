@@ -1,4 +1,4 @@
-{% extends base_workflow.html %}
+{% extends base.html %}
 {%block head%}
 
 <script type="text/javascript">
@@ -24,11 +24,44 @@ function ShowHide() {
 	});
 }
 
+function GetUsage() {
+	$("input[type=radio]").on("change", function() {
+		if( ($(this).val()) == 'usage' ) {
+			var selected_aa = [];
+			if ( $("input[name=keep_or_remove]").val() == 'keep' ) {
+				$("input[name=aa]:checked").each( function(){ selected_aa.push( $(this).val() ) } );
+				var keepers = selected_aa;
+			}
+			else if ( $("input[name=keep_or_remove]").val() == 'remove' ) {
+				var all_aa = [];
+				$("input[name=aa]").each( function(){ all_aa.push( $(this).val() ) } );
+				$("input[name=aa]:checked").each( function(){ selected_aa.push( $(this).val() ) } );
+				var keepers = _.difference(all_aa, selected_aa);
+			}
+
+			var filtered_keepers = [];
+			var filtered = _.pick(highest_usage_mapping[$("input[name=usage_table]").val()], keepers);
+
+			$.each( filtered, function( key, value ) {
+				filtered_keepers.push(_.values(value)[0]);
+			});
+
+			var minimum_usage = filtered_keepers.sort()[0];
+			//alert("Based on the amino acids you have selected, " + String(minimum_usage) + " is the maximum threshold for codon compression. If you enter a number larger than " + String(minimum_usage) + " you will eliminate codons that have not been selected for removal during the compression process.");
+
+			$("#input_usage").attr("placeholder", "max value: " + String(minimum_usage));
+
+			//document.getElementById("input_usage").style.display = 'none';
+
+		};
+	}); 
+}
+
 </script>
 
 {%end%}
 
-{% block content2%}
+{% block content%}
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -50,7 +83,7 @@ function ShowHide() {
 
 
 
-<body onload="ShowHide();">
+<body onload="ShowHide();GetUsage();">
 
 <div>
 <div class="row" style="margin-bottom:30px;">
@@ -62,7 +95,7 @@ function ShowHide() {
 <form method = "post" action="/dynamcc_0/">
 
 <div class="row">
-	<div class = "col-sm-8">
+	<div class = "col-sm-12">
 	<div class="panel panel-default">
 		<div class="panel-heading">Choose your organism:</div>
 		<div class="panel-body">
@@ -103,7 +136,7 @@ function ShowHide() {
 </div>
 
 <div class="row">
-	<div class = "col-sm-8">
+	<div class = "col-sm-12">
 	<div class="panel panel-default">
 		<div class="panel-heading">Choose amino acids:
 		<input type="radio" name="keep_or_remove" value="remove" style="margin:0 5px 0 10px;" required>To remove from the pool
@@ -112,7 +145,7 @@ function ShowHide() {
 		<div class="panel-body">
 			<div class="row" style="margin-left:0;">
 				<div class="col-sm-8 row">
-					<input type="checkbox" name="aa" value="X" style="margin-right:10px;">
+					<input type="checkbox" name="aa" value="X" id="stop_test" style="margin-right:10px;">
 					<label>STOP</label>
 				</div>
 			</div>
@@ -258,7 +291,7 @@ function ShowHide() {
 				<label>Rank</label>
 				<input type="text" name="input_rank" id="input_rank">
 			</div>
-			<div class="col-sm-6">
+			<div class="col-sm-6" id="usage_div">
 				<input type="radio" value="usage" name="compression_method" id="usage">
 				<label>Usage</label>
 				<input type="text" name="input_usage" id="input_usage">
