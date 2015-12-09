@@ -98,6 +98,45 @@ def BuildUsageDict(filename):
 
     return usage_dict
 
+def BuildCustomUsageDict(fileinfo_dict):
+    """
+	-------
+	usage_dict: dict
+		Dictionary of lists of dictionaries for codon usage. Dictionary has the
+		following structure:
+		{
+			F : [{TTT: 0.58}, {TTC: 0.42}],
+			L : [{TTA: 0.14}, {TTG: 0.13}, {CTT: 0.12}, {CTC: 0.1},
+					{CTA: 0.04}, {CTG: 0.47}],
+			I : [{ATT: 0.49}, {ATC: 0.39}, {ATA: 0.11}],
+			...
+			...
+			...
+			G : [{GGT: 0.35}, {GGC: 0.37}, {GGA: 0.13}, {GGG: 0.15}]
+		}
+
+	Examples
+	--------
+	"""
+
+    usage_dict = defaultdict(list)
+
+    lines = fileinfo_dict['body'].split('\r\n')
+
+    for line in lines[1:-1]:
+        tokens = line.strip().split('\t')
+        print tokens
+        codon = tokens[0]
+        frequency = float(tokens[2])
+        residue = tokens[1]
+
+        usage_dict[residue].append((codon, frequency))
+
+    for residue in usage_dict:
+        usage_dict[residue] = sorted(usage_dict[residue], key = lambda x: x[1], reverse=True)
+
+    return usage_dict
+
 def BuildCodonDict(usage_dict):
 	"""
 	-------

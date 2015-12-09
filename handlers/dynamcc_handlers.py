@@ -43,16 +43,20 @@ rules = {   'R' : ['A', 'G'],
 
 class Dynamcc0Handler(RequestHandler):
 	def get(self):
-		self.render("dynamcc_0.html")
+		self.render("dynamcc_0.html", usage_array = [])
 
 	def post(self):
-		seletect_organism = self.get_argument("usage_table")
-		if seletect_organism in organism_mapping:
-			sorted_dict = util.BuildUsageDict(organism_mapping[seletect_organism])
-			organism_name = organism_names[seletect_organism]
-			print "sorted_dict", sorted_dict
+		if "table" in self.request.files:
+			sorted_dict = util.BuildCustomUsageDict(self.request.files["table"][0])
+			organism_name = "user uploaded usage table"
 		else:
-			pass
+			seletect_organism = self.get_argument("usage_table")
+			if seletect_organism in organism_mapping:
+				sorted_dict = util.BuildUsageDict(organism_mapping[seletect_organism])
+				organism_name = organism_names[seletect_organism]
+				print "sorted_dict", sorted_dict
+			else:
+				pass
 		rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
 		if self.get_argument("keep_or_remove") == 'remove':
 			remove_aa = self.get_arguments('aa')
