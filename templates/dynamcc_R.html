@@ -1,9 +1,54 @@
 {% extends base.html %}
 {%block head%}
 
+<script type="text/javascript">
+
+function uploadUsageTable() {
+	document.getElementById("custom_codon_usage").addEventListener("change", readFile, false);
+}
+
+function readFile(event) {
+	if(window.FileReader){
+		var files = event.target.files;
+		var file = files[0];
+		var reader = new FileReader();
+		var error_message = "The file you entered is not formatted correctly. Please use the Example Input as a template. Fields are tab-separated, and there is an empty line at the end of the file. Note that the first line is ignored.";
+		reader.readAsText(file);
+		reader.onload = function() {
+			var lines = this.result.split('\n');
+			if (lines[lines.length - 1] != ""){
+				$("form").submit(function(event) {
+					event.preventDefault();
+				});
+				alert(error_message);
+			}
+			for(var line = 1; line < lines.length - 1; line++){
+				var tokens = (lines[line]).split('\t');
+				//console.log(tokens.length);
+				if ( tokens.length != 3 || tokens[0].length != 3 || tokens[1].length != 1 || isNaN(tokens[2]) ) {
+					$("form").submit(function(event) {
+						event.preventDefault();
+					});
+					alert(error_message);
+				}
+				else {
+					//console.log(tokens);
+				}
+			}
+			return lines;
+		}
+	}
+	else {
+		alert("Your Browser does not support uploading files on this site. Please use Chrome, Firefox, or Safari.");
+	}	
+}
+
+</script>
+
 {%end%}
 
 {% block content%}
+<body onload="uploadUsageTable();">
 
 <div>
 <div class="row" style="margin-bottom:30px;">
@@ -12,7 +57,7 @@
 
 <div>
 
-<form method = "post" action="/dynamcc_R/">
+<form enctype="multipart/form-data" method = "post" action="/dynamcc_R/">
 
 <div class="row">
 	<div class = "col-sm-8">
@@ -47,7 +92,7 @@
 				<input id="custom_usage" type="radio" name="usage_table" value="custom" style="margin-right:10px;">
 				<label>Upload custom usage table</label>
 				<div id="custom_table" style="display:none">
-					<input type="file" name="custom_codon_usage">
+					<input type="file" name="table" id="custom_codon_usage">
 				</div>
 			</div>
 		</div>
@@ -215,5 +260,7 @@
 </div>
 
 </div>
+
+</body>
 
 {%end%}

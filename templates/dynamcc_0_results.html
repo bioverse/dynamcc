@@ -7,7 +7,7 @@ function ExplodeCodons() {
 	{% for codon in exploded_codons %} 
 	exploded_codons.{{codon}} = [];
 		{% for item in exploded_codons[codon] %}
-		console.log('{{item}}');
+		//console.log('{{item}}');
 		exploded_codons['{{codon}}'].push('{{item}}');
 		{% end %}
 	{% end %}
@@ -21,9 +21,9 @@ function ExplodeCodons() {
 		codon_aa_map.{{codon}} = '{{codon_dict[codon][2]}}';
 	{% end %}
 
-	console.log(exploded_codons);
-	console.log(codon_rank);
-	console.log(codon_usage);
+	//console.log(exploded_codons);
+	//console.log(codon_rank);
+	//console.log(codon_usage);
 	
 	var html = '<table border="1">';
 	html += '<th style="padding:10px;">Compressed Codon</th><th style="padding:10px;">Exploded Codons</th><th style="padding:10px;">Rank</th><th style="padding:10px;">Usage</th><th style="padding:10px;">Amino Acid</th>'
@@ -86,8 +86,6 @@ function ExplodeCodons() {
 <h5>Selected organism usage table: <em>{{organism}}</em></h5>
 <h5>Amino acids removed from the compressed codon pool: {% for aa in remove_aa %} {{aa}} {% end %}</h5>
 <h5>The resulting compressed codons are optimized for usage in <em>{{organism}}</em>: </h5>
-
-<!--<p>Compressed codons: {% for codon in best_result['BestReducedList'] %} {{codon}} {% end %}</p>-->
 
 <div id="exploded_codons"></div>
 
