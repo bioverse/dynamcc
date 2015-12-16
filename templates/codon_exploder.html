@@ -1,0 +1,276 @@
+{% extends base.html %}
+{%block head%}
+
+<script type="text/javascript">
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+$(function () {
+  $('[data-toggle="popover"]').popover()
+})
+
+
+function ShowHide() {
+	document.getElementById("input_rank").style.display = 'none';
+	document.getElementById("input_usage").style.display = 'none';
+
+	$("#rank").click(function() {
+		$("#input_rank").show();
+		$("#input_usage").hide();
+	});
+	$("#usage").click(function() {
+		$("#input_rank").hide();
+		$("#input_usage").show();
+	});
+}
+
+function GetUsage() {
+	$("input[type=radio]").on("change", function() {
+		if( ($(this).val()) == 'usage' ) {
+			var selected_aa = [];
+			if ( $("input[name=keep_or_remove]").val() == 'keep' ) {
+				$("input[name=aa]:checked").each( function(){ selected_aa.push( $(this).val() ) } );
+				var keepers = selected_aa;
+			}
+			else if ( $("input[name=keep_or_remove]").val() == 'remove' ) {
+				var all_aa = [];
+				$("input[name=aa]").each( function(){ all_aa.push( $(this).val() ) } );
+				$("input[name=aa]:checked").each( function(){ selected_aa.push( $(this).val() ) } );
+				var keepers = _.difference(all_aa, selected_aa);
+			}
+			var filtered_keepers = [];
+			if ( _.has( highest_usage_mapping, $("input[name='usage_table']:checked").val() ) ){
+				var filtered = _.pick(highest_usage_mapping[$("input[name='usage_table']:checked").val()], keepers);
+				$.each( filtered, function( key, value ) {
+					filtered_keepers.push(_.values(value)[0]);
+				});
+				var maximum_usage = filtered_keepers.sort()[0];
+				$("#input_usage").attr("placeholder", "max value: " + String(maximum_usage));
+				checkUsage(maximum_usage);
+			}
+			else {
+				var input = document.getElementById("custom_codon_usage");
+				var fReader = new FileReader();
+				var myFile = fReader.readAsText(input.files[0]);
+				fReader.onloadend = function(event){
+					var custom_usage_hash = {}
+					var lines = this.result.split('\n');
+					for(var line = 1; line < lines.length - 1; line++){
+						var tokens = (lines[line]).split('\t');
+						var amino_acid = tokens[1];
+						var codon = tokens[0];
+						var usage = parseFloat(tokens[2]);
+						if ( _.has(custom_usage_hash, amino_acid)) {
+							custom_usage_hash[amino_acid].push([codon, usage]);
+						} else {
+							custom_usage_hash[amino_acid] = [[codon, usage]];
+						}
+					}
+					custom_usage_hash = BubbleSort(custom_usage_hash);
+					var highest_usage_codons = GetHighestUsageCodons(custom_usage_hash);
+					var filtered = _.pick(highest_usage_codons, keepers);
+					$.each( filtered, function( key, value ) {
+						filtered_keepers.push(_.values(value)[0]);
+					});
+					var maximum_usage = filtered_keepers.sort()[0];
+					$("#input_usage").attr("placeholder", "max value: " + String(maximum_usage));
+					checkUsage(maximum_usage);
+				}
+			}
+		} 
+	});
+}
+
+function GetHighestUsageCodons(custom_usage_hash){
+	var highest_usage_codons = {};
+	for ( var key in custom_usage_hash ) {
+		var codon_array = custom_usage_hash[key];
+		var codon = codon_array[codon_array.length - 1][0];
+		var usage = codon_array[codon_array.length - 1][1];
+		highest_usage_codons[key] = {codon : usage};
+	}
+	return highest_usage_codons;
+}
+
+function BubbleSort(custom_usage_hash){
+	for (var key in custom_usage_hash){
+		var codon_array = custom_usage_hash[key];
+		if (codon_array.length > 1){
+			for (var i = 0; i < codon_array.length; i++ ){
+				for ( var j = 0; j < codon_array.length - 1; j++) {
+					if (codon_array[j][1] > codon_array[j + 1][1]){
+						swap(codon_array, j, j+1)
+					}
+				}
+			}
+		}
+	}
+	return custom_usage_hash;
+}
+
+function swap(codon_array, firstIndex, secondIndex){
+	var temp = codon_array[firstIndex];
+	codon_array[firstIndex] = codon_array[secondIndex];
+	codon_array[secondIndex] = temp;
+}
+
+
+function checkUsage(maximum_usage) {
+	$("input[name=input_usage]").on("change", function() {
+		if( parseFloat($(this).val()) > parseFloat(maximum_usage) ) {
+			$("#usage_warning").text("Maximum Usage: " + maximum_usage).css("color", "red");
+			$("form").submit(function(event) {
+				event.preventDefault();
+			});
+			alert("Based on the amino acids you have selected, " + String(maximum_usage) + " is the maximum threshold for codon compression. You have entered a number larger than " + String(maximum_usage) + ", which would result in eliminating codons that have not been selected for removal during the compression process. Please enter a number less than " + String(maximum_usage));
+		}
+	});
+}
+
+function uploadUsageTable() {
+	document.getElementById("custom_codon_usage").addEventListener("change", readFile, false);
+}
+
+function readFile(event) {
+	if(window.FileReader){
+		var files = event.target.files;
+		var file = files[0];
+		var reader = new FileReader();
+		var error_message = "The file you entered is not formatted correctly. Please use the Example Input as a template. Fields are tab-separated, and there is an empty line at the end of the file. Note that the first line is ignored.";
+		reader.readAsText(file);
+		reader.onload = function() {
+			var lines = this.result.split('\n');
+			if (lines[lines.length - 1] != ""){
+				$("form").submit(function(event) {
+					event.preventDefault();
+				});
+				alert(error_message);
+			}
+			for(var line = 1; line < lines.length - 1; line++){
+				var tokens = (lines[line]).split('\t');
+				//console.log(tokens.length);
+				if ( tokens.length != 3 || tokens[0].length != 3 || tokens[1].length != 1 || isNaN(tokens[2]) ) {
+					$("form").submit(function(event) {
+						event.preventDefault();
+					});
+					alert(error_message);
+				}
+				else {
+					//console.log(tokens);
+				}
+			}
+			return lines;
+		}
+	}
+	else {
+		alert("Your Browser does not support uploading files on this site. Please use Chrome, Firefox, or Safari.");
+	}	
+}
+
+</script>
+
+{%end%}
+
+{% block content%}
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Sign this petition!</h4>
+      </div>
+      <div class="modal-body">
+        <p>Fields for the signatures here, take some from the facebook API</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Sign now!</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<body onload="ShowHide();GetUsage();uploadUsageTable();">
+
+<div>
+<div class="row" style="margin-bottom:30px;">
+  <h3>Codon Exploder</h3>
+</div>
+
+<div>
+
+<form enctype="multipart/form-data" method="post" id="form" name="form" action="/exploder/">
+
+<div class="row">
+	<div class = "col-sm-12">
+	<div class="panel panel-default">
+		<div class="panel-heading">Choose your organism:</div>
+		<div class="panel-body">
+			<div class="col-sm-4">
+				<input type="radio" name="usage_table" value="Ecoli" style="margin-right:10px;" required>
+				<label><em>E. coli</em></label>
+			</div>
+			<div class="col-sm-4">
+				<input type="radio" name="usage_table" value="yeast" style="margin-right:10px;">
+				<label>yeast</label>
+			</div>
+			<div class="col-sm-4">
+				<input type="radio" name="usage_table" value="human" style="margin-right:10px;">
+				<label>human</label>
+			</div>
+			<div class="col-sm-4">
+				<input type="radio" name="usage_table" value="mouse" style="margin-right:10px;">
+				<label>mouse</label>
+			</div>
+			<div class="col-sm-4">
+				<input type="radio" name="usage_table" value="Dmel" style="margin-right:10px;">
+				<label><em>D. melanogaster</em></label>
+			</div>
+			<div class="col-sm-4">
+				<input type="radio" name="usage_table" value="Cele" style="margin-right:10px;">
+				<label><em>C. elegans</em></label>
+			</div>
+			<div class="col-sm-6">
+				<input id="custom_usage" type="radio" name="usage_table" value="custom" style="margin-right:10px;">
+				<label>Upload custom usage table</label>
+				<div id="custom_table" style="display:none">
+					<input type="file" name="table" id="custom_codon_usage">
+					<a href="/static/txt/UsageTableExample.txt">Example Input</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class = "col-sm-12">
+	<div class="panel panel-default">
+		<div class="panel-heading">Enter Compressed Codons:</div>
+		<div class="panel-body">
+			<div class="row" style="margin-left:0;">
+				<div class="col-sm-8 row">
+					<label style="margin-right:10px;">Codons</label>
+					<input type="text" name="compressedCodons" id="compressedCodons">
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<button type="submit" class="btn btn-default">Explode Codons</button>
+	</div>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+</body>
+
+{%end%}
