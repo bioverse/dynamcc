@@ -190,8 +190,9 @@ class DynamccRHandler(RequestHandler):
 		self.render("dynamcc_R_results.html", codon_dict=codon_dict, organism=organism_name, remove_aa=remove_aa, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict)
 
 
-
-
+class ExploderHandler(RequestHandler):
+	def get(self):
+		self.render("codon_exploder.html")
 
 
 

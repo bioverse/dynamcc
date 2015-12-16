@@ -18,12 +18,12 @@ The resulting compressed codons are optimized for the target organism codon usag
 
 This tool contains 2 different compression approaches:<br><br> 
 
-<u><a href="/dynamcc_R/">DYNAMCC_0</a></u>:
+<u><a href="/dynamcc_0/">DYNAMCC_0</a></u>:
 This algorithm calculates the minimal set of degenerate codons for any desired set of amino acids, without redundancy. Note that the compressed codons may be ranked according to codon usage, or according to their usage rank, which may result in different results.<br><br>
  
 For example: to include all amino acids, without redundancy and without any stop codon, optimized for E. coli, the compressed codon list is: VHG, NRT, WTT and TGG<br><br>
 
-<u><a href="/dynamcc_0/">DYNAMCC_R</a></u>:
+<u><a href="/dynamcc_R/">DYNAMCC_R</a></u>:
 This algorithm helps in finding compressed codons with various levels of redundancy. Due to the large solution space, the algorithm compresses the “best List” according to usage that constitutes a single codon for each amino acid, and then adds more codons ordered by their specific usage, until complete redundancy is achieved.<br><br>
 For example: to include all amino acids, without any stop codon, optimized for E. coli, the compressed and fully redundant codon list is: NYA, NBG, VRA, NNY and VAG<br><br>
  

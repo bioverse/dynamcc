@@ -14,7 +14,7 @@ from handlers.base_handlers import (
     IndexHandler
     )
 from handlers.dynamcc_handlers import (
-    Dynamcc0Handler, DynamccRHandler)
+    Dynamcc0Handler, DynamccRHandler, ExploderHandler)
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -30,7 +30,8 @@ class Application(tornado.web.Application):
                 (r"/static/(.*)", tornado.web.StaticFileHandler,
                  {"path": STATIC_PATH}),
                 (r"/dynamcc_0/", Dynamcc0Handler),
-                (r"/dynamcc_R/", DynamccRHandler)
+                (r"/dynamcc_R/", DynamccRHandler),
+                (r"/exploder/", ExploderHandler)
                 ]
         settings = {
             "template_path": TEMPLATE_PATH,
