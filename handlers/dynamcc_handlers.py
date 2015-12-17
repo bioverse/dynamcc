@@ -208,8 +208,9 @@ class ExploderHandler(RequestHandler):
 
 		codon_dict = util.BuildCodonDict(sorted_dict)
 
-		compressed_codons = str(self.get_argument("compressedCodons"))
-		compressed_list = [codon.strip() for codon in compressed_codons.split(',')]
+		compressed_codons = (str(self.get_argument("compressedCodons"))).upper()
+		compressed_list = compressed_codons.split(',')
+		compressed_list = [codon.strip() for codon in compressed_list]
 		print compressed_list
 		
 		## exploding codons
@@ -222,6 +223,7 @@ class ExploderHandler(RequestHandler):
 		for key in exploded_codons:
 			exploded_codons_copy1[key] = []
 		for codon in exploded_codons:
+			print codon
 			for j in range(len(exploded_codons[codon])):
 				exploded_codons_copy1[codon].append(rules[exploded_codons[codon][j]])
 
