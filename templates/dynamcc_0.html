@@ -13,6 +13,8 @@ $(function () {
 function ShowHide() {
 	document.getElementById("input_rank").style.display = 'none';
 	document.getElementById("input_usage").style.display = 'none';
+	document.getElementById("submit_message").style.display = 'none';
+	document.getElementById("bad_input").style.display = 'none';
 
 	$("#rank").click(function() {
 		$("#input_rank").show();
@@ -21,6 +23,22 @@ function ShowHide() {
 	$("#usage").click(function() {
 		$("#input_rank").hide();
 		$("#input_usage").show();
+	});
+
+	if ( $("#rank").is(":checked") ) {
+		$("#input_rank").show();
+		$("#input_usage").hide();
+	}
+
+	if ( $("#usage").is(":checked") ) {
+		$("#input_rank").hide();
+		$("#input_usage").show();
+	}
+
+	$("form").submit(function(event) {
+		if ( $("input[name=usage_table]:checked").val() != "custom" ) {
+			$("#submit_message").show();
+		}
 	});
 }
 
@@ -140,10 +158,12 @@ function readFile(event) {
 		reader.readAsText(file);
 		reader.onload = function() {
 			var lines = this.result.split('\n');
-			if (lines[lines.length - 1] != ""){
+			var show_submit_message = true;
+			if ( lines.length != 66 || lines[lines.length - 1] != "" ){
 				$("form").submit(function(event) {
 					event.preventDefault();
 				});
+				show_submit_message = false;
 				alert(error_message);
 			}
 			for(var line = 1; line < lines.length - 1; line++){
@@ -153,10 +173,19 @@ function readFile(event) {
 					$("form").submit(function(event) {
 						event.preventDefault();
 					});
+					show_submit_message = false;
 					alert(error_message);
 				}
 				else {
-					//console.log(tokens);
+					if ( show_submit_message ){
+						$("form").submit(function(event) {
+							$("#submit_message").show();
+						});
+					} else {
+						$("form").submit(function(event) {
+							$("#bad_input").show();
+						});
+					}
 				}
 			}
 			return lines;
@@ -410,7 +439,11 @@ function readFile(event) {
 			</div>
 		</div>
 	</div>	
-	<button type="submit" class="btn btn-default">Compress Codons</button>
+	<div class="row" style="margin-left:0px;">
+		<button type="submit" class="btn btn-default">Compress Codons</button>
+		<span id="submit_message" style="color:black;">Processing...</span>
+		<span id="bad_input" style="color:red;">Your usage table is formatted incorrectly. Please use the <a href="/static/txt/UsageTableExample.txt">Example Input</a> as a template.</span>
+	</div>
 	</div>
 
 </div>
