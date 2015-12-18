@@ -35,9 +35,23 @@ function ShowHide() {
 		$("#input_usage").show();
 	}
 
+	$("input[name=usage_table]").click(function() {
+		if ( $("input[name=usage_table]:checked").val() != "custom" ) {
+			$("#bad_input").hide();
+			$("#submit_message").hide();
+			$("#custom_codon_usage").wrap("<form>").closest("form").get(0).reset();
+			$("#custom_codon_usage").unwrap();
+			$("form").submit(function(event) {
+				$(this).unbind('submit').submit();
+			});
+		}
+	})
+
 	$("form").submit(function(event) {
 		if ( $("input[name=usage_table]:checked").val() != "custom" ) {
+			$(this).unbind('submit').submit();
 			$("#submit_message").show();
+			$("#bad_input").hide();
 		}
 	});
 }
@@ -151,6 +165,7 @@ function uploadUsageTable() {
 
 function readFile(event) {
 	if(window.FileReader){
+		var show_submit_message = true;
 		var files = event.target.files;
 		var file = files[0];
 		var reader = new FileReader();
@@ -158,13 +173,16 @@ function readFile(event) {
 		reader.readAsText(file);
 		reader.onload = function() {
 			var lines = this.result.split('\n');
-			var show_submit_message = true;
 			if ( lines.length != 66 || lines[lines.length - 1] != "" ){
 				$("form").submit(function(event) {
 					event.preventDefault();
 				});
 				show_submit_message = false;
 				alert(error_message);
+				$("form").submit(function(event) {
+					$("#bad_input").show();
+				});
+				return;
 			}
 			for(var line = 1; line < lines.length - 1; line++){
 				var tokens = (lines[line]).split('\t');
@@ -180,10 +198,13 @@ function readFile(event) {
 					if ( show_submit_message ){
 						$("form").submit(function(event) {
 							$("#submit_message").show();
+							$("#bad_input").hide();
+							$(this).unbind('submit').submit();
 						});
 					} else {
 						$("form").submit(function(event) {
 							$("#bad_input").show();
+							event.preventDefault();
 						});
 					}
 				}
