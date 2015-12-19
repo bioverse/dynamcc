@@ -5,6 +5,10 @@
 
 function uploadUsageTable() {
 	document.getElementById("custom_codon_usage").addEventListener("change", readFile, false);
+
+	if ( $("#custom_usage").is(":checked") ){
+	    $("#custom_table").show();
+	}
 }
 
 function readFile(event) {

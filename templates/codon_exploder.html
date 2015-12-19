@@ -9,19 +9,10 @@ $(function () {
   $('[data-toggle="popover"]').popover()
 })
 
-
 function ShowHide() {
-	document.getElementById("input_rank").style.display = 'none';
-	document.getElementById("input_usage").style.display = 'none';
-
-	$("#rank").click(function() {
-		$("#input_rank").show();
-		$("#input_usage").hide();
-	});
-	$("#usage").click(function() {
-		$("#input_rank").hide();
-		$("#input_usage").show();
-	});
+    if ( $("#custom_usage").is(":checked") ){
+	    $("#custom_table").show();
+	}
 }
 
 function GetUsage() {
@@ -193,7 +184,7 @@ function readFile(event) {
 
 
 
-<body onload="ShowHide();GetUsage();uploadUsageTable();">
+<body onload="ShowHide();uploadUsageTable();">
 
 <div>
 <div class="row" style="margin-bottom:30px;">

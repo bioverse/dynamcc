@@ -35,6 +35,10 @@ function ShowHide() {
 		$("#input_usage").show();
 	}
 
+	if ( $("#custom_usage").is(":checked") ) {
+	    $("#custom_table").show();
+	}
+
 	$("input[name=usage_table]").click(function() {
 		if ( $("input[name=usage_table]:checked").val() != "custom" ) {
 			$("#bad_input").hide();
