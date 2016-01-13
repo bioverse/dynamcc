@@ -83,9 +83,8 @@ function ExplodeCodons() {
 
 <div class= "row">
 
-<h5>Selected organism usage table: <em>{{organism}}</em></h5>
 <h5>Amino acids removed from the compressed codon pool: {% for aa in remove_aa %} {{aa}} {% end %}</h5>
-<h5>The resulting compressed codons are optimized for usage in <em>{{organism}}</em>: </h5>
+<h5>The resulting compressed codons are optimized for usage in <em>{{organism}}</em> and were selected based on a cutoff {% if rank == True %} rank of {% else %} usage of {% end %} {{ threshold_value }} </h5>
 
 <div id="exploded_codons"></div>
 

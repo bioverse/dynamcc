@@ -3,6 +3,108 @@
 
 <script type="text/javascript">
 
+function ShowHide() {
+    $("input[name=hydrophobic]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_hydrophobic input[name=aa]").prop("checked", true);
+			$("input[name=aromatic]").prop("checked", true);
+			$("input[name=nonpolar]").prop("checked", true);
+			$("input[name=small]").prop("checked", true);
+		}
+		else {
+			$("#all_hydrophobic input[name=aa]").prop("checked", false);
+			$("input[name=aromatic]").prop("checked", false);
+			$("input[name=nonpolar]").prop("checked", false);
+			$("input[name=small]").prop("checked", false);
+		}
+	});
+
+	$("input[name=aromatic]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_aromatic input[name=aa]").prop("checked", true);
+		}
+		else {
+			$("#all_aromatic input[name=aa]").prop("checked", false);
+		}
+	});
+
+	$("input[name=nonpolar]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_nonpolar input[name=aa]").prop("checked", true);
+			$("input[name=small]").prop("checked", true);
+		}
+		else {
+			$("#all_nonpolar input[name=aa]").prop("checked", false);
+			$("input[name=small]").prop("checked", false);
+		}
+	});
+
+	$("input[name=small]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_small input[name=aa]").prop("checked", true);
+		}
+		else {
+			$("#all_small input[name=aa]").prop("checked", false);
+		}
+	});
+
+	$("input[name=hydrophilic]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_hydrophilic input[name=aa]").prop("checked", true);
+			$("input[name=negative]").prop("checked", true);
+			$("input[name=positive]").prop("checked", true);
+			$("input[name=uncharged]").prop("checked", true);
+			$("input[name=small_uncharged]").prop("checked", true);
+		}
+		else {
+			$("#all_hydrophilic input[name=aa]").prop("checked", false);
+			$("input[name=negative]").prop("checked", false);
+			$("input[name=positive]").prop("checked", false);
+			$("input[name=uncharged]").prop("checked", false);
+			$("input[name=small_uncharged]").prop("checked", false);
+		}
+	});
+
+	$("input[name=negative]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_negative input[name=aa]").prop("checked", true);
+		}
+		else {
+			$("#all_negative input[name=aa]").prop("checked", false);
+		}
+	});
+
+	$("input[name=positive]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_positive input[name=aa]").prop("checked", true);
+		}
+		else {
+			$("#all_positive input[name=aa]").prop("checked", false);
+		}
+	});
+
+	$("input[name=uncharged]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_uncharged input[name=aa]").prop("checked", true);
+			$("input[name=small_uncharged]").prop("checked", true);
+		}
+		else {
+			$("#all_uncharged input[name=aa]").prop("checked", false);
+			$("input[name=small_uncharged]").prop("checked", false);
+		}
+	});
+
+	$("input[name=small_uncharged]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_small_uncharged input[name=aa]").prop("checked", true);
+		}
+		else {
+			$("#all_small_uncharged input[name=aa]").prop("checked", false);
+		}
+	});
+}
+
+
 function uploadUsageTable() {
 	document.getElementById("custom_codon_usage").addEventListener("change", readFile, false);
 
@@ -52,7 +154,7 @@ function readFile(event) {
 {%end%}
 
 {% block content%}
-<body onload="uploadUsageTable();">
+<body onload="ShowHide();uploadUsageTable();">
 
 <div>
 <div class="row" style="margin-bottom:30px;">
@@ -62,7 +164,7 @@ function readFile(event) {
 <div>
 
 <form enctype="multipart/form-data" method = "post" action="/dynamcc_R/">
-
+<!--
 <div class="row">
 	<div class = "col-sm-8">
 	<div class="panel panel-default">
@@ -104,9 +206,10 @@ function readFile(event) {
 	</div>
 	</div>
 </div>
+-->
 
 <div class="row">
-	<div class = "col-sm-8">
+	<div class = "col-sm-12">
 	<div class="panel panel-default">
 		<div class="panel-heading">Choose amino acids:
 		<input type="radio" name="keep_or_remove" value="remove" style="margin:0 5px 0 10px;" required>To remove from the pool
@@ -120,11 +223,15 @@ function readFile(event) {
 				</div>
 			</div>
 			<div class="row" style="margin-left:0;">
-			<div class="panel panel-default col-sm-6">
-				<div class="panel-heading">Hydrophobic</div>
+			<div class="panel panel-default col-sm-6" id="all_hydrophobic">
+				<div class="panel-heading">Hydrophobic
+					<input type="checkbox" name="hydrophobic" style="margin-left:20px;">
+				</div>
 				<div class="panel-body">
-					<div class="panel panel-default">
-						<div class="panel-heading">aromatic</div>
+					<div class="panel panel-default" id="all_aromatic">
+						<div class="panel-heading">aromatic
+							<input type="checkbox" name="aromatic" style="margin-left:20px;">
+						</div>
 						<div class="panel-body">
 							<div class="col-sm-2">
 								<input type="checkbox" name="aa" value="W" style="margin-right:10px;">
@@ -140,8 +247,10 @@ function readFile(event) {
 							</div>
 						</div>
 					</div>
-					<div class="panel panel-default">
-						<div class="panel-heading">non-polar aliphatic</div>
+					<div class="panel panel-default" id="all_nonpolar">
+						<div class="panel-heading">non-polar aliphatic
+							<input type="checkbox" name="nonpolar" style="margin-left:20px;">
+						</div>
 						<div class="panel-body">
 							<div class="row" style="margin-left:0;">
 							<div class="col-sm-2">
@@ -165,8 +274,10 @@ function readFile(event) {
 								<label>V</label>
 							</div>
 							</div>
-							<div class="panel panel-default">
-								<div class="panel-heading">small</div>
+							<div class="panel panel-default" id="all_small">
+								<div class="panel-heading">small
+									<input type="checkbox" name="small" style="margin-left:20px;">
+								</div>
 								<div class="panel-body">
 									<div class="col-sm-2">
 										<input type="checkbox" name="aa" value="A" style="margin-right:10px;">
@@ -182,11 +293,15 @@ function readFile(event) {
 					</div>
 				</div>
 			</div>
-			<div class="panel panel-default col-sm-6">
-				<div class="panel-heading">Hydrophilic</div>
+			<div class="panel panel-default col-sm-6" id="all_hydrophilic">
+				<div class="panel-heading">Hydrophilic
+					<input type="checkbox" name="hydrophilic" style="margin-left:20px;">
+				</div>
 				<div class="panel-body">
-					<div class="panel panel-default">
-						<div class="panel-heading">negatively charged, acidic</div>
+					<div class="panel panel-default" id="all_negative">
+						<div class="panel-heading">negatively charged, acidic
+							<input type="checkbox" name="negative" style="margin-left:20px;">
+						</div>
 						<div class="panel-body">
 							<div class="col-sm-2">
 								<input type="checkbox" name="aa" value="D" style="margin-right:10px;">
@@ -198,8 +313,10 @@ function readFile(event) {
 							</div>
 						</div>
 					</div>
-					<div class="panel panel-default">
-						<div class="panel-heading">positively charged, basic</div>
+					<div class="panel panel-default" id="all_positive">
+						<div class="panel-heading">positively charged, basic
+							<input type="checkbox" name="positive" style="margin-left:20px;">
+						</div>
 						<div class="panel-body">
 							<div class="col-sm-2">
 								<input type="checkbox" name="aa" value="H" style="margin-right:10px;">
@@ -215,8 +332,10 @@ function readFile(event) {
 							</div>
 						</div>
 					</div>
-					<div class="panel panel-default">
-						<div class="panel-heading">polar uncharged</div>
+					<div class="panel panel-default" id="all_uncharged">
+						<div class="panel-heading">polar uncharged
+							<input type="checkbox" name="uncharged" style="margin-left:20px;">
+						</div>
 						<div class="panel-body">
 							<div class="row" style="margin-left:0;">
 							<div class="col-sm-2">
@@ -232,8 +351,10 @@ function readFile(event) {
 								<label>N</label>
 							</div>
 							</div>
-							<div class="panel panel-default">
-								<div class="panel-heading">small</div>
+							<div class="panel panel-default" id="all_uncharged_small">
+								<div class="panel-heading">small
+									<input type="checkbox" name="small_uncharged" style="margin-left:20px;">
+								</div>
 								<div class="panel-body">
 									<div class="col-sm-2">
 										<input type="checkbox" name="aa" value="C" style="margin-right:10px;">

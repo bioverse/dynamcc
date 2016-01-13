@@ -66,13 +66,17 @@ class Dynamcc0Handler(RequestHandler):
 		filtered_dict = util.EditUsageDict(remove_aa, sorted_dict)
 		selection = self.get_argument("compression_method")
 		#print selection
+		rank = False
+		usage = False
 		if selection == 'rank':
+			rank = True
 			Selection = 'R'
 			#threshold = 2
 			threshold = int(self.get_argument("input_rank"))
 			print threshold
 			new_dict = RemoveCodonByRank(threshold, filtered_dict)
 		else:
+			usage = True
 			Selection = 'U'
 			print Selection
 			#threshold = 0.04
@@ -123,7 +127,7 @@ class Dynamcc0Handler(RequestHandler):
 		codon_dict = util.BuildCodonDict(sorted_dict)
 		print "codon_dict:", codon_dict
 
-		self.render("dynamcc_0_results.html", codon_dict=codon_dict, organism=organism_name, remove_aa=remove_aa, best_result=best_result, exploded_codons=exploded_codons, sorted_dict=sorted_dict)
+		self.render("dynamcc_0_results.html", rank=rank, usage=usage, threshold_value=str(threshold), codon_dict=codon_dict, organism=organism_name, remove_aa=remove_aa, best_result=best_result, exploded_codons=exploded_codons, sorted_dict=sorted_dict)
 
 
 class DynamccRHandler(RequestHandler):
@@ -131,16 +135,18 @@ class DynamccRHandler(RequestHandler):
 		self.render("dynamcc_R.html")
 
 	def post(self):
-		if "table" in self.request.files:
-			sorted_dict = util.BuildCustomUsageDict(self.request.files["table"][0])
-			organism_name = "user uploaded usage table"
-		else:
-			seletect_organism = self.get_argument("usage_table")
-			if seletect_organism in organism_mapping:
-				sorted_dict = util.BuildUsageDict(organism_mapping[seletect_organism])
-				organism_name = organism_names[seletect_organism]
-			else:
-				pass
+		#if "table" in self.request.files:
+		#	sorted_dict = util.BuildCustomUsageDict(self.request.files["table"][0])
+		#	organism_name = "user uploaded usage table"
+		#else:
+		#	seletect_organism = self.get_argument("usage_table")
+		#	if seletect_organism in organism_mapping:
+		#		sorted_dict = util.BuildUsageDict(organism_mapping[seletect_organism])
+		#		organism_name = organism_names[seletect_organism]
+		#	else:
+		#		pass
+		organism_name = "E. coli"
+		sorted_dict = util.BuildUsageDict(organism_mapping["Ecoli"])
 		rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
 		if self.get_argument("keep_or_remove") == 'remove':
 			remove_aa = self.get_arguments('aa')
