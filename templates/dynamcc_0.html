@@ -16,6 +16,8 @@ function ShowHide() {
 	document.getElementById("submit_message").style.display = 'none';
 	document.getElementById("bad_input").style.display = 'none';
 
+	$("#additional_aa").hide();
+
 	$("#rank").click(function() {
 		$("#input_rank").show();
 		$("#input_usage").hide();
@@ -185,6 +187,7 @@ function GetUsage() {
 				checkUsage(maximum_usage);
 			}
 			else {
+				//CheckforNewAA();
 				var input = document.getElementById("custom_codon_usage");
 				var fReader = new FileReader();
 				var myFile = fReader.readAsText(input.files[0]);
@@ -214,6 +217,48 @@ function GetUsage() {
 				}
 			}
 		} 
+	});
+}
+
+function CheckforNewAA(){
+	$("input:file").change(function () {
+		$("#additional_aa").empty();
+		var input = document.getElementById("custom_codon_usage");
+		var fReader = new FileReader();
+		var myFile = fReader.readAsText(input.files[0]);
+		fReader.onloadend = function(event){
+			var custom_usage_hash = {}
+			var lines = this.result.split('\n');
+			for(var line = 1; line < lines.length - 1; line++){
+				var tokens = (lines[line]).split('\t');
+				var amino_acid = tokens[1];
+				var codon = tokens[0];
+				var usage = parseFloat(tokens[2]);
+				if ( _.has(custom_usage_hash, amino_acid)) {
+					custom_usage_hash[amino_acid].push([codon, usage]);
+				} else {
+					custom_usage_hash[amino_acid] = [[codon, usage]];
+				}
+			}
+			var default_keys = [];
+			_.each( ecoli, function( val, key ) {
+				default_keys.push(key);
+			});
+			var custom_keys = [];
+			_.each( custom_usage_hash, function( val, key ){
+				custom_keys.push(key);
+			});
+			var additional_keys = _.difference( custom_keys, default_keys );
+			if ( additional_keys.length > 0 ){
+				for ( var i = 0; i < additional_keys.length; i++ ){
+					var new_aa = additional_keys[i];
+					$("#additional_aa").append("<input type=\"checkbox\" name=\"aa\" value=\"" + 
+						new_aa + "\" style=\"margin:0px 10px 0px 20px;\" >");
+					$("#additional_aa").append("<label>" + new_aa + "</label>");
+					$("#additional_aa").show();
+				}
+			}
+		}
 	});
 }
 
@@ -291,7 +336,7 @@ function readFile(event) {
 			for(var line = 1; line < lines.length - 1; line++){
 				var tokens = (lines[line]).split('\t');
 				//console.log(tokens.length);
-				if ( tokens.length != 3 || tokens[0].length != 3 || tokens[1].length != 1 || isNaN(tokens[2]) ) {
+				if ( tokens.length != 3 || tokens[0].length != 3 || isNaN(tokens[2]) ) {
 					$("form").submit(function(event) {
 						event.preventDefault();
 					});
@@ -327,7 +372,7 @@ function readFile(event) {
 
 {% block content%}
 
-<body onload="ShowHide();GetUsage();uploadUsageTable();">
+<body onload="ShowHide();GetUsage();uploadUsageTable();CheckforNewAA();">
 
 <div>
 <div class="row" style="margin-bottom:30px;">
@@ -389,10 +434,11 @@ function readFile(event) {
 		</div>
 		<div class="panel-body">
 			<div class="row" style="margin-left:0;">
-				<div class="col-sm-8 row">
+				<div class="col-sm-6">
 					<input type="checkbox" name="aa" value="X" id="stop_test" style="margin-right:10px;">
 					<label>STOP</label>
 				</div>
+				<div class="col-sm-6" id="additional_aa"></div>
 			</div>
 			<div class="row" style="margin-left:0;">
 			<div class="panel panel-default col-sm-6" id="all_hydrophobic">
