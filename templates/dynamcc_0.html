@@ -1,6 +1,8 @@
 {% extends base.html %}
 {%block head%}
 
+<script type="text/javascript" src="/static/js/js.cookie.js"></script>
+
 <script type="text/javascript">
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
@@ -9,40 +11,88 @@ $(function () {
   $('[data-toggle="popover"]').popover()
 })
 
-
 function ShowHide() {
 	document.getElementById("input_rank").style.display = 'none';
 	document.getElementById("input_usage").style.display = 'none';
 	document.getElementById("submit_message").style.display = 'none';
 	document.getElementById("bad_input").style.display = 'none';
 
-	$("#additional_aa").hide();
+	//$("#additional_aa").hide();
 
 	$("#rank").click(function() {
 		$("#input_rank").show();
 		$("#input_usage").hide();
+		$("input_rank").prop("required", true);
+		$("input_usage").prop("required", false);
 	});
+
 	$("#usage").click(function() {
 		$("#input_rank").hide();
 		$("#input_usage").show();
+		$("#input_usage").prop("required", true);
+		$("input_rank").prop("required", false);
+		if ( $("#usage").is(":checked") ) {
+			GetUsage();
+			$("input[name=aa]").bind("change", function() {
+				CheckforNewAA();
+				GetUsage();
+			});
+			$("input[name=keep_or_remove]").change( function() {
+				GetUsage();
+				//BindUsage(); // Do not add back
+			});
+			$("#input_usage").change( function() {
+				var maximum_usage = GetUsage();
+				checkUsage(maximum_usage);
+			});
+		}
 	});
-
-	if ( $("#rank").is(":checked") ) {
-		$("#input_rank").show();
-		$("#input_usage").hide();
-	}
 
 	if ( $("#usage").is(":checked") ) {
 		$("#input_rank").hide();
 		$("#input_usage").show();
+		$("#input_usage").prop("required", true);
+		$("input_rank").prop("required", false);
+		$("input[name=aa]").bind("change", function() {
+			GetUsage();
+		});
+		$("input[name=keep_or_remove]").change( function() {
+			GetUsage();
+		});
+		$("#input_usage").change( function() {
+			var maximum_usage = GetUsage();
+			checkUsage(maximum_usage);
+		});
+		$("input:file").bind("change", function() {
+			if ( $("input:file").val() ) {
+				//CheckforNewAA();
+				GetUsage();
+			}
+		});
+		$("input[name=keep_or_remove").bind("change", function() {
+			GetUsage();
+		});
+	}
+
+	if ( $("#rank").is(":checked") ) {
+		$("#input_rank").show();
+		$("#input_usage").hide();
+		$("input_rank").prop("required", true);
+		$("input_usage").prop("required", false);
 	}
 
 	if ( $("#custom_usage").is(":checked") ) {
 	    $("#custom_table").show();
+	    if ( $("input:file").val() ) {
+	    	CheckforNewAA();
+	    	GetUsage();
+	    }
 	}
 
 	$("input[name=usage_table]").click(function() {
 		if ( $("input[name=usage_table]:checked").val() != "custom" ) {
+			$("#additional_aa").empty();
+			GetUsage();
 			$("#bad_input").hide();
 			$("#submit_message").hide();
 			$("#custom_codon_usage").wrap("<form>").closest("form").get(0).reset();
@@ -50,8 +100,24 @@ function ShowHide() {
 			$("form").submit(function(event) {
 				$(this).unbind('submit').submit();
 			});
-		}
+		} else {
+			$("input:file").change(function () {
+				Cookies.remove('checkboxValues');
+				CheckforNewAA();
+				if ( $("input:file").val() ) {
+					console.log("file loaded");
+					GetUsage();
+					$(":checkbox").bind("change", function() {
+						GetUsage();
+					});
+					$("input[name=keep_or_remove").bind("change", function() {
+						GetUsage();
+					});
+				}
+			});
+		} 
 	})
+
 
 	$("form").submit(function(event) {
 		if ( $("input[name=usage_table]:checked").val() != "custom" ) {
@@ -163,66 +229,29 @@ function ShowHide() {
 }
 
 function GetUsage() {
-	$("input[type=radio]").on("change", function() {
-		if( ($(this).val()) == 'usage' ) {
-			var selected_aa = [];
-			if ( $("input[name=keep_or_remove]").val() == 'keep' ) {
-				$("input[name=aa]:checked").each( function(){ selected_aa.push( $(this).val() ) } );
-				var keepers = selected_aa;
-			}
-			else if ( $("input[name=keep_or_remove]").val() == 'remove' ) {
-				var all_aa = [];
-				$("input[name=aa]").each( function(){ all_aa.push( $(this).val() ) } );
-				$("input[name=aa]:checked").each( function(){ selected_aa.push( $(this).val() ) } );
-				var keepers = _.difference(all_aa, selected_aa);
-			}
-			var filtered_keepers = [];
-			if ( _.has( highest_usage_mapping, $("input[name='usage_table']:checked").val() ) ){
-				var filtered = _.pick(highest_usage_mapping[$("input[name='usage_table']:checked").val()], keepers);
-				$.each( filtered, function( key, value ) {
-					filtered_keepers.push(_.values(value)[0]);
-				});
-				var maximum_usage = filtered_keepers.sort()[0];
-				$("#input_usage").attr("placeholder", "max value: " + String(maximum_usage));
-				checkUsage(maximum_usage);
-			}
-			else {
-				//CheckforNewAA();
-				var input = document.getElementById("custom_codon_usage");
-				var fReader = new FileReader();
-				var myFile = fReader.readAsText(input.files[0]);
-				fReader.onloadend = function(event){
-					var custom_usage_hash = {}
-					var lines = this.result.split('\n');
-					for(var line = 1; line < lines.length - 1; line++){
-						var tokens = (lines[line]).split('\t');
-						var amino_acid = tokens[1];
-						var codon = tokens[0];
-						var usage = parseFloat(tokens[2]);
-						if ( _.has(custom_usage_hash, amino_acid)) {
-							custom_usage_hash[amino_acid].push([codon, usage]);
-						} else {
-							custom_usage_hash[amino_acid] = [[codon, usage]];
-						}
-					}
-					custom_usage_hash = BubbleSort(custom_usage_hash);
-					var highest_usage_codons = GetHighestUsageCodons(custom_usage_hash);
-					var filtered = _.pick(highest_usage_codons, keepers);
-					$.each( filtered, function( key, value ) {
-						filtered_keepers.push(_.values(value)[0]);
-					});
-					var maximum_usage = filtered_keepers.sort()[0];
-					$("#input_usage").attr("placeholder", "max value: " + String(maximum_usage));
-					checkUsage(maximum_usage);
-				}
-			}
-		} 
-	});
-}
-
-function CheckforNewAA(){
-	$("input:file").change(function () {
-		$("#additional_aa").empty();
+	var selected_aa = [];
+	if ( $("input[name=keep_or_remove]:checked").val() == 'keep' ) {
+		$("input[name=aa]:checked").each( function(){ selected_aa.push( $(this).val() ) } );
+		var keepers = selected_aa;
+		console.log(keepers);
+	}
+	else if ( $("input[name=keep_or_remove]:checked").val() == 'remove' ) {
+		var all_aa = [];
+		$("input[name=aa]").each( function(){ all_aa.push( $(this).val() ) } );
+		$("input[name=aa]:checked").each( function(){ selected_aa.push( $(this).val() ) } );
+		var keepers = _.difference(all_aa, selected_aa);
+		console.log(keepers);
+	}
+	var filtered_keepers = [];
+	if ( _.has( highest_usage_mapping, $("input[name='usage_table']:checked").val() ) ){
+		var filtered = _.pick(highest_usage_mapping[$("input[name='usage_table']:checked").val()], keepers);
+		$.each( filtered, function( key, value ) {
+			filtered_keepers.push(_.values(value)[0]);
+		});
+		var maximum_usage = SetMaxUsage(filtered_keepers);
+		return maximum_usage;
+	}
+	else {
 		var input = document.getElementById("custom_codon_usage");
 		var fReader = new FileReader();
 		var myFile = fReader.readAsText(input.files[0]);
@@ -240,26 +269,86 @@ function CheckforNewAA(){
 					custom_usage_hash[amino_acid] = [[codon, usage]];
 				}
 			}
-			var default_keys = [];
-			_.each( ecoli, function( val, key ) {
-				default_keys.push(key);
+			custom_usage_hash = BubbleSort(custom_usage_hash);
+			var highest_usage_codons = GetHighestUsageCodons(custom_usage_hash);
+			var filtered = _.pick(highest_usage_codons, keepers);
+			$.each( filtered, function( key, value ) {
+				filtered_keepers.push(_.values(value)[0]);
 			});
-			var custom_keys = [];
-			_.each( custom_usage_hash, function( val, key ){
-				custom_keys.push(key);
-			});
-			var additional_keys = _.difference( custom_keys, default_keys );
-			if ( additional_keys.length > 0 ){
-				for ( var i = 0; i < additional_keys.length; i++ ){
-					var new_aa = additional_keys[i];
-					$("#additional_aa").append("<input type=\"checkbox\" name=\"aa\" value=\"" + 
-						new_aa + "\" style=\"margin:0px 10px 0px 20px;\" >");
-					$("#additional_aa").append("<label>" + new_aa + "</label>");
-					$("#additional_aa").show();
-				}
+			//SetMaxUsage(filtered_keepers);
+			var maximum_usage = SetMaxUsage(filtered_keepers);
+		}
+		console.log(maximum_usage);
+		return maximum_usage;
+	}
+}
+
+function SetMaxUsage(filtered_keepers) {
+	var maximum_usage = filtered_keepers.sort()[0];
+	if ( String(maximum_usage) == 'undefined' ){
+		$("#input_usage").addClass("usage-input-warning");
+		$("#input_usage").attr("size", 70);
+		$("#input_usage").attr("placeholder", "Warning: You must first specify whether to keep or remove AA from pool.");
+	} else {
+		if ( $("#input_usage").hasClass("usage-input-warning") ) {
+			$("#input_usage").removeClass("usage-input-warning");
+		}
+		$("#input_usage").attr("size", 20);
+		$("#input_usage").attr("placeholder", "max value: " + String(maximum_usage));
+	}
+	return maximum_usage;
+}
+
+function CheckforNewAA(){
+	$("#additional_aa").empty();
+	var input = document.getElementById("custom_codon_usage");
+	var fReader = new FileReader();
+	var myFile = fReader.readAsText(input.files[0]);
+	fReader.onloadend = function(event){
+		var custom_usage_hash = {}
+		var lines = this.result.split('\n');
+		for(var line = 1; line < lines.length - 1; line++){
+			var tokens = (lines[line]).split('\t');
+			var amino_acid = tokens[1];
+			var codon = tokens[0];
+			var usage = parseFloat(tokens[2]);
+			if ( _.has(custom_usage_hash, amino_acid)) {
+				custom_usage_hash[amino_acid].push([codon, usage]);
+			} else {
+				custom_usage_hash[amino_acid] = [[codon, usage]];
 			}
 		}
-	});
+		var default_keys = [];
+		_.each( ecoli, function( val, key ) {
+			default_keys.push(key);
+		});
+		var custom_keys = [];
+		_.each( custom_usage_hash, function( val, key ){
+			custom_keys.push(key);
+		});
+		var additional_keys = _.difference( custom_keys, default_keys );
+		if ( additional_keys.length > 0 ){
+			for ( var i = 0; i < additional_keys.length; i++ ){
+				var new_aa = additional_keys[i];
+				$("#additional_aa").append("<input type=\"checkbox\" id=\"" + 
+					new_aa + "\" name=\"aa\" value=\"" + 
+					new_aa + "\" style=\"margin:0px 10px 0px 20px;\" >");
+				var checkboxValues = repopulateCheckboxes();
+				for ( var key in checkboxValues ){
+					if ( key == new_aa && checkboxValues[key] == true ){
+						$( "#" + new_aa ).prop("checked", true);
+					} else if ( key == new_aa && checkboxValues[key] == false ){
+						$( "#" + new_aa ).prop("checked", false);
+					}
+				}
+				$("#additional_aa").append("<label>" + new_aa + "</label>");
+			}
+			$("#additional_aa").show();
+		}
+		if ( $("#usage").is(":checked") ) {
+			GetUsage();
+		}
+	}
 }
 
 function GetHighestUsageCodons(custom_usage_hash){
@@ -366,13 +455,37 @@ function readFile(event) {
 	}	
 }
 
+function SaveState() {
+	$(":checkbox").on("change", function() {
+		var checkboxValues = {};
+		$(":checkbox").each(function(){
+			checkboxValues[this.value] = this.checked;
+		});
+		Cookies.set('checkboxValues', checkboxValues);
+	});
+}
+
+
+function repopulateCheckboxes(){
+	var checkboxValues = Cookies.getJSON("checkboxValues");
+	console.log(checkboxValues);
+	if ( checkboxValues ){
+		Object.keys( checkboxValues ).forEach( function(element) {
+			var checked = checkboxValues[element];
+		});
+	}
+	return checkboxValues;
+}
+
+//Cookies.remove('checkboxValues');
+
 </script>
 
 {%end%}
 
 {% block content%}
 
-<body onload="ShowHide();GetUsage();uploadUsageTable();CheckforNewAA();">
+<body onload="ShowHide();uploadUsageTable();SaveState();">
 
 <div>
 <div class="row" style="margin-bottom:30px;">
@@ -429,13 +542,15 @@ function readFile(event) {
 	<div class = "col-sm-12">
 	<div class="panel panel-default">
 		<div class="panel-heading">Choose amino acids:
-		<input type="radio" name="keep_or_remove" value="remove" style="margin:0 5px 0 10px;" required>To remove from the pool
-		<input type="radio" name="keep_or_remove" value="keep" style="margin:0 5px 0 10px;">To keep in the pool
+		<input type="radio" name="keep_or_remove" value="remove" style="margin:0 5px 0 10px;" required>
+		<label>To remove from the pool</label>
+		<input type="radio" name="keep_or_remove" value="keep" style="margin:0 5px 0 10px;">
+		<label>To keep in the pool</label>
 		</div>
 		<div class="panel-body">
 			<div class="row" style="margin-left:0;">
 				<div class="col-sm-6">
-					<input type="checkbox" name="aa" value="X" id="stop_test" style="margin-right:10px;">
+					<input type="checkbox" name="aa" value="X" id="X" style="margin-right:10px;">
 					<label>STOP</label>
 				</div>
 				<div class="col-sm-6" id="additional_aa"></div>
@@ -452,15 +567,15 @@ function readFile(event) {
 						</div>
 						<div class="panel-body">
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="W" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="W" id="W" style="margin-right:10px;">
 								<label>W</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="F" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="F" id="F" style="margin-right:10px;">
 								<label>F</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="Y" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="Y" id="Y" style="margin-right:10px;">
 								<label>Y</label>
 							</div>
 						</div>
@@ -472,23 +587,23 @@ function readFile(event) {
 						<div class="panel-body">
 							<div class="row" style="margin-left:0;">
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="M" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="M" id="M" style="margin-right:10px;">
 								<label>M</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="P" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="P" id="P" style="margin-right:10px;">
 								<label>P</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="I" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="I" id="I" style="margin-right:10px;">
 								<label>I</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="L" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="L" id="L" style="margin-right:10px;">
 								<label>L</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="V" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="V" id="V" style="margin-right:10px;">
 								<label>V</label>
 							</div>
 							</div>
@@ -498,11 +613,11 @@ function readFile(event) {
 								</div>
 								<div class="panel-body">
 									<div class="col-sm-2">
-										<input type="checkbox" name="aa" value="A" style="margin-right:10px;">
+										<input type="checkbox" name="aa" value="A" id="A" style="margin-right:10px;">
 										<label>A</label>
 									</div>
 									<div class="col-sm-2">
-										<input type="checkbox" name="aa" value="G" style="margin-right:10px;">
+										<input type="checkbox" name="aa" value="G" id="G" style="margin-right:10px;">
 										<label>G</label>
 									</div>
 								</div>
@@ -522,11 +637,11 @@ function readFile(event) {
 						</div>
 						<div class="panel-body">
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="D" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="D" id="D" style="margin-right:10px;">
 								<label>D</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="E" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="E" id="E" style="margin-right:10px;">
 								<label>E</label>
 							</div>
 						</div>
@@ -537,15 +652,15 @@ function readFile(event) {
 						</div>
 						<div class="panel-body">
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="H" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="H" id="H" style="margin-right:10px;">
 								<label>H</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="R" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="R" id="R" style="margin-right:10px;">
 								<label>R</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="K" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="K" id="K" style="margin-right:10px;">
 								<label>K</label>
 							</div>
 						</div>
@@ -557,15 +672,15 @@ function readFile(event) {
 						<div class="panel-body">
 							<div class="row" style="margin-left:0;">
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="T" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="T" id="T" style="margin-right:10px;">
 								<label>T</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="Q" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="Q" id="Q" style="margin-right:10px;">
 								<label>Q</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="N" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="N" id="N" style="margin-right:10px;">
 								<label>N</label>
 							</div>
 							</div>
@@ -575,11 +690,11 @@ function readFile(event) {
 								</div>
 								<div class="panel-body">
 									<div class="col-sm-2">
-										<input type="checkbox" name="aa" value="C" style="margin-right:10px;">
+										<input type="checkbox" name="aa" value="C" id="C" style="margin-right:10px;">
 										<label>C</label>
 									</div>
 									<div class="col-sm-2">
-										<input type="checkbox" name="aa" value="S" style="margin-right:10px;">
+										<input type="checkbox" name="aa" value="S" id="S" style="margin-right:10px;">
 										<label>S</label>
 									</div>
 								</div>
