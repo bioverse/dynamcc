@@ -163,3 +163,38 @@ a:focus {
   display: none;
 }
 
+::-webkit-input-placeholder {
+    color:    #999;
+}
+:-moz-placeholder {
+    color:    #999;
+}
+::-moz-placeholder {
+    color:    #999;
+}
+:-ms-input-placeholder {
+    color:    #999;
+}
+
+.usage-input-warning::-webkit-input-placeholder {
+  color: #FF0000;
+}
+
+.usage-input-warning:-moz-placeholder {
+  color: #FF0000;
+}
+
+.usage-input-warning::-moz-input-placeholder {
+  color: #FF0000;
+}
+
+.usage-input-warning:-ms-placeholder {
+  color: #FF0000;
+}
+
+
+
+
+
+
+
