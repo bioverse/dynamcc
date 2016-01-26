@@ -1,9 +1,40 @@
 {% extends base.html %}
 {%block head%}
 
+<script type="text/javascript" src="/static/js/js.cookie.js"></script>
+
 <script type="text/javascript">
 
 function ShowHide() {
+
+	if ( $("#custom_usage").is(":checked") ) {
+	    $("#custom_table").show();
+	    if ( $("input:file").val() ) {
+	    	CheckforNewAA();
+	    }
+	}
+
+	$("input[name=usage_table]").click(function() {
+		if ( $("input[name=usage_table]:checked").val() != "custom" ) {
+			$("#additional_aa").empty();
+			//$("#bad_input").hide();
+			//$("#submit_message").hide();
+			$("#custom_codon_usage").wrap("<form>").closest("form").get(0).reset();
+			$("#custom_codon_usage").unwrap();
+			$("form").submit(function(event) {
+				$(this).unbind('submit').submit();
+			});
+		} else {
+			$("input:file").change(function () {
+				Cookies.remove('checkboxValues');
+				CheckforNewAA();
+				if ( $("input:file").val() ) {
+					console.log("file loaded");
+				}
+			});
+		} 
+	})
+
     $("input[name=hydrophobic]").click(function() {
 		if ( $(this).is(":checked") ) {
 			$("#all_hydrophobic input[name=aa]").prop("checked", true);
@@ -149,12 +180,83 @@ function readFile(event) {
 	}	
 }
 
+function CheckforNewAA(){
+	$("#additional_aa").empty();
+	var input = document.getElementById("custom_codon_usage");
+	var fReader = new FileReader();
+	var myFile = fReader.readAsText(input.files[0]);
+	fReader.onloadend = function(event){
+		var custom_usage_hash = {}
+		var lines = this.result.split('\n');
+		for(var line = 1; line < lines.length - 1; line++){
+			var tokens = (lines[line]).split('\t');
+			var amino_acid = tokens[1];
+			var codon = tokens[0];
+			var usage = parseFloat(tokens[2]);
+			if ( _.has(custom_usage_hash, amino_acid)) {
+				custom_usage_hash[amino_acid].push([codon, usage]);
+			} else {
+				custom_usage_hash[amino_acid] = [[codon, usage]];
+			}
+		}
+		var default_keys = [];
+		_.each( ecoli, function( val, key ) {
+			default_keys.push(key);
+		});
+		var custom_keys = [];
+		_.each( custom_usage_hash, function( val, key ){
+			custom_keys.push(key);
+		});
+		var additional_keys = _.difference( custom_keys, default_keys );
+		if ( additional_keys.length > 0 ){
+			for ( var i = 0; i < additional_keys.length; i++ ){
+				var new_aa = additional_keys[i];
+				$("#additional_aa").append("<input type=\"checkbox\" id=\"" + 
+					new_aa + "\" name=\"aa\" value=\"" + 
+					new_aa + "\" style=\"margin:0px 10px 0px 20px;\" >");
+				var checkboxValues = repopulateCheckboxes();
+				for ( var key in checkboxValues ){
+					if ( key == new_aa && checkboxValues[key] == true ){
+						$( "#" + new_aa ).prop("checked", true);
+					} else if ( key == new_aa && checkboxValues[key] == false ){
+						$( "#" + new_aa ).prop("checked", false);
+					}
+				}
+				$("#additional_aa").append("<label>" + new_aa + "</label>");
+			}
+			$("#additional_aa").show();
+		}
+	}
+}
+
+function SaveState() {
+	$(":checkbox").on("change", function() {
+		var checkboxValues = {};
+		$(":checkbox").each(function(){
+			checkboxValues[this.value] = this.checked;
+		});
+		Cookies.set('checkboxValues', checkboxValues);
+	});
+}
+
+
+function repopulateCheckboxes(){
+	var checkboxValues = Cookies.getJSON("checkboxValues");
+	console.log(checkboxValues);
+	if ( checkboxValues ){
+		Object.keys( checkboxValues ).forEach( function(element) {
+			var checked = checkboxValues[element];
+		});
+	}
+	return checkboxValues;
+}
+
 </script>
 
 {%end%}
 
 {% block content%}
-<body onload="ShowHide();uploadUsageTable();">
+<body onload="ShowHide();uploadUsageTable();SaveState();">
 
 <div>
 <div class="row" style="margin-bottom:30px;">
@@ -197,10 +299,11 @@ function readFile(event) {
 		</div>
 		<div class="panel-body">
 			<div class="row" style="margin-left:0;">
-				<div class="col-sm-8 row">
-					<input type="checkbox" name="aa" value="X" style="margin-right:10px;">
+				<div class="col-sm-6">
+					<input type="checkbox" name="aa" value="X" id="X" style="margin-right:10px;">
 					<label>STOP</label>
 				</div>
+				<div class="col-sm-6" id="additional_aa"></div>
 			</div>
 			<div class="row" style="margin-left:0;">
 			<div class="panel panel-default col-sm-6" id="all_hydrophobic">
