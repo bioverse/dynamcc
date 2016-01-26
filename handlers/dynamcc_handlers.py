@@ -135,17 +135,17 @@ class DynamccRHandler(RequestHandler):
 		self.render("dynamcc_R.html")
 
 	def post(self):
-		#if "table" in self.request.files:
-		#	sorted_dict = util.BuildCustomUsageDict(self.request.files["table"][0])
-		#	organism_name = "user uploaded usage table"
-		#else:
-		#	seletect_organism = self.get_argument("usage_table")
-		#	if seletect_organism in organism_mapping:
-		#		sorted_dict = util.BuildUsageDict(organism_mapping[seletect_organism])
-		#		organism_name = organism_names[seletect_organism]
-		#	else:
-		#		pass
-		organism_name = "E. coli"
+		if "table" in self.request.files:
+			sorted_dict = util.BuildCustomUsageDict(self.request.files["table"][0])
+			organism_name = "user uploaded usage table"
+		else:
+			seletect_organism = self.get_argument("usage_table")
+			if seletect_organism in organism_mapping:
+				sorted_dict = util.BuildUsageDict(organism_mapping[seletect_organism])
+				organism_name = organism_names[seletect_organism]
+			else:
+				pass
+		#organism_name = "E. coli"
 		sorted_dict = util.BuildUsageDict(organism_mapping["Ecoli"])
 		rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
 		if self.get_argument("keep_or_remove") == 'remove':
