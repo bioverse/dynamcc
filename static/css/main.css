@@ -15,11 +15,14 @@ footer p {
   font-size: 12px;
 }
 
+
 .navbar-custom {
+  /*background-color: white;*/
   background-color: #C8C8C8;
   border-color: black;
+  border-bottom: 6px solid black;
 }
-
+/*
 .navbar-brand {
   float: left;
   height: 50px;
@@ -28,6 +31,7 @@ footer p {
   line-height: 20px;
   margin:0 0 20px 0;
 }
+*/
 
 .btn {
   display: inline-block;
@@ -192,6 +196,22 @@ a:focus {
   color: #FF0000;
 }
 
+.dynamcc_logo {
+  height: 100px;
+  width: 175px;
+  background-image: url("/static/img/dynamcc_logo_v5.png");
+  background-size: 175px 100px;
+  background-repeat: no-repeat;
+  margin-right: 40px;
+}
+
+.lab_logo {
+  height: 50px;
+  width: 75px;
+  background-image: url("/static/img/gill_lab_logo_v2.png");
+  background-size: 75px 50px;
+  background-repeat: no-repeat;
+}
 
 
 
