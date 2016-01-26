@@ -131,7 +131,7 @@ function readFile(event) {
 			for(var line = 1; line < lines.length - 1; line++){
 				var tokens = (lines[line]).split('\t');
 				//console.log(tokens.length);
-				if ( tokens.length != 3 || tokens[0].length != 3 || tokens[1].length != 1 || isNaN(tokens[2]) ) {
+				if ( tokens.length != 3 || tokens[0].length != 3 || isNaN(tokens[2]) ) {
 					$("form").submit(function(event) {
 						event.preventDefault();
 					});
@@ -164,35 +164,15 @@ function readFile(event) {
 <div>
 
 <form enctype="multipart/form-data" method = "post" action="/dynamcc_R/">
-<!--
+
 <div class="row">
-	<div class = "col-sm-8">
+	<div class = "col-sm-12">
 	<div class="panel panel-default">
-		<div class="panel-heading">Choose your organism:</div>
+		<div class="panel-heading">Codon Usage:</div>
 		<div class="panel-body">
 			<div class="col-sm-4">
 				<input type="radio" name="usage_table" value="Ecoli" style="margin-right:10px;" required>
-				<label><em>E. coli</em></label>
-			</div>
-			<div class="col-sm-4">
-				<input type="radio" name="usage_table" value="yeast" style="margin-right:10px;">
-				<label>yeast</label>
-			</div>
-			<div class="col-sm-4">
-				<input type="radio" name="usage_table" value="human" style="margin-right:10px;">
-				<label>human</label>
-			</div>
-			<div class="col-sm-4">
-				<input type="radio" name="usage_table" value="mouse" style="margin-right:10px;">
-				<label>mouse</label>
-			</div>
-			<div class="col-sm-4">
-				<input type="radio" name="usage_table" value="Dmel" style="margin-right:10px;">
-				<label><em>D. melanogaster</em></label>
-			</div>
-			<div class="col-sm-4">
-				<input type="radio" name="usage_table" value="Cele" style="margin-right:10px;">
-				<label><em>C. elegans</em></label>
+				<label>Standard ( <em>E. coli</em> )</label>
 			</div>
 			<div class="col-sm-6">
 				<input id="custom_usage" type="radio" name="usage_table" value="custom" style="margin-right:10px;">
@@ -206,7 +186,7 @@ function readFile(event) {
 	</div>
 	</div>
 </div>
--->
+
 
 <div class="row">
 	<div class = "col-sm-12">
