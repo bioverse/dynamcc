@@ -146,7 +146,7 @@ class DynamccRHandler(RequestHandler):
 			else:
 				pass
 		#organism_name = "E. coli"
-		sorted_dict = util.BuildUsageDict(organism_mapping["Ecoli"])
+		#sorted_dict = util.BuildUsageDict(organism_mapping["Ecoli"])
 		rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
 		if self.get_argument("keep_or_remove") == 'remove':
 			remove_aa = self.get_arguments('aa')
