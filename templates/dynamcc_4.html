@@ -338,7 +338,7 @@ function repopulateCheckboxes(){
 					<label>Upload custom usage table</label>
 					<div id="custom_table" style="display:none">
 						<input type="file" name="table" id="custom_codon_usage">
-						<a href="/static/txt/UsageTableExample.txt">Example Input</a>
+						<a target="_blank" href="/static/txt/UsageTableExample.txt">Example Input</a>
 					</div>
 				</div>
 			</div>
@@ -352,13 +352,6 @@ function repopulateCheckboxes(){
 	<div class="panel panel-default">
 		<div class="panel-heading">Choose amino acids:</div>
 		<div class="panel-body">
-			<div class="row" style="margin-left:0;">
-				<div class="col-sm-6">
-					<input type="checkbox" name="aa" value="X" id="X" style="margin-right:10px;">
-					<label>STOP</label>
-				</div>
-				<div class="col-sm-6" id="additional_aa"></div>
-			</div>
 			<div class="row" style="margin-left:0;">
 			<div class="panel panel-default col-sm-6" id="all_hydrophobic">
 				<div class="panel-heading">Hydrophobic
