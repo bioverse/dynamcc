@@ -281,8 +281,67 @@ class ExploderHandler(RequestHandler):
 
 		self.render("exploded_codon_results.html", codon_dict=codon_dict, organism=organism_name, exploded_codons=exploded_codons, sorted_dict=sorted_dict)
 
+class Dynamcc4Handler(RequestHandler):
+	def get(self):
+		self.render("dynamcc_4.html")
 
+	def post(self):
+		if "table" in self.request.files:
+			sorted_dict = util.BuildCustomUsageDict(self.request.files["table"][0])
+			organism_name = "user uploaded usage table"
+		else:
+			seletect_organism = self.get_argument("usage_table")
+			if seletect_organism in organism_mapping:
+				sorted_dict = util.BuildUsageDict(organism_mapping[seletect_organism])
+				organism_name = organism_names[seletect_organism]
+			else:
+				pass
+		#organism_name = "E. coli"
+		#sorted_dict = util.BuildUsageDict(organism_mapping["Ecoli"])
+		rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
+		if self.get_argument("keep_or_remove") == 'remove':
+			remove_aa = self.get_arguments('aa')
+		else:
+			selected_aa = self.get_arguments('aa')
+			remove_aa = list(aa.difference(selected_aa))
+		filtered_dict = util.EditUsageDict(remove_aa, sorted_dict)
+		InUse_dict = ReformatUsageDict(filtered_dict)
+		codon_list = BestList(filtered_dict)
+		in_use = FlagInUse(codon_list, InUse_dict)
+		best_compression = execute_algorithm(codon_list,in_use,rules_dict,inverse_dict)
 
+		print "best_compression:", best_compression
+		
+		## exploding codons
+		exploded_codons = {}
+		codon_list = []
+		for codon in best_compression:
+			exploded_codons[codon] = list(codon)
+			codon_list.append(list(codon))
+		exploded_codons_copy1 = {}
+		for key in exploded_codons:
+			exploded_codons_copy1[key] = []
+		for codon in exploded_codons:
+			for j in range(len(exploded_codons[codon])):
+				exploded_codons_copy1[codon].append(rules[exploded_codons[codon][j]])
 
+		exploded_codons_copy2 = {}
+		for key in exploded_codons:
+			exploded_codons_copy2[key] = []
+		for codon in exploded_codons_copy1:
+			combos = list(itertools.product(*exploded_codons_copy1[codon]))
+			for combo in combos:
+				exploded_codons_copy2[codon].append(combo)
 
+		exploded_codons = {}
+		for key in exploded_codons_copy2:
+			exploded_codons[key] = []
+			for value in exploded_codons_copy2[key]:
+				joined_codon = ''.join(list(value))
+				exploded_codons[key].append(joined_codon)
+		print "exploded_codons:", exploded_codons
 
+		codon_dict = util.BuildCodonDict(sorted_dict)
+		print "codon_dict:", codon_dict
+
+		self.render("dynamcc_R_results.html", codon_dict=codon_dict, organism=organism_name, remove_aa=remove_aa, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict)

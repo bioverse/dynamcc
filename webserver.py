@@ -43,7 +43,7 @@ from handlers.base_handlers import (
     IndexHandler
     )
 from handlers.dynamcc_handlers import (
-    Dynamcc0Handler, DynamccRHandler, ExploderHandler)
+    Dynamcc0Handler, DynamccRHandler, ExploderHandler, Dynamcc4Handler)
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -60,7 +60,8 @@ class Application(tornado.web.Application):
                  {"path": STATIC_PATH}),
                 (r"/dynamcc_0/", Dynamcc0Handler),
                 (r"/dynamcc_R/", DynamccRHandler),
-                (r"/exploder/", ExploderHandler)
+                (r"/exploder/", ExploderHandler),
+                (r"/dynamcc_4/", Dynamcc4Handler)
                 ]
         settings = {
             "template_path": TEMPLATE_PATH,
