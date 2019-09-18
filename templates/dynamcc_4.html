@@ -1,0 +1,529 @@
+{% extends base.html %}
+{%block head%}
+
+<script type="text/javascript" src="/static/js/js.cookie.js"></script>
+
+<script type="text/javascript">
+
+function ShowHide() {
+
+	if ( $("#custom_usage").is(":checked") ) {
+	    $("#custom_table").show();
+	    if ( $("input:file").val() ) {
+	    	CheckforNewAA();
+	    }
+	}
+
+	$("input[name=usage_table]").click(function() {
+		if ( $("input[name=usage_table]:checked").val() != "custom" ) {
+			$("#additional_aa").empty();
+			//$("#bad_input").hide();
+			//$("#submit_message").hide();
+			$("#custom_codon_usage").wrap("<form>").closest("form").get(0).reset();
+			$("#custom_codon_usage").unwrap();
+			$("form").submit(function(event) {
+				$(this).unbind('submit').submit();
+			});
+		} else {
+			$("input:file").change(function () {
+				Cookies.remove('checkboxValues');
+				CheckforNewAA();
+				if ( $("input:file").val() ) {
+					console.log("file loaded");
+				}
+			});
+		} 
+	})
+
+    $("input[name=hydrophobic]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_hydrophobic input[name=aa]").prop("checked", true);
+			$("input[name=aromatic]").prop("checked", true);
+			$("input[name=nonpolar]").prop("checked", true);
+			$("input[name=small]").prop("checked", true);
+		}
+		else {
+			$("#all_hydrophobic input[name=aa]").prop("checked", false);
+			$("input[name=aromatic]").prop("checked", false);
+			$("input[name=nonpolar]").prop("checked", false);
+			$("input[name=small]").prop("checked", false);
+		}
+	});
+
+	$("input[name=aromatic]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_aromatic input[name=aa]").prop("checked", true);
+		}
+		else {
+			$("#all_aromatic input[name=aa]").prop("checked", false);
+		}
+	});
+
+	$("input[name=nonpolar]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_nonpolar input[name=aa]").prop("checked", true);
+			$("input[name=small]").prop("checked", true);
+		}
+		else {
+			$("#all_nonpolar input[name=aa]").prop("checked", false);
+			$("input[name=small]").prop("checked", false);
+		}
+	});
+
+	$("input[name=small]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_small input[name=aa]").prop("checked", true);
+		}
+		else {
+			$("#all_small input[name=aa]").prop("checked", false);
+		}
+	});
+
+	$("input[name=hydrophilic]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_hydrophilic input[name=aa]").prop("checked", true);
+			$("input[name=negative]").prop("checked", true);
+			$("input[name=positive]").prop("checked", true);
+			$("input[name=uncharged]").prop("checked", true);
+			$("input[name=small_uncharged]").prop("checked", true);
+		}
+		else {
+			$("#all_hydrophilic input[name=aa]").prop("checked", false);
+			$("input[name=negative]").prop("checked", false);
+			$("input[name=positive]").prop("checked", false);
+			$("input[name=uncharged]").prop("checked", false);
+			$("input[name=small_uncharged]").prop("checked", false);
+		}
+	});
+
+	$("input[name=negative]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_negative input[name=aa]").prop("checked", true);
+		}
+		else {
+			$("#all_negative input[name=aa]").prop("checked", false);
+		}
+	});
+
+	$("input[name=positive]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_positive input[name=aa]").prop("checked", true);
+		}
+		else {
+			$("#all_positive input[name=aa]").prop("checked", false);
+		}
+	});
+
+	$("input[name=uncharged]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_uncharged input[name=aa]").prop("checked", true);
+			$("input[name=small_uncharged]").prop("checked", true);
+		}
+		else {
+			$("#all_uncharged input[name=aa]").prop("checked", false);
+			$("input[name=small_uncharged]").prop("checked", false);
+		}
+	});
+
+	$("input[name=small_uncharged]").click(function() {
+		if ( $(this).is(":checked") ) {
+			$("#all_small_uncharged input[name=aa]").prop("checked", true);
+		}
+		else {
+			$("#all_small_uncharged input[name=aa]").prop("checked", false);
+		}
+	});
+}
+
+
+function uploadUsageTable() {
+	document.getElementById("custom_codon_usage").addEventListener("change", readFile, false);
+
+	if ( $("#custom_usage").is(":checked") ){
+	    $("#custom_table").show();
+	}
+}
+
+function readFile(event) {
+	if(window.FileReader){
+		var files = event.target.files;
+		var file = files[0];
+		var reader = new FileReader();
+		var error_message = "The file you entered is not formatted correctly. Please use the Example Input as a template. Fields are tab-separated, and there is an empty line at the end of the file. Note that the first line is ignored.";
+		reader.readAsText(file);
+		reader.onload = function() {
+			var lines = this.result.split('\n');
+			if (lines[lines.length - 1] != ""){
+				$("form").submit(function(event) {
+					event.preventDefault();
+				});
+				alert(error_message);
+			}
+			for(var line = 1; line < lines.length - 1; line++){
+				var tokens = (lines[line]).split('\t');
+				//console.log(tokens.length);
+				if ( tokens.length != 3 || tokens[0].length != 3 || isNaN(tokens[2]) ) {
+					$("form").submit(function(event) {
+						event.preventDefault();
+					});
+					alert(error_message);
+				}
+				else {
+					//console.log(tokens);
+				}
+			}
+			return lines;
+		}
+	}
+	else {
+		alert("Your Browser does not support uploading files on this site. Please use Chrome, Firefox, or Safari.");
+	}	
+}
+
+function CheckforNewAA(){
+	$("#additional_aa").empty();
+	var input = document.getElementById("custom_codon_usage");
+	var fReader = new FileReader();
+	var myFile = fReader.readAsText(input.files[0]);
+	fReader.onloadend = function(event){
+		var custom_usage_hash = {}
+		var lines = this.result.split('\n');
+		for(var line = 1; line < lines.length - 1; line++){
+			var tokens = (lines[line]).split('\t');
+			var amino_acid = tokens[1];
+			var codon = tokens[0];
+			var usage = parseFloat(tokens[2]);
+			if ( _.has(custom_usage_hash, amino_acid)) {
+				custom_usage_hash[amino_acid].push([codon, usage]);
+			} else {
+				custom_usage_hash[amino_acid] = [[codon, usage]];
+			}
+		}
+		var default_keys = [];
+		_.each( ecoli, function( val, key ) {
+			default_keys.push(key);
+		});
+		var custom_keys = [];
+		_.each( custom_usage_hash, function( val, key ){
+			custom_keys.push(key);
+		});
+		var additional_keys = _.difference( custom_keys, default_keys );
+		if ( additional_keys.length > 0 ){
+			for ( var i = 0; i < additional_keys.length; i++ ){
+				var new_aa = additional_keys[i];
+				$("#additional_aa").append("<input type=\"checkbox\" id=\"" + 
+					new_aa + "\" name=\"aa\" value=\"" + 
+					new_aa + "\" style=\"margin:0px 10px 0px 20px;\" >");
+				var checkboxValues = repopulateCheckboxes();
+				for ( var key in checkboxValues ){
+					if ( key == new_aa && checkboxValues[key] == true ){
+						$( "#" + new_aa ).prop("checked", true);
+					} else if ( key == new_aa && checkboxValues[key] == false ){
+						$( "#" + new_aa ).prop("checked", false);
+					}
+				}
+				$("#additional_aa").append("<label>" + new_aa + "</label>");
+			}
+			$("#additional_aa").show();
+		}
+	}
+}
+
+function SaveState() {
+	$(":checkbox").on("change", function() {
+		var checkboxValues = {};
+		$(":checkbox").each(function(){
+			checkboxValues[this.value] = this.checked;
+		});
+		Cookies.set('checkboxValues', checkboxValues);
+	});
+}
+
+
+function repopulateCheckboxes(){
+	var checkboxValues = Cookies.getJSON("checkboxValues");
+	console.log(checkboxValues);
+	if ( checkboxValues ){
+		Object.keys( checkboxValues ).forEach( function(element) {
+			var checked = checkboxValues[element];
+		});
+	}
+	return checkboxValues;
+}
+
+</script>
+
+{%end%}
+
+{% block content%}
+<body onload="ShowHide();uploadUsageTable();SaveState();">
+
+<div>
+<div class="row" style="margin-bottom:30px;">
+  <h3>DYNAMCC_4</h3>
+</div>
+
+<div>
+
+<form enctype="multipart/form-data" method = "post" action="/dynamcc_4/">
+
+<div class="row">
+	<div class = "col-sm-12">
+	<div class="panel panel-default">
+		<div class="panel-heading">Target Codon:</div>
+		<div class="panel-body">
+			<div class="col-sm-1">
+				<input type="text" name="target_codon" value="" style="margin-right:10px;" required>
+			</div>
+		</div>
+	</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class = "col-sm-12">
+	<div class="panel panel-default">
+		<div class="panel-heading">Target hamming distance in bases:</div>
+		<div class="panel-body">
+			<div class="col-sm-6">
+				<input type="radio" id="hamming_distance_1" name="hamming_distance" value="1" style="margin-right:10px;" required>
+				<label class="side-wrapper" for="hamming_distance_1">
+					<span class="side-value">1</span>
+					<span class="side-label">access to 9 codons relevant to naturally occuring mutations</span>
+				</label>
+			</div>
+			<div class="col-sm-6">
+				<input type="radio" id="hamming_distance_2_3" name="hamming_distance" value="2_3" style="margin-right:10px;" required>
+				<label class="side-wrapper" for="hamming_distance_2_3">
+					<span class="side-value">2+3</span>
+					<span class="side-label">access to 54 codons relevant for protein engineering</span>
+				</label>
+			</div>
+		</div>
+	</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class = "col-sm-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">Choose your organism:</div>
+			<div class="panel-body">
+				<div class="col-sm-4">
+					<input type="radio" name="usage_table" value="Ecoli" style="margin-right:10px;" required>
+					<label><em>E. coli</em></label>
+				</div>
+				<div class="col-sm-4">
+					<input type="radio" name="usage_table" value="yeast" style="margin-right:10px;">
+					<label>yeast</label>
+				</div>
+				<div class="col-sm-4">
+					<input type="radio" name="usage_table" value="human" style="margin-right:10px;">
+					<label>human</label>
+				</div>
+				<div class="col-sm-4">
+					<input type="radio" name="usage_table" value="mouse" style="margin-right:10px;">
+					<label>mouse</label>
+				</div>
+				<div class="col-sm-4">
+					<input type="radio" name="usage_table" value="Dmel" style="margin-right:10px;">
+					<label><em>D. melanogaster</em></label>
+				</div>
+				<div class="col-sm-4">
+					<input type="radio" name="usage_table" value="Cele" style="margin-right:10px;">
+					<label><em>C. elegans</em></label>
+				</div>
+				<div class="col-sm-6">
+					<input id="custom_usage" type="radio" name="usage_table" value="custom" style="margin-right:10px;">
+					<label>Upload custom usage table</label>
+					<div id="custom_table" style="display:none">
+						<input type="file" name="table" id="custom_codon_usage">
+						<a href="/static/txt/UsageTableExample.txt">Example Input</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<button type="submit" style="margin-bottom: 20px;" class="btn btn-default">Find codons and amino acids</button>
+	</div>
+</div>
+
+<div class="row">
+	<div class = "col-sm-12">
+	<div class="panel panel-default">
+		<div class="panel-heading">Choose amino acids:</div>
+		<div class="panel-body">
+			<div class="row" style="margin-left:0;">
+				<div class="col-sm-6">
+					<input type="checkbox" name="aa" value="X" id="X" style="margin-right:10px;">
+					<label>STOP</label>
+				</div>
+				<div class="col-sm-6" id="additional_aa"></div>
+			</div>
+			<div class="row" style="margin-left:0;">
+			<div class="panel panel-default col-sm-6" id="all_hydrophobic">
+				<div class="panel-heading">Hydrophobic
+					<input type="checkbox" name="hydrophobic" style="margin-left:20px;">
+				</div>
+				<div class="panel-body">
+					<div class="panel panel-default" id="all_aromatic">
+						<div class="panel-heading">aromatic
+							<input type="checkbox" name="aromatic" style="margin-left:20px;">
+						</div>
+						<div class="panel-body">
+							<div class="col-sm-2">
+								<input type="checkbox" name="aa" value="W" style="margin-right:10px;">
+								<label>W</label>
+							</div>
+							<div class="col-sm-2">
+								<input type="checkbox" name="aa" value="F" style="margin-right:10px;">
+								<label>F</label>
+							</div>
+							<div class="col-sm-2">
+								<input type="checkbox" name="aa" value="Y" style="margin-right:10px;">
+								<label>Y</label>
+							</div>
+						</div>
+					</div>
+					<div class="panel panel-default" id="all_nonpolar">
+						<div class="panel-heading">non-polar aliphatic
+							<input type="checkbox" name="nonpolar" style="margin-left:20px;">
+						</div>
+						<div class="panel-body">
+							<div class="row" style="margin-left:0;">
+							<div class="col-sm-2">
+								<input type="checkbox" name="aa" value="M" style="margin-right:10px;">
+								<label>M</label>
+							</div>
+							<div class="col-sm-2">
+								<input type="checkbox" name="aa" value="P" style="margin-right:10px;">
+								<label>P</label>
+							</div>
+							<div class="col-sm-2">
+								<input type="checkbox" name="aa" value="I" style="margin-right:10px;">
+								<label>I</label>
+							</div>
+							<div class="col-sm-2">
+								<input type="checkbox" name="aa" value="L" style="margin-right:10px;">
+								<label>L</label>
+							</div>
+							<div class="col-sm-2">
+								<input type="checkbox" name="aa" value="V" style="margin-right:10px;">
+								<label>V</label>
+							</div>
+							</div>
+							<div class="panel panel-default" id="all_small">
+								<div class="panel-heading">small
+									<input type="checkbox" name="small" style="margin-left:20px;">
+								</div>
+								<div class="panel-body">
+									<div class="col-sm-2">
+										<input type="checkbox" name="aa" value="A" style="margin-right:10px;">
+										<label>A</label>
+									</div>
+									<div class="col-sm-2">
+										<input type="checkbox" name="aa" value="G" style="margin-right:10px;">
+										<label>G</label>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="panel panel-default col-sm-6" id="all_hydrophilic">
+				<div class="panel-heading">Hydrophilic
+					<input type="checkbox" name="hydrophilic" style="margin-left:20px;">
+				</div>
+				<div class="panel-body">
+					<div class="panel panel-default" id="all_negative">
+						<div class="panel-heading">negatively charged, acidic
+							<input type="checkbox" name="negative" style="margin-left:20px;">
+						</div>
+						<div class="panel-body">
+							<div class="col-sm-2">
+								<input type="checkbox" name="aa" value="D" style="margin-right:10px;">
+								<label>D</label>
+							</div>
+							<div class="col-sm-2">
+								<input type="checkbox" name="aa" value="E" style="margin-right:10px;">
+								<label>E</label>
+							</div>
+						</div>
+					</div>
+					<div class="panel panel-default" id="all_positive">
+						<div class="panel-heading">positively charged, basic
+							<input type="checkbox" name="positive" style="margin-left:20px;">
+						</div>
+						<div class="panel-body">
+							<div class="col-sm-2">
+								<input type="checkbox" name="aa" value="H" style="margin-right:10px;">
+								<label>H</label>
+							</div>
+							<div class="col-sm-2">
+								<input type="checkbox" name="aa" value="R" style="margin-right:10px;">
+								<label>R</label>
+							</div>
+							<div class="col-sm-2">
+								<input type="checkbox" name="aa" value="K" style="margin-right:10px;">
+								<label>K</label>
+							</div>
+						</div>
+					</div>
+					<div class="panel panel-default" id="all_uncharged">
+						<div class="panel-heading">polar uncharged
+							<input type="checkbox" name="uncharged" style="margin-left:20px;">
+						</div>
+						<div class="panel-body">
+							<div class="row" style="margin-left:0;">
+							<div class="col-sm-2">
+								<input type="checkbox" name="aa" value="T" style="margin-right:10px;">
+								<label>T</label>
+							</div>
+							<div class="col-sm-2">
+								<input type="checkbox" name="aa" value="Q" style="margin-right:10px;">
+								<label>Q</label>
+							</div>
+							<div class="col-sm-2">
+								<input type="checkbox" name="aa" value="N" style="margin-right:10px;">
+								<label>N</label>
+							</div>
+							</div>
+							<div class="panel panel-default" id="all_uncharged_small">
+								<div class="panel-heading">small
+									<input type="checkbox" name="small_uncharged" style="margin-left:20px;">
+								</div>
+								<div class="panel-body">
+									<div class="col-sm-2">
+										<input type="checkbox" name="aa" value="C" style="margin-right:10px;">
+										<label>C</label>
+									</div>
+									<div class="col-sm-2">
+										<input type="checkbox" name="aa" value="S" style="margin-right:10px;">
+										<label>S</label>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			</div>
+		</div>
+	</div>
+	
+	<button type="submit" class="btn btn-default">Compress Codons</button>
+
+	</div>
+</div>
+
+
+
+</form>
+
+</div>
+
+</div>
+
+</body>
+
+{%end%}

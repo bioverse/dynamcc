@@ -1,0 +1,98 @@
+{% extends base.html %}
+{%block head%}
+
+<script type="text/javascript">
+
+function ExplodeCodons() {
+	var exploded_codons = {};
+	{% for codon in exploded_codons %} 
+	exploded_codons.{{codon}} = [];
+		{% for item in exploded_codons[codon] %}
+		//console.log('{{item}}');
+		exploded_codons['{{codon}}'].push('{{item}}');
+		{% end %}
+	{% end %}
+
+	var codon_rank = {};
+	var codon_usage = {};
+	var codon_aa_map = {};
+	{% for codon in codon_dict %}
+		codon_rank.{{codon}} = {{codon_dict[codon][0]}};
+		codon_usage.{{codon}} = {{codon_dict[codon][1]}};
+		codon_aa_map.{{codon}} = '{{codon_dict[codon][2]}}';
+	{% end %}
+
+	//console.log(exploded_codons);
+	//console.log(codon_rank);
+	//console.log(codon_usage);
+	
+	var html = '<table border="1">';
+	html += '<th style="padding:10px;">Compressed Codon</th><th style="padding:10px;">Exploded Codons</th><th style="padding:10px;">Rank</th><th style="padding:10px;">Usage</th><th style="padding:10px;">Amino Acid</th>'
+	
+	for (var key in exploded_codons) 
+	{
+		html += '<tr>';
+		html += '<td style="padding:10px;">' + key + '</td>';
+		html += '<td style="padding:10px;">';
+		for (i = 0; i < exploded_codons[key].length; i++) 
+		{
+			html += exploded_codons[key][i];
+			html += '<br>';	
+		}
+		html += '</td>';
+		html += '<td style="padding:10px;">';
+		for (i = 0; i < exploded_codons[key].length; i++)
+		{
+			html += codon_rank[exploded_codons[key][i]];
+			html += '<br>';	
+		}
+		html += '</td>';
+		html += '<td style="padding:10px;">';
+		for (i = 0; i < exploded_codons[key].length; i++)
+		{
+			html += codon_usage[exploded_codons[key][i]];
+			html += '<br>';	
+		}
+		html += '</td>';
+		html += '<td style="padding:10px;">';
+		for (i = 0; i < exploded_codons[key].length; i++)
+		{
+			html += codon_aa_map[exploded_codons[key][i]];
+			html += '<br>';	
+		}
+		html += '</td>';
+		html += '</tr>';
+	};
+
+	html += '</table>'
+	$('#exploded_codons').append(html);
+
+}
+
+</script>
+
+{%end%}
+
+{% block content%}
+<body onload="ExplodeCodons();">
+
+<div>
+<div class="row" style="margin-bottom:30px;">
+  <h3>DYNAMCC_R</h3>
+</div>
+
+<div class = "row">
+
+<h5>Selected organism usage table: <em>{{organism}}</em></h5>
+<h5>Amino acids removed from the compressed codon pool: {% for aa in remove_aa %} {{aa}} {% end %}</h5>
+<h5>The resulting compressed codons are optimized for usage in <em>{{organism}}</em>: </h5>
+
+<div id="exploded_codons"></div>
+
+</div>
+
+</div>
+
+</body>
+
+{%end%}
