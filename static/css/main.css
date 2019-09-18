@@ -210,3 +210,17 @@ a:focus {
   background-size: 75px 50px;
   background-repeat: no-repeat;
 }
+.side-wrapper {
+  display: inline-flex;
+}
+.side-wrapper span {
+  display: inline-flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  justify-items: center;
+}
+.side-wrapper span.side-label {
+  width: 130px;
+  margin-left: 20px;
+}
