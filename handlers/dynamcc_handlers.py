@@ -283,7 +283,9 @@ class ExploderHandler(RequestHandler):
 
 class Dynamcc4Handler(RequestHandler):
 	def get(self):
-		self.render("dynamcc_4.html")
+		d = {"step2": False}
+		d["step2"] = self.get_argument("step2", None) is not None
+		self.render("dynamcc_4.html", **d)
 
 	def post(self):
 		if "table" in self.request.files:

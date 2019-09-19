@@ -256,13 +256,15 @@
   <div>
     <div class="row" style="margin-bottom:30px;">
       <h3>DYNAMCC_4</h3>
+      {{ step2 }}
     </div>
 
     <div>
+      {% if not step2 %}
       <form
         enctype="multipart/form-data"
         method="post"
-        action="/dynamcc_4/?step=2"
+        action="/dynamcc_4/?step2"
       >
         <div class="row">
           <div class="col-sm-12">
@@ -416,6 +418,7 @@
         </div>
       </form>
 
+      {% else %}
       <form enctype="multipart/form-data" method="post" action="/dynamcc_4/">
         <div class="row">
           <div class="col-sm-12">
@@ -734,6 +737,7 @@
           </div>
         </div>
       </form>
+      {% end %}
     </div>
   </div>
 </body>
