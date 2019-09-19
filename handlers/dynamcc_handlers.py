@@ -32,7 +32,7 @@ import itertools
 from tornado.web import RequestHandler
 from src.DYNAMCC_0 import *
 from src.DYNAMCC_R import *
-
+from src.DYNAMCC_4 import *
 
 organism_mapping = {
 	"Ecoli" : "ecoli.txt",
@@ -298,14 +298,22 @@ class Dynamcc4Handler(RequestHandler):
 				organism_name = organism_names[seletect_organism]
 			else:
 				pass
-		#organism_name = "E. coli"
-		#sorted_dict = util.BuildUsageDict(organism_mapping["Ecoli"])
+
+		hamming_distance = self.get_argument("hamming_distance")
 		rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
+
+		print hamming_distance, TargetHammingDistance("TTT", "TTC", hamming_distance)
+
+		return
+
 		if self.get_argument("keep_or_remove") == 'remove':
 			remove_aa = self.get_arguments('aa')
 		else:
 			selected_aa = self.get_arguments('aa')
 			remove_aa = list(aa.difference(selected_aa))
+
+		HammingDistance()
+
 		filtered_dict = util.EditUsageDict(remove_aa, sorted_dict)
 		InUse_dict = ReformatUsageDict(filtered_dict)
 		codon_list = BestList(filtered_dict)
