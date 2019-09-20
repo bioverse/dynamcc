@@ -283,28 +283,48 @@ class ExploderHandler(RequestHandler):
 
 class Dynamcc4Handler(RequestHandler):
 	def get(self):
-		d = {"step2": False}
-		d["step2"] = self.get_argument("step2", None) is not None
-		self.render("dynamcc_4.html", **d)
+		self.render("dynamcc_4.html", step=None)
 
 	def post(self):
-		if "table" in self.request.files:
-			sorted_dict = util.BuildCustomUsageDict(self.request.files["table"][0])
-			organism_name = "user uploaded usage table"
-		else:
-			seletect_organism = self.get_argument("usage_table")
-			if seletect_organism in organism_mapping:
-				sorted_dict = util.BuildUsageDict(organism_mapping[seletect_organism])
-				organism_name = organism_names[seletect_organism]
-			else:
-				pass
-
 		hamming_distance = self.get_argument("hamming_distance")
-		rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
+		target_codon = self.get_argument("target_codon")
+		form_step = int(self.get_argument("step", 0))
 
-		print hamming_distance, TargetHammingDistance("TTT", "TTC", hamming_distance)
+		print "target_codon: %s\nhamming distance: %s" % (target_codon, hamming_distance)
 
-		return
+		if form_step == 2:
+			if "table" in self.request.files:
+				usage_table = util.BuildCustomUsageDict(self.request.files["table"][0])
+				organism_name = "user uploaded usage table"
+			else:
+				seletect_organism = self.get_argument("usage_table")
+				if seletect_organism in organism_mapping:
+					usage_table = util.BuildUsageDict(organism_mapping[seletect_organism])
+					organism_name = organism_names[seletect_organism]
+				else:
+					pass
+			
+			rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
+
+			# hamming_distance, TargetHammingDistance("TTT", "TTC", hamming_distance)
+
+			new_usage_table = defaultdict(list)
+			for amino_acid in usage_table:
+				codons = usage_table[amino_acid]
+				distance_in_range = False
+				for codon in codons:
+					if hamming_distance != 1:
+						distance_in_range = TargetHammingDistance(codon[0], target_codon, 2)
+						if distance_in_range == False:
+							distance_in_range = TargetHammingDistance(codon[0], target_codon, 3)
+					else:
+						distance_in_range = TargetHammingDistance(codon[0], target_codon, 1)
+
+					new_usage_table[amino_acid].append((codon[0], codon[1], distance_in_range))
+
+				print new_usage_table, 
+
+			return self.render("dynamcc_4.html", step=form_step, usage_table=new_usage_table)
 
 		if self.get_argument("keep_or_remove") == 'remove':
 			remove_aa = self.get_arguments('aa')
@@ -314,7 +334,7 @@ class Dynamcc4Handler(RequestHandler):
 
 		HammingDistance()
 
-		filtered_dict = util.EditUsageDict(remove_aa, sorted_dict)
+		filtered_dict = util.EditUsageDict(remove_aa, usage_table)
 		InUse_dict = ReformatUsageDict(filtered_dict)
 		codon_list = BestList(filtered_dict)
 		in_use = FlagInUse(codon_list, InUse_dict)
@@ -351,7 +371,7 @@ class Dynamcc4Handler(RequestHandler):
 				exploded_codons[key].append(joined_codon)
 		print "exploded_codons:", exploded_codons
 
-		codon_dict = util.BuildCodonDict(sorted_dict)
+		codon_dict = util.BuildCodonDict(usage_table)
 		print "codon_dict:", codon_dict
 
-		self.render("dynamcc_R_results.html", codon_dict=codon_dict, organism=organism_name, remove_aa=remove_aa, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict)
+		self.render("dynamcc_R_results.html", codon_dict=codon_dict, organism=organism_name, remove_aa=remove_aa, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=usage_table)

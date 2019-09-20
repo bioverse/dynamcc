@@ -61,7 +61,7 @@ def HammingDistance(codonA, codonB):
     return outerCount
 
 
-def TargetHammingDistance(codonA, codonB, target):
+def TargetHammingDistance(codonA, codonB, distance):
     """Check if targetted hamming distance is in range between two Codons
 
     Parameters
@@ -70,23 +70,23 @@ def TargetHammingDistance(codonA, codonB, target):
 
     codonB (str): Codon to compare with
 
-    target (int): Base distance to be expected between the two Codons
+    distance (int): Base distance to be expected between the two Codons
 
     Returns
     -------
-    bool: targetted hamming distance is in range
+    bool: Is hamming distance in range
 
     """
 
-    target = int(target)
+    distance = int(distance)
     proton_engineering_bases = [2, 3]
     natural_mutation_base = 1
     hamming_distance = HammingDistance(codonA, codonB)
 
-    if hamming_distance in proton_engineering_bases and target in proton_engineering_bases:
+    if hamming_distance in proton_engineering_bases and distance in proton_engineering_bases:
         return True
 
-    if target == natural_mutation_base and hamming_distance == natural_mutation_base:
+    if distance == natural_mutation_base and hamming_distance == natural_mutation_base:
         return True
 
     return False
