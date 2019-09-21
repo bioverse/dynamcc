@@ -1,0 +1,14 @@
+{% for codon in codons %}
+<div>
+  <label {% if not codon[2] %} style="color: #c6c6c6" {% end %}>
+    <input
+      type="checkbox"
+      name="aa"
+      value="{{ codon[0] }}"
+      {% if not codon[2] %} disabled readonly {% end %}
+      style="margin-right:10px;"
+    />
+    {{ codon[0] }} ({{ codon[1] }})</label
+  >
+</div>
+{% end %}

@@ -40,12 +40,12 @@
 
     $("input[name=hydrophobic]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_hydrophobic input[name=aa]").prop("checked", true);
+        $("#all_hydrophobic input[name=aa]:not(:disabled)").prop("checked", true);
         $("input[name=aromatic]").prop("checked", true);
         $("input[name=nonpolar]").prop("checked", true);
         $("input[name=small]").prop("checked", true);
       } else {
-        $("#all_hydrophobic input[name=aa]").prop("checked", false);
+        $("#all_hydrophobic input[name=aa]:not(:disabled)").prop("checked", false);
         $("input[name=aromatic]").prop("checked", false);
         $("input[name=nonpolar]").prop("checked", false);
         $("input[name=small]").prop("checked", false);
@@ -54,39 +54,39 @@
 
     $("input[name=aromatic]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_aromatic input[name=aa]").prop("checked", true);
+        $("#all_aromatic input[name=aa]:not(:disabled)").prop("checked", true);
       } else {
-        $("#all_aromatic input[name=aa]").prop("checked", false);
+        $("#all_aromatic input[name=aa]:not(:disabled)").prop("checked", false);
       }
     });
 
     $("input[name=nonpolar]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_nonpolar input[name=aa]").prop("checked", true);
+        $("#all_nonpolar input[name=aa]:not(:disabled)").prop("checked", true);
         $("input[name=small]").prop("checked", true);
       } else {
-        $("#all_nonpolar input[name=aa]").prop("checked", false);
+        $("#all_nonpolar input[name=aa]:not(:disabled)").prop("checked", false);
         $("input[name=small]").prop("checked", false);
       }
     });
 
     $("input[name=small]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_small input[name=aa]").prop("checked", true);
+        $("#all_small input[name=aa]:not(:disabled)").prop("checked", true);
       } else {
-        $("#all_small input[name=aa]").prop("checked", false);
+        $("#all_small input[name=aa]:not(:disabled)").prop("checked", false);
       }
     });
 
     $("input[name=hydrophilic]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_hydrophilic input[name=aa]").prop("checked", true);
+        $("#all_hydrophilic input[name=aa]:not(:disabled)").prop("checked", true);
         $("input[name=negative]").prop("checked", true);
         $("input[name=positive]").prop("checked", true);
         $("input[name=uncharged]").prop("checked", true);
         $("input[name=small_uncharged]").prop("checked", true);
       } else {
-        $("#all_hydrophilic input[name=aa]").prop("checked", false);
+        $("#all_hydrophilic input[name=aa]:not(:disabled)").prop("checked", false);
         $("input[name=negative]").prop("checked", false);
         $("input[name=positive]").prop("checked", false);
         $("input[name=uncharged]").prop("checked", false);
@@ -96,35 +96,35 @@
 
     $("input[name=negative]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_negative input[name=aa]").prop("checked", true);
+        $("#all_negative input[name=aa]:not(:disabled)").prop("checked", true);
       } else {
-        $("#all_negative input[name=aa]").prop("checked", false);
+        $("#all_negative input[name=aa]:not(:disabled)").prop("checked", false);
       }
     });
 
     $("input[name=positive]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_positive input[name=aa]").prop("checked", true);
+        $("#all_positive input[name=aa]:not(:disabled)").prop("checked", true);
       } else {
-        $("#all_positive input[name=aa]").prop("checked", false);
+        $("#all_positive input[name=aa]:not(:disabled)").prop("checked", false);
       }
     });
 
     $("input[name=uncharged]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_uncharged input[name=aa]").prop("checked", true);
+        $("#all_uncharged input[name=aa]:not(:disabled)").prop("checked", true);
         $("input[name=small_uncharged]").prop("checked", true);
       } else {
-        $("#all_uncharged input[name=aa]").prop("checked", false);
+        $("#all_uncharged input[name=aa]:not(:disabled)").prop("checked", false);
         $("input[name=small_uncharged]").prop("checked", false);
       }
     });
 
     $("input[name=small_uncharged]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_small_uncharged input[name=aa]").prop("checked", true);
+        $("#all_small_uncharged input[name=aa]:not(:disabled)").prop("checked", true);
       } else {
-        $("#all_small_uncharged input[name=aa]").prop("checked", false);
+        $("#all_small_uncharged input[name=aa]:not(:disabled)").prop("checked", false);
       }
     });
   }
@@ -445,7 +445,7 @@
                           />
                         </div>
                         <div class="panel-body">
-                          <div class="col-sm-2">
+                          <div class="col-sm-3">
                             <input
                               type="checkbox"
                               name="aa"
@@ -453,8 +453,9 @@
                               style="margin-right:10px;"
                             />
                             <label>W</label>
+                            {% module Template("codons_list.html", codons=usage_table['W']) %}
                           </div>
-                          <div class="col-sm-2">
+                          <div class="col-sm-3">
                             <input
                               type="checkbox"
                               name="aa"
@@ -462,8 +463,9 @@
                               style="margin-right:10px;"
                             />
                             <label>F</label>
+                            {% module Template("codons_list.html", codons=usage_table['F']) %}
                           </div>
-                          <div class="col-sm-2">
+                          <div class="col-sm-3">
                             <input
                               type="checkbox"
                               name="aa"
@@ -471,6 +473,7 @@
                               style="margin-right:10px;"
                             />
                             <label>Y</label>
+                            {% module Template("codons_list.html", codons=usage_table['Y']) %}
                           </div>
                         </div>
                       </div>
@@ -485,7 +488,7 @@
                         </div>
                         <div class="panel-body">
                           <div class="row" style="margin-left:0;">
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                               <input
                                 type="checkbox"
                                 name="aa"
@@ -493,17 +496,9 @@
                                 style="margin-right:10px;"
                               />
                               <label>M</label>
+                              {% module Template("codons_list.html", codons=usage_table['M']) %}
                             </div>
-                            <div class="col-sm-2">
-                              <input
-                                type="checkbox"
-                                name="aa"
-                                value="P"
-                                style="margin-right:10px;"
-                              />
-                              <label>P</label>
-                            </div>
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                               <input
                                 type="checkbox"
                                 name="aa"
@@ -511,17 +506,19 @@
                                 style="margin-right:10px;"
                               />
                               <label>I</label>
+                              {% module Template("codons_list.html", codons=usage_table['I']) %}
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                               <input
                                 type="checkbox"
                                 name="aa"
-                                value="L"
+                                value="P"
                                 style="margin-right:10px;"
                               />
-                              <label>L</label>
+                              <label>P</label>
+                              {% module Template("codons_list.html", codons=usage_table['P']) %}
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                               <input
                                 type="checkbox"
                                 name="aa"
@@ -529,6 +526,18 @@
                                 style="margin-right:10px;"
                               />
                               <label>V</label>
+                              {% module Template("codons_list.html", codons=usage_table['V']) %}
+                            </div>
+                          </div>
+                          <div class="row" style="margin-left:0;">
+                            <div class="col-sm-3">
+                              <input
+                                type="checkbox"
+                                name="aa"
+                                value="L"
+                                style="margin-right:10px;"
+                              />
+                              <label>L</label>
                             </div>
                           </div>
                           <div class="panel panel-default" id="all_small">
@@ -541,7 +550,7 @@
                               />
                             </div>
                             <div class="panel-body">
-                              <div class="col-sm-2">
+                              <div class="col-sm-3">
                                 <input
                                   type="checkbox"
                                   name="aa"
@@ -549,8 +558,9 @@
                                   style="margin-right:10px;"
                                 />
                                 <label>A</label>
+                                {% module Template("codons_list.html", codons=usage_table['A']) %}
                               </div>
-                              <div class="col-sm-2">
+                              <div class="col-sm-3">
                                 <input
                                   type="checkbox"
                                   name="aa"
@@ -558,6 +568,7 @@
                                   style="margin-right:10px;"
                                 />
                                 <label>G</label>
+                                {% module Template("codons_list.html", codons=usage_table['G']) %}
                               </div>
                             </div>
                           </div>
@@ -588,7 +599,7 @@
                           />
                         </div>
                         <div class="panel-body">
-                          <div class="col-sm-2">
+                          <div class="col-sm-3">
                             <input
                               type="checkbox"
                               name="aa"
@@ -596,8 +607,9 @@
                               style="margin-right:10px;"
                             />
                             <label>D</label>
+                            {% module Template("codons_list.html", codons=usage_table['D']) %}
                           </div>
-                          <div class="col-sm-2">
+                          <div class="col-sm-3">
                             <input
                               type="checkbox"
                               name="aa"
@@ -605,6 +617,7 @@
                               style="margin-right:10px;"
                             />
                             <label>E</label>
+                            {% module Template("codons_list.html", codons=usage_table['E']) %}
                           </div>
                         </div>
                       </div>
@@ -618,7 +631,7 @@
                           />
                         </div>
                         <div class="panel-body">
-                          <div class="col-sm-2">
+                          <div class="col-sm-3">
                             <input
                               type="checkbox"
                               name="aa"
@@ -626,8 +639,9 @@
                               style="margin-right:10px;"
                             />
                             <label>H</label>
+                            {% module Template("codons_list.html", codons=usage_table['H']) %}
                           </div>
-                          <div class="col-sm-2">
+                          <div class="col-sm-3">
                             <input
                               type="checkbox"
                               name="aa"
@@ -635,8 +649,9 @@
                               style="margin-right:10px;"
                             />
                             <label>R</label>
+                            {% module Template("codons_list.html", codons=usage_table['R']) %}
                           </div>
-                          <div class="col-sm-2">
+                          <div class="col-sm-3">
                             <input
                               type="checkbox"
                               name="aa"
@@ -644,6 +659,7 @@
                               style="margin-right:10px;"
                             />
                             <label>K</label>
+                            {% module Template("codons_list.html", codons=usage_table['K']) %}
                           </div>
                         </div>
                       </div>
@@ -658,7 +674,7 @@
                         </div>
                         <div class="panel-body">
                           <div class="row" style="margin-left:0;">
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                               <input
                                 type="checkbox"
                                 name="aa"
@@ -666,8 +682,9 @@
                                 style="margin-right:10px;"
                               />
                               <label>T</label>
+                              {% module Template("codons_list.html", codons=usage_table['T']) %}
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                               <input
                                 type="checkbox"
                                 name="aa"
@@ -675,8 +692,9 @@
                                 style="margin-right:10px;"
                               />
                               <label>Q</label>
+                              {% module Template("codons_list.html", codons=usage_table['Q']) %}
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                               <input
                                 type="checkbox"
                                 name="aa"
@@ -684,6 +702,7 @@
                                 style="margin-right:10px;"
                               />
                               <label>N</label>
+                              {% module Template("codons_list.html", codons=usage_table['N']) %}
                             </div>
                           </div>
                           <div
@@ -699,7 +718,7 @@
                               />
                             </div>
                             <div class="panel-body">
-                              <div class="col-sm-2">
+                              <div class="col-sm-3">
                                 <input
                                   type="checkbox"
                                   name="aa"
@@ -707,8 +726,9 @@
                                   style="margin-right:10px;"
                                 />
                                 <label>C</label>
+                                {% module Template("codons_list.html", codons=usage_table['C']) %}
                               </div>
-                              <div class="col-sm-2">
+                              <div class="col-sm-3">
                                 <input
                                   type="checkbox"
                                   name="aa"
@@ -716,6 +736,7 @@
                                   style="margin-right:10px;"
                                 />
                                 <label>S</label>
+                                {% module Template("codons_list.html", codons=usage_table['S']) %}
                               </div>
                             </div>
                           </div>
