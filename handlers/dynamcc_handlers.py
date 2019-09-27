@@ -325,7 +325,7 @@ class Dynamcc4Handler(RequestHandler):
 
 					new_usage_table[amino_acid].append((codon[0], codon[1], distance_in_range))
 
-				print new_usage_table, 
+				print new_usage_table
 
 			return self.render("dynamcc_4.html", step=form_step, usage_table=new_usage_table)
 
