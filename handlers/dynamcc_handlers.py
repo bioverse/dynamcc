@@ -313,6 +313,9 @@ class Dynamcc4Handler(RequestHandler):
 				codons = usage_table[amino_acid]
 				distance_in_range = False
 				for codon in codons:
+					if codon[0] == target_codon:
+						continue
+
 					if hamming_distance != 1:
 						distance_in_range = TargetHammingDistance(codon[0], target_codon, 2)
 						if distance_in_range == False:
