@@ -286,11 +286,9 @@ class Dynamcc4Handler(RequestHandler):
 		self.render("dynamcc_4.html", step=None)
 
 	def post(self):
-		hamming_distance = self.get_argument("hamming_distance")
+		hamming_distance = int(self.get_argument("hamming_distance"))
 		target_codon = self.get_argument("target_codon")
 		form_step = int(self.get_argument("step", 0))
-
-		print "target_codon: %s\nhamming distance: %s" % (target_codon, hamming_distance)
 
 		if form_step == 2:
 			if "table" in self.request.files:
@@ -303,11 +301,14 @@ class Dynamcc4Handler(RequestHandler):
 					organism_name = organism_names[seletect_organism]
 				else:
 					pass
-			
+
+			print "target_codon: %s\nhamming distance: %d\norganism: %s" % (target_codon, hamming_distance, organism_name)
+
 			rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
 
-			# hamming_distance, TargetHammingDistance("TTT", "TTC", hamming_distance)
-
+			"""
+			Finding hamming distance from the usage table
+			"""
 			new_usage_table = defaultdict(list)
 			for amino_acid in usage_table:
 				codons = usage_table[amino_acid]
@@ -325,7 +326,7 @@ class Dynamcc4Handler(RequestHandler):
 
 					new_usage_table[amino_acid].append((codon[0], codon[1], distance_in_range))
 
-				print new_usage_table
+				print amino_acid, new_usage_table[amino_acid]
 
 			return self.render("dynamcc_4.html", step=form_step, usage_table=new_usage_table)
 
