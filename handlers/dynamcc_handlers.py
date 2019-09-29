@@ -324,6 +324,15 @@ class Dynamcc4Handler(RequestHandler):
 					else:
 						distance_in_range = TargetHammingDistance(codon[0], target_codon, 1)
 
+					"""
+					Filter out possible codons from the list and
+					only preserve the highest usage value possible codon
+					"""
+					if len(new_usage_table[amino_acid]):
+						for _codon in new_usage_table[amino_acid]:
+							if _codon[2] == True and distance_in_range == True:
+								distance_in_range = False
+
 					new_usage_table[amino_acid].append((codon[0], codon[1], distance_in_range))
 
 				print amino_acid, new_usage_table[amino_acid]
