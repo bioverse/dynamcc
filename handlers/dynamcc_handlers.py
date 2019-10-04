@@ -328,12 +328,14 @@ class Dynamcc4Handler(RequestHandler):
 					Filter out possible codons from the list and
 					only preserve the highest usage value possible codon
 					"""
+					sibling_in_range = False
 					if len(new_usage_table[amino_acid]):
 						for _codon in new_usage_table[amino_acid]:
 							if _codon[2] == True and distance_in_range == True:
 								distance_in_range = False
+								sibling_in_range = True
 
-					new_usage_table[amino_acid].append((codon[0], codon[1], distance_in_range))
+					new_usage_table[amino_acid].append((codon[0], codon[1], distance_in_range, sibling_in_range))
 
 				print amino_acid, new_usage_table[amino_acid]
 
