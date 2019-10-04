@@ -3,8 +3,8 @@
   <label {% if not codon[2] and not codon[3] %} style="color: #c6c6c6" {% end %}>
     <input
       type="checkbox"
-      name="aa"
-      value="{{ codon[0] }}"
+      name="codons"
+      value="{{ aa }}_{{ codon[0] }}_{{ codon[1] }}"
       {% if codon[2] %} checked="checked" {% end %}
       {% if not codon[2] and not codon[3] %} disabled readonly {% end %}
       style="margin-right:10px;"

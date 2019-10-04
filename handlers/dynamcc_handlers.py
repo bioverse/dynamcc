@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 import itertools
+import json
 from tornado.web import RequestHandler
 from src.DYNAMCC_0 import *
 from src.DYNAMCC_R import *
@@ -190,7 +191,7 @@ class DynamccRHandler(RequestHandler):
 		best_compression = execute_algorithm(codon_list,in_use,rules_dict,inverse_dict)
 
 		print "best_compression:", best_compression
-		
+
 		## exploding codons
 		exploded_codons = {}
 		codon_list = []
@@ -304,8 +305,6 @@ class Dynamcc4Handler(RequestHandler):
 
 			print "target_codon: %s\nhamming distance: %d\norganism: %s" % (target_codon, hamming_distance, organism_name)
 
-			rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
-
 			"""
 			Finding hamming distance from the usage table
 			"""
@@ -339,24 +338,30 @@ class Dynamcc4Handler(RequestHandler):
 
 				print amino_acid, new_usage_table[amino_acid]
 
-			return self.render("dynamcc_4.html", step=form_step, usage_table=new_usage_table)
+			return self.render("dynamcc_4.html", step=form_step, target_codon=target_codon, hamming_distance=hamming_distance, organism_name=organism_name, sorted_dict=json.dumps(usage_table), usage_table=new_usage_table)
 
-		if self.get_argument("keep_or_remove") == 'remove':
-			remove_aa = self.get_arguments('aa')
-		else:
-			selected_aa = self.get_arguments('aa')
-			remove_aa = list(aa.difference(selected_aa))
+		codons = self.get_arguments("codons")
 
-		HammingDistance()
+		sorted_dict_codons = defaultdict(list)
+		for codon in codons:
+			inline_codon = str.split(str(codon), '_')
 
-		filtered_dict = util.EditUsageDict(remove_aa, usage_table)
-		InUse_dict = ReformatUsageDict(filtered_dict)
-		codon_list = BestList(filtered_dict)
+			sorted_dict_codons[ inline_codon[0] ].append((inline_codon[1],inline_codon[2]))
+		
+		print sorted_dict_codons
+
+		rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
+		organism_name = self.get_argument("organism_name")
+
+		InUse_dict = ReformatUsageDict(sorted_dict_codons)
+		codon_list = BestList(sorted_dict_codons)
 		in_use = FlagInUse(codon_list, InUse_dict)
 		best_compression = execute_algorithm(codon_list,in_use,rules_dict,inverse_dict)
 
 		print "best_compression:", best_compression
-		
+
+		inline_codon_list = codon_list
+
 		## exploding codons
 		exploded_codons = {}
 		codon_list = []
@@ -386,7 +391,7 @@ class Dynamcc4Handler(RequestHandler):
 				exploded_codons[key].append(joined_codon)
 		print "exploded_codons:", exploded_codons
 
-		codon_dict = util.BuildCodonDict(usage_table)
+		codon_dict = util.BuildCodonDict(sorted_dict_codons)
 		print "codon_dict:", codon_dict
 
-		self.render("dynamcc_R_results.html", codon_dict=codon_dict, organism=organism_name, remove_aa=remove_aa, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=usage_table)
+		self.render("dynamcc_4_results.html", inline_codon_list=inline_codon_list, codon_dict=codon_dict, organism=organism_name, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict_codons)

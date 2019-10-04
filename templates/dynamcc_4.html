@@ -40,12 +40,18 @@
 
     $("input[name=hydrophobic]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_hydrophobic input[name=aa]:not(:disabled)").prop("checked", true);
+        $("#all_hydrophobic input[name=aa]:not(:disabled)").prop(
+          "checked",
+          true
+        );
         $("input[name=aromatic]").prop("checked", true);
         $("input[name=nonpolar]").prop("checked", true);
         $("input[name=small]").prop("checked", true);
       } else {
-        $("#all_hydrophobic input[name=aa]:not(:disabled)").prop("checked", false);
+        $("#all_hydrophobic input[name=aa]:not(:disabled)").prop(
+          "checked",
+          false
+        );
         $("input[name=aromatic]").prop("checked", false);
         $("input[name=nonpolar]").prop("checked", false);
         $("input[name=small]").prop("checked", false);
@@ -80,13 +86,19 @@
 
     $("input[name=hydrophilic]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_hydrophilic input[name=aa]:not(:disabled)").prop("checked", true);
+        $("#all_hydrophilic input[name=aa]:not(:disabled)").prop(
+          "checked",
+          true
+        );
         $("input[name=negative]").prop("checked", true);
         $("input[name=positive]").prop("checked", true);
         $("input[name=uncharged]").prop("checked", true);
         $("input[name=small_uncharged]").prop("checked", true);
       } else {
-        $("#all_hydrophilic input[name=aa]:not(:disabled)").prop("checked", false);
+        $("#all_hydrophilic input[name=aa]:not(:disabled)").prop(
+          "checked",
+          false
+        );
         $("input[name=negative]").prop("checked", false);
         $("input[name=positive]").prop("checked", false);
         $("input[name=uncharged]").prop("checked", false);
@@ -115,16 +127,25 @@
         $("#all_uncharged input[name=aa]:not(:disabled)").prop("checked", true);
         $("input[name=small_uncharged]").prop("checked", true);
       } else {
-        $("#all_uncharged input[name=aa]:not(:disabled)").prop("checked", false);
+        $("#all_uncharged input[name=aa]:not(:disabled)").prop(
+          "checked",
+          false
+        );
         $("input[name=small_uncharged]").prop("checked", false);
       }
     });
 
     $("input[name=small_uncharged]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_small_uncharged input[name=aa]:not(:disabled)").prop("checked", true);
+        $("#all_small_uncharged input[name=aa]:not(:disabled)").prop(
+          "checked",
+          true
+        );
       } else {
-        $("#all_small_uncharged input[name=aa]:not(:disabled)").prop("checked", false);
+        $("#all_small_uncharged input[name=aa]:not(:disabled)").prop(
+          "checked",
+          false
+        );
       }
     });
   }
@@ -263,6 +284,7 @@
       <form enctype="multipart/form-data" method="post" action="/dynamcc_4/">
         <div class="row">
           <div class="col-sm-12">
+            <h4>Selecting distance (library type) and organism</h4>
             <div class="panel panel-default">
               <div class="panel-heading">Target Codon:</div>
               <div class="panel-body">
@@ -415,11 +437,18 @@
       </form>
 
       {% else %}
-      <form enctype="multipart/form-data" method="post" action="/dynamcc_4/">
+      <form
+        enctype="application/x-www-form-urlencoded"
+        method="post"
+        action="/dynamcc_4/"
+      >
         <div class="row">
           <div class="col-sm-12">
+            <h4>Selecting codons for compression:</h4>
             <div class="panel panel-default">
-              <div class="panel-heading">Choose amino acids:</div>
+              <div class="panel-heading">
+                Choose amino acids to keep in the pool:
+              </div>
               <div class="panel-body">
                 <div class="row" style="margin-left:0;">
                   <div
@@ -453,7 +482,7 @@
                               style="margin-right:10px;"
                             />
                             <label>W</label>
-                            {% module Template("codons_list.html", codons=usage_table['W']) %}
+                            {% module Template("codons_list.html", aa='W', codons=usage_table['W']) %}
                           </div>
                           <div class="col-sm-3">
                             <input
@@ -463,7 +492,7 @@
                               style="margin-right:10px;"
                             />
                             <label>F</label>
-                            {% module Template("codons_list.html", codons=usage_table['F']) %}
+                            {% module Template("codons_list.html", aa='F', codons=usage_table['F']) %}
                           </div>
                           <div class="col-sm-3">
                             <input
@@ -473,7 +502,7 @@
                               style="margin-right:10px;"
                             />
                             <label>Y</label>
-                            {% module Template("codons_list.html", codons=usage_table['Y']) %}
+                            {% module Template("codons_list.html", aa='Y', codons=usage_table['Y']) %}
                           </div>
                         </div>
                       </div>
@@ -496,7 +525,7 @@
                                 style="margin-right:10px;"
                               />
                               <label>M</label>
-                              {% module Template("codons_list.html", codons=usage_table['M']) %}
+                              {% module Template("codons_list.html", aa='M', codons=usage_table['M']) %}
                             </div>
                             <div class="col-sm-3">
                               <input
@@ -506,7 +535,7 @@
                                 style="margin-right:10px;"
                               />
                               <label>I</label>
-                              {% module Template("codons_list.html", codons=usage_table['I']) %}
+                              {% module Template("codons_list.html", aa='I', codons=usage_table['I']) %}
                             </div>
                             <div class="col-sm-3">
                               <input
@@ -516,7 +545,7 @@
                                 style="margin-right:10px;"
                               />
                               <label>P</label>
-                              {% module Template("codons_list.html", codons=usage_table['P']) %}
+                              {% module Template("codons_list.html", aa='P', codons=usage_table['P']) %}
                             </div>
                             <div class="col-sm-3">
                               <input
@@ -526,7 +555,7 @@
                                 style="margin-right:10px;"
                               />
                               <label>V</label>
-                              {% module Template("codons_list.html", codons=usage_table['V']) %}
+                              {% module Template("codons_list.html", aa='V', codons=usage_table['V']) %}
                             </div>
                           </div>
                           <div class="row" style="margin-left:0;">
@@ -558,7 +587,7 @@
                                   style="margin-right:10px;"
                                 />
                                 <label>A</label>
-                                {% module Template("codons_list.html", codons=usage_table['A']) %}
+                                {% module Template("codons_list.html", aa='A', codons=usage_table['A']) %}
                               </div>
                               <div class="col-sm-3">
                                 <input
@@ -568,7 +597,7 @@
                                   style="margin-right:10px;"
                                 />
                                 <label>G</label>
-                                {% module Template("codons_list.html", codons=usage_table['G']) %}
+                                {% module Template("codons_list.html", aa='G', codons=usage_table['G']) %}
                               </div>
                             </div>
                           </div>
@@ -607,7 +636,7 @@
                               style="margin-right:10px;"
                             />
                             <label>D</label>
-                            {% module Template("codons_list.html", codons=usage_table['D']) %}
+                            {% module Template("codons_list.html", aa='D', codons=usage_table['D']) %}
                           </div>
                           <div class="col-sm-3">
                             <input
@@ -617,7 +646,7 @@
                               style="margin-right:10px;"
                             />
                             <label>E</label>
-                            {% module Template("codons_list.html", codons=usage_table['E']) %}
+                            {% module Template("codons_list.html", aa='E', codons=usage_table['E']) %}
                           </div>
                         </div>
                       </div>
@@ -639,7 +668,7 @@
                               style="margin-right:10px;"
                             />
                             <label>H</label>
-                            {% module Template("codons_list.html", codons=usage_table['H']) %}
+                            {% module Template("codons_list.html", aa='H', codons=usage_table['H']) %}
                           </div>
                           <div class="col-sm-3">
                             <input
@@ -649,7 +678,7 @@
                               style="margin-right:10px;"
                             />
                             <label>R</label>
-                            {% module Template("codons_list.html", codons=usage_table['R']) %}
+                            {% module Template("codons_list.html", aa='R', codons=usage_table['R']) %}
                           </div>
                           <div class="col-sm-3">
                             <input
@@ -659,7 +688,7 @@
                               style="margin-right:10px;"
                             />
                             <label>K</label>
-                            {% module Template("codons_list.html", codons=usage_table['K']) %}
+                            {% module Template("codons_list.html", aa='K', codons=usage_table['K']) %}
                           </div>
                         </div>
                       </div>
@@ -682,7 +711,7 @@
                                 style="margin-right:10px;"
                               />
                               <label>T</label>
-                              {% module Template("codons_list.html", codons=usage_table['T']) %}
+                              {% module Template("codons_list.html", aa='T', codons=usage_table['T']) %}
                             </div>
                             <div class="col-sm-3">
                               <input
@@ -692,7 +721,7 @@
                                 style="margin-right:10px;"
                               />
                               <label>Q</label>
-                              {% module Template("codons_list.html", codons=usage_table['Q']) %}
+                              {% module Template("codons_list.html", aa='Q', codons=usage_table['Q']) %}
                             </div>
                             <div class="col-sm-3">
                               <input
@@ -702,7 +731,7 @@
                                 style="margin-right:10px;"
                               />
                               <label>N</label>
-                              {% module Template("codons_list.html", codons=usage_table['N']) %}
+                              {% module Template("codons_list.html", aa='N', codons=usage_table['N']) %}
                             </div>
                           </div>
                           <div
@@ -726,7 +755,7 @@
                                   style="margin-right:10px;"
                                 />
                                 <label>C</label>
-                                {% module Template("codons_list.html", codons=usage_table['C']) %}
+                                {% module Template("codons_list.html", aa='C', codons=usage_table['C']) %}
                               </div>
                               <div class="col-sm-3">
                                 <input
@@ -736,7 +765,7 @@
                                   style="margin-right:10px;"
                                 />
                                 <label>S</label>
-                                {% module Template("codons_list.html", codons=usage_table['S']) %}
+                                {% module Template("codons_list.html", aa='S', codons=usage_table['S']) %}
                               </div>
                             </div>
                           </div>
@@ -753,6 +782,15 @@
             </button>
           </div>
         </div>
+
+        <input type="hidden" name="target_codon" value="{{ target_codon }}" />
+        <input
+          type="hidden"
+          name="hamming_distance"
+          value="{{ hamming_distance }}"
+        />
+        <input type="hidden" name="organism_name" value="{{ organism_name }}" />
+        <input type="hidden" name="sorted_dict" value="{{ sorted_dict }}" />
       </form>
       {% end %}
     </div>

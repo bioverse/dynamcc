@@ -27,7 +27,7 @@ function ExplodeCodons() {
 	//console.log(codon_usage);
 	
 	var html = '<table border="1">';
-	html += '<th style="padding:10px;">Compressed Codon</th><th style="padding:10px;">Exploded Codons</th><th style="padding:10px;">Rank</th><th style="padding:10px;">Usage</th><th style="padding:10px;">Amino Acid</th>'
+	html += '<th style="padding:10px;">Compressed Codon</th><th style="padding:10px;">Exploded Codons</th><th style="padding:10px;">Usage</th><th style="padding:10px;">Amino Acid</th>'
 	
 	for (var key in exploded_codons) 
 	{
@@ -37,13 +37,6 @@ function ExplodeCodons() {
 		for (i = 0; i < exploded_codons[key].length; i++) 
 		{
 			html += exploded_codons[key][i];
-			html += '<br>';	
-		}
-		html += '</td>';
-		html += '<td style="padding:10px;">';
-		for (i = 0; i < exploded_codons[key].length; i++)
-		{
-			html += codon_rank[exploded_codons[key][i]];
 			html += '<br>';	
 		}
 		html += '</td>';
@@ -84,7 +77,7 @@ function ExplodeCodons() {
 <div class = "row">
 
 <h5>Selected organism usage table: <em>{{organism}}</em></h5>
-<h5>Amino acids removed from the compressed codon pool: {% for aa in remove_aa %} {{aa}} {% end %}</h5>
+<h5>Selected codons for compression: {% for codon in inline_codon_list %} {{codon}} {% end %}</h5>
 <h5>The resulting compressed codons are optimized for usage in <em>{{organism}}</em>: </h5>
 
 <div id="exploded_codons"></div>
