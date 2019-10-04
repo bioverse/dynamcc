@@ -29,7 +29,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 import itertools
-import json
 from tornado.web import RequestHandler
 from src.DYNAMCC_0 import *
 from src.DYNAMCC_R import *
@@ -338,7 +337,7 @@ class Dynamcc4Handler(RequestHandler):
 
 				print amino_acid, new_usage_table[amino_acid]
 
-			return self.render("dynamcc_4.html", step=form_step, target_codon=target_codon, hamming_distance=hamming_distance, organism_name=organism_name, sorted_dict=json.dumps(usage_table), usage_table=new_usage_table)
+			return self.render("dynamcc_4.html", step=form_step, target_codon=target_codon, hamming_distance=hamming_distance, organism_name=organism_name, usage_table=new_usage_table)
 
 		codons = self.get_arguments("codons")
 
