@@ -440,6 +440,7 @@
               Find codons and amino acids
             </button>
             <input type="hidden" name="step" value="2" />
+            <input type="hidden" name="access_code" value="{{ access_code }}" />
           </div>
         </div>
       </form>
@@ -817,6 +818,7 @@
           value="{{ hamming_distance }}"
         />
         <input type="hidden" name="organism_name" value="{{ organism_name }}" />
+        <input type="hidden" name="access_code" value="{{ access_code }}" />
       </form>
       {% end %}
     </div>

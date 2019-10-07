@@ -35,47 +35,50 @@ from src.DYNAMCC_R import *
 from src.DYNAMCC_4 import *
 
 organism_mapping = {
-	"Ecoli" : "ecoli.txt",
-	"yeast" : "yeast.txt",
-	"human" : "hsapiens.txt",
-	"mouse" : "mmusculus.txt",
+	"Ecoli": "ecoli.txt",
+	"yeast": "yeast.txt",
+	"human": "hsapiens.txt",
+	"mouse": "mmusculus.txt",
 	"Dmel"	: "dmelanogaster.txt",
 	"Cele"	: "celegans.txt"
 	}
 
 organism_names = {
-	"Ecoli" : "E. coli",
-	"yeast" : "yeast",
-	"human" : "human",
-	"mouse" : "mouse",
+	"Ecoli": "E. coli",
+	"yeast": "yeast",
+	"human": "human",
+	"mouse": "mouse",
 	"Dmel"	: "D. melanogaster",
 	"Cele"	: "C. elegans"
 }
 
-aa = set(['A', 'R', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V', 'N', 'X'])
+aa = set(['A', 'R', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 'L',
+         'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V', 'N', 'X'])
 
-rules = {   'R' : ['A', 'G'],
-			'Y' : ['C', 'T'],
-			'M' : ['A', 'C'],
-			'K' : ['G', 'T'],
-			'S' : ['C', 'G'],
-			'W' : ['A', 'T'],
-			'H' : ['A', 'C', 'T'],
-			'B' : ['C', 'G', 'T'],
-			'V' : ['A', 'C', 'G'],
-			'D' : ['A', 'G', 'T'],
-			'N' : ['A', 'C', 'G', 'T'],
-			'A' : ['A'],
-			'C' : ['C'],
-			'G' : ['G'],
-			'T' : ['T']
+rules = {'R': ['A', 'G'],
+			'Y': ['C', 'T'],
+			'M': ['A', 'C'],
+			'K': ['G', 'T'],
+			'S': ['C', 'G'],
+			'W': ['A', 'T'],
+			'H': ['A', 'C', 'T'],
+			'B': ['C', 'G', 'T'],
+			'V': ['A', 'C', 'G'],
+			'D': ['A', 'G', 'T'],
+			'N': ['A', 'C', 'G', 'T'],
+			'A': ['A'],
+			'C': ['C'],
+			'G': ['G'],
+			'T': ['T']
 		}
 
 ALLOWED_NEUCLOTIDES = ['A', 'C', 'G', 'T']
+ACCESS_CODE = "af12d5f5c349b38b3be6ca40ca4b0d79"
+
 
 class Dynamcc0Handler(RequestHandler):
 	def get(self):
-		self.render("dynamcc_0.html", usage_array = [])
+		self.render("dynamcc_0.html", usage_array=[])
 
 	def post(self):
 		if "table" in self.request.files:
@@ -97,13 +100,13 @@ class Dynamcc0Handler(RequestHandler):
 			remove_aa = list(aa.difference(selected_aa))
 		filtered_dict = util.EditUsageDict(remove_aa, sorted_dict)
 		selection = self.get_argument("compression_method")
-		#print selection
+		# print selection
 		rank = False
 		usage = False
 		if selection == 'rank':
 			rank = True
 			Selection = 'R'
-			#threshold = 2
+			# threshold = 2
 			threshold = int(self.get_argument("input_rank"))
 			print threshold
 			new_dict = RemoveCodonByRank(threshold, filtered_dict)
@@ -111,23 +114,24 @@ class Dynamcc0Handler(RequestHandler):
 			usage = True
 			Selection = 'U'
 			print Selection
-			#threshold = 0.04
+			# threshold = 0.04
 			threshold = float(self.get_argument("input_usage"))
 			new_dict = RemoveLowCodons(threshold, filtered_dict)
 
 		print "new_dict: ", new_dict
-		
+
 		codon_order = new_dict.keys()
 
 		codon_count = BuildCodonCount(new_dict, codon_order)
 
 		redundancy = 0
 
-		best_result = start_multiprocessing(new_dict,rules_dict, Selection, codon_count, redundancy, processes = 3)
+		best_result = start_multiprocessing(
+		    new_dict, rules_dict, Selection, codon_count, redundancy, processes=3)
 
 		print "best_result:", best_result
 
-		## exploding codons
+		# exploding codons
 		exploded_codons = {}
 		codon_list = []
 		for codon in best_result['BestReducedList']:
@@ -159,7 +163,8 @@ class Dynamcc0Handler(RequestHandler):
 		codon_dict = util.BuildCodonDict(sorted_dict)
 		print "codon_dict:", codon_dict
 
-		self.render("dynamcc_0_results.html", rank=rank, usage=usage, threshold_value=str(threshold), codon_dict=codon_dict, organism=organism_name, remove_aa=remove_aa, best_result=best_result, exploded_codons=exploded_codons, sorted_dict=sorted_dict)
+		self.render("dynamcc_0_results.html", rank=rank, usage=usage, threshold_value=str(threshold), codon_dict=codon_dict,
+		            organism=organism_name, remove_aa=remove_aa, best_result=best_result, exploded_codons=exploded_codons, sorted_dict=sorted_dict)
 
 
 class DynamccRHandler(RequestHandler):
@@ -177,8 +182,8 @@ class DynamccRHandler(RequestHandler):
 				organism_name = organism_names[seletect_organism]
 			else:
 				pass
-		#organism_name = "E. coli"
-		#sorted_dict = util.BuildUsageDict(organism_mapping["Ecoli"])
+		# organism_name = "E. coli"
+		# sorted_dict = util.BuildUsageDict(organism_mapping["Ecoli"])
 		rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
 		if self.get_argument("keep_or_remove") == 'remove':
 			remove_aa = self.get_arguments('aa')
@@ -189,11 +194,12 @@ class DynamccRHandler(RequestHandler):
 		InUse_dict = ReformatUsageDict(filtered_dict)
 		codon_list = BestList(filtered_dict)
 		in_use = FlagInUse(codon_list, InUse_dict)
-		best_compression = execute_algorithm(codon_list,in_use,rules_dict,inverse_dict)
+		best_compression = execute_algorithm(
+		    codon_list, in_use, rules_dict, inverse_dict)
 
 		print "best_compression:", best_compression
 
-		## exploding codons
+		# exploding codons
 		exploded_codons = {}
 		codon_list = []
 		for codon in best_compression:
@@ -225,7 +231,8 @@ class DynamccRHandler(RequestHandler):
 		codon_dict = util.BuildCodonDict(sorted_dict)
 		print "codon_dict:", codon_dict
 
-		self.render("dynamcc_R_results.html", codon_dict=codon_dict, organism=organism_name, remove_aa=remove_aa, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict)
+		self.render("dynamcc_R_results.html", codon_dict=codon_dict, organism=organism_name, remove_aa=remove_aa,
+		            best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict)
 
 
 class ExploderHandler(RequestHandler):
@@ -250,8 +257,8 @@ class ExploderHandler(RequestHandler):
 		compressed_list = compressed_codons.split(',')
 		compressed_list = [codon.strip() for codon in compressed_list]
 		print compressed_list
-		
-		## exploding codons
+
+		# exploding codons
 		exploded_codons = {}
 		codon_list = []
 		for codon in compressed_list:
@@ -281,13 +288,19 @@ class ExploderHandler(RequestHandler):
 				exploded_codons[key].append(joined_codon)
 		print "exploded_codons:", exploded_codons
 
-		self.render("exploded_codon_results.html", codon_dict=codon_dict, organism=organism_name, exploded_codons=exploded_codons, sorted_dict=sorted_dict)
+		self.render("exploded_codon_results.html", codon_dict=codon_dict,
+		            organism=organism_name, exploded_codons=exploded_codons, sorted_dict=sorted_dict)
+
 
 class Dynamcc4Handler(RequestHandler):
 	def get(self):
 		self.render("dynamcc_4.html", step=None, error=None)
 
 	def post(self):
+		access_code = self.get_argument("access_code", False)
+		if access_code != ACCESS_CODE:
+			return
+
 		hamming_distance_label = self.get_argument("hamming_distance")
 		hamming_distance = 1 if hamming_distance_label == '1' else 2
 		target_codon = self.get_argument("target_codon")
@@ -347,7 +360,7 @@ class Dynamcc4Handler(RequestHandler):
 
 				print amino_acid, new_usage_table[amino_acid]
 
-			return self.render("dynamcc_4.html", error=None, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance_label, organism_name=organism_name, usage_table=new_usage_table)
+			return self.render("dynamcc_4.html", error=None, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance, organism_name=organism_name, usage_table=new_usage_table, access_code=ACCESS_CODE)
 
 		codons = self.get_arguments("codons")
 
@@ -371,7 +384,7 @@ class Dynamcc4Handler(RequestHandler):
 
 		inline_codon_list = codon_list
 
-		## exploding codons
+		# exploding codons
 		exploded_codons = {}
 		codon_list = []
 		for codon in best_compression:
@@ -403,4 +416,4 @@ class Dynamcc4Handler(RequestHandler):
 		codon_dict = util.BuildCodonDict(sorted_dict_codons)
 		print "codon_dict:", codon_dict
 
-		self.render("dynamcc_4_results.html", hamming_distance=hamming_distance_label, target_codon=target_codon, inline_codon_list=inline_codon_list, codon_dict=codon_dict, organism=organism_name, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict_codons)
+		self.render("dynamcc_4_results.html", hamming_distance=hamming_distance_label, target_codon=target_codon, inline_codon_list=inline_codon_list, codon_dict=codon_dict, organism=organism_name, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict_codons, access_code=ACCESS_CODE)
