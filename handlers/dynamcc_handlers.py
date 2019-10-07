@@ -74,6 +74,10 @@ rules = {'R': ['A', 'G'],
 
 ALLOWED_NEUCLOTIDES = ['A', 'C', 'G', 'T']
 ACCESS_CODE = "af12d5f5c349b38b3be6ca40ca4b0d79"
+<<<<<<< HEAD
+=======
+
+>>>>>>> Access Token
 
 class Dynamcc0Handler(RequestHandler):
 	def get(self):
@@ -419,7 +423,6 @@ class DynamccDHandler(RequestHandler):
 		print "exploded_codons:", exploded_codons
 
 		codon_dict = util.BuildCodonDict(sorted_dict_codons)
-
 		print "codon_dict:", codon_dict
 		
 		self.render("dynamcc_d_results.html", hamming_distance=hamming_distance_label, target_codon=target_codon, target_codon_aa=target_codon_aa, inline_codon_list=inline_codon_list, codon_dict=codon_dict, organism=organism_name, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict_codons, access_code=ACCESS_CODE)
