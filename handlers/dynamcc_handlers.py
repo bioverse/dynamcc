@@ -71,6 +71,8 @@ rules = {   'R' : ['A', 'G'],
 			'T' : ['T']
 		}
 
+ALLOWED_NEUCLOTIDES = ['A', 'C', 'G', 'T']
+
 class Dynamcc0Handler(RequestHandler):
 	def get(self):
 		self.render("dynamcc_0.html", usage_array = [])
@@ -283,12 +285,19 @@ class ExploderHandler(RequestHandler):
 
 class Dynamcc4Handler(RequestHandler):
 	def get(self):
-		self.render("dynamcc_4.html", step=None)
+		self.render("dynamcc_4.html", step=None, error=None)
 
 	def post(self):
 		hamming_distance = int(self.get_argument("hamming_distance"))
 		target_codon = self.get_argument("target_codon")
 		form_step = int(self.get_argument("step", 0))
+		target_codon = target_codon.upper()
+
+		verified_ncltds = [c in ALLOWED_NEUCLOTIDES for c in list(target_codon)];
+		verified_ncltd = all(verified_ncltds)
+
+		if not verified_ncltd or len(verified_ncltds) != 3:
+			return self.render("dynamcc_4.html", step=None, error="Invalid Codon")
 
 		if form_step == 2:
 			if "table" in self.request.files:
@@ -337,7 +346,7 @@ class Dynamcc4Handler(RequestHandler):
 
 				print amino_acid, new_usage_table[amino_acid]
 
-			return self.render("dynamcc_4.html", step=form_step, target_codon=target_codon, hamming_distance=hamming_distance, organism_name=organism_name, usage_table=new_usage_table)
+			return self.render("dynamcc_4.html", error=None, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance, organism_name=organism_name, usage_table=new_usage_table)
 
 		codons = self.get_arguments("codons")
 
