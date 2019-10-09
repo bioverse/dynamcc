@@ -76,6 +76,8 @@ function ExplodeCodons() {
 
 <div class = "row">
 
+<h5>Targeted codon: <em>{{target_codon}}</em></h5>
+<h5>Target hamming distance: <em>{{hamming_distance}}</em></h5>
 <h5>Selected organism usage table: <em>{{organism}}</em></h5>
 <h5>Selected codons for compression: {% for codon in inline_codon_list %} {{codon}} {% end %}</h5>
 <h5>The resulting compressed codons are optimized for usage in <em>{{organism}}</em>: </h5>

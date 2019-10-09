@@ -288,7 +288,8 @@ class Dynamcc4Handler(RequestHandler):
 		self.render("dynamcc_4.html", step=None, error=None)
 
 	def post(self):
-		hamming_distance = int(self.get_argument("hamming_distance"))
+		hamming_distance_label = self.get_argument("hamming_distance")
+		hamming_distance = 1 if hamming_distance_label == '1' else 2
 		target_codon = self.get_argument("target_codon")
 		form_step = int(self.get_argument("step", 0))
 		target_codon = target_codon.upper()
@@ -346,7 +347,7 @@ class Dynamcc4Handler(RequestHandler):
 
 				print amino_acid, new_usage_table[amino_acid]
 
-			return self.render("dynamcc_4.html", error=None, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance, organism_name=organism_name, usage_table=new_usage_table)
+			return self.render("dynamcc_4.html", error=None, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance_label, organism_name=organism_name, usage_table=new_usage_table)
 
 		codons = self.get_arguments("codons")
 
@@ -402,4 +403,4 @@ class Dynamcc4Handler(RequestHandler):
 		codon_dict = util.BuildCodonDict(sorted_dict_codons)
 		print "codon_dict:", codon_dict
 
-		self.render("dynamcc_4_results.html", inline_codon_list=inline_codon_list, codon_dict=codon_dict, organism=organism_name, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict_codons)
+		self.render("dynamcc_4_results.html", hamming_distance=hamming_distance_label, target_codon=target_codon, inline_codon_list=inline_codon_list, codon_dict=codon_dict, organism=organism_name, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict_codons)
