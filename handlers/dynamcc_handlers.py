@@ -75,7 +75,6 @@ rules = {'R': ['A', 'G'],
 ALLOWED_NEUCLOTIDES = ['A', 'C', 'G', 'T']
 ACCESS_CODE = "af12d5f5c349b38b3be6ca40ca4b0d79"
 
-
 class Dynamcc0Handler(RequestHandler):
 	def get(self):
 		self.render("dynamcc_0.html", usage_array=[])
@@ -294,7 +293,9 @@ class ExploderHandler(RequestHandler):
 
 class Dynamcc4Handler(RequestHandler):
 	def get(self):
-		self.render("dynamcc_4.html", step=None, error=None)
+		access_code = self.get_argument("access_code", False)
+		if access_code == ACCESS_CODE:
+			self.render("dynamcc_4.html", step=None, error=None, access_code=ACCESS_CODE)
 
 	def post(self):
 		access_code = self.get_argument("access_code", False)
@@ -311,7 +312,7 @@ class Dynamcc4Handler(RequestHandler):
 		verified_ncltd = all(verified_ncltds)
 
 		if not verified_ncltd or len(verified_ncltds) != 3:
-			return self.render("dynamcc_4.html", step=None, error="Invalid Codon")
+			return self.render("dynamcc_4.html", step=None, error="Invalid Codon", access_code=ACCESS_CODE)
 
 		if form_step == 2:
 			if "table" in self.request.files:
