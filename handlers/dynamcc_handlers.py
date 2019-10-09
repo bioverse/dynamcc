@@ -74,10 +74,6 @@ rules = {'R': ['A', 'G'],
 
 ALLOWED_NEUCLOTIDES = ['A', 'C', 'G', 'T']
 ACCESS_CODE = "af12d5f5c349b38b3be6ca40ca4b0d79"
-<<<<<<< HEAD
-=======
-
->>>>>>> Access Token
 
 class Dynamcc0Handler(RequestHandler):
 	def get(self):
