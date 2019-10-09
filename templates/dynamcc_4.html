@@ -45,18 +45,20 @@
 
     $("input[name=hydrophobic]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_hydrophobic input[name=aa]:not(:disabled)").prop(
-          "checked",
-          true
-        );
+        $("#all_hydrophobic")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", true);
         $("input[name=aromatic]").prop("checked", true);
         $("input[name=nonpolar]").prop("checked", true);
         $("input[name=small]").prop("checked", true);
       } else {
-        $("#all_hydrophobic input[name=aa]:not(:disabled)").prop(
-          "checked",
-          false
-        );
+        $("#all_hydrophobic")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", false);
         $("input[name=aromatic]").prop("checked", false);
         $("input[name=nonpolar]").prop("checked", false);
         $("input[name=small]").prop("checked", false);
@@ -65,45 +67,71 @@
 
     $("input[name=aromatic]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_aromatic input[name=aa]:not(:disabled)").prop("checked", true);
+        $("#all_aromatic")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", true);
       } else {
-        $("#all_aromatic input[name=aa]:not(:disabled)").prop("checked", false);
+        $("#all_aromatic")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", false);
       }
     });
 
     $("input[name=nonpolar]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_nonpolar input[name=aa]:not(:disabled)").prop("checked", true);
+        $("#all_nonpolar")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", true);
         $("input[name=small]").prop("checked", true);
       } else {
-        $("#all_nonpolar input[name=aa]:not(:disabled)").prop("checked", false);
+        $("#all_nonpolar")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", false);
         $("input[name=small]").prop("checked", false);
       }
     });
 
     $("input[name=small]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_small input[name=aa]:not(:disabled)").prop("checked", true);
+        $("#all_small")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", true);
       } else {
-        $("#all_small input[name=aa]:not(:disabled)").prop("checked", false);
+        $("#all_small")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", false);
       }
     });
 
     $("input[name=hydrophilic]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_hydrophilic input[name=aa]:not(:disabled)").prop(
-          "checked",
-          true
-        );
+        $("#all_hydrophilic")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", true);
         $("input[name=negative]").prop("checked", true);
         $("input[name=positive]").prop("checked", true);
         $("input[name=uncharged]").prop("checked", true);
         $("input[name=small_uncharged]").prop("checked", true);
       } else {
-        $("#all_hydrophilic input[name=aa]:not(:disabled)").prop(
-          "checked",
-          false
-        );
+        $("#all_hydrophilic")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", false);
         $("input[name=negative]").prop("checked", false);
         $("input[name=positive]").prop("checked", false);
         $("input[name=uncharged]").prop("checked", false);
@@ -113,53 +141,91 @@
 
     $("input[name=negative]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_negative input[name=aa]:not(:disabled)").prop("checked", true);
+        $("#all_negative")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", true);
       } else {
-        $("#all_negative input[name=aa]:not(:disabled)").prop("checked", false);
+        $("#all_negative")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", false);
       }
     });
 
     $("input[name=positive]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_positive input[name=aa]:not(:disabled)").prop("checked", true);
+        $("#all_positive")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", true);
       } else {
-        $("#all_positive input[name=aa]:not(:disabled)").prop("checked", false);
+        $("#all_positive")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", false);
       }
     });
 
     $("input[name=uncharged]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_uncharged input[name=aa]:not(:disabled)").prop("checked", true);
+        $("#all_uncharged")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", true);
         $("input[name=small_uncharged]").prop("checked", true);
       } else {
-        $("#all_uncharged input[name=aa]:not(:disabled)").prop(
-          "checked",
-          false
-        );
+        $("#all_uncharged")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", false);
         $("input[name=small_uncharged]").prop("checked", false);
       }
     });
 
     $("input[name=small_uncharged]").click(function() {
       if ($(this).is(":checked")) {
-        $("#all_small_uncharged input[name=aa]:not(:disabled)").prop(
-          "checked",
-          true
-        );
+        $("#all_small_uncharged")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", true);
       } else {
-        $("#all_small_uncharged input[name=aa]:not(:disabled)").prop(
-          "checked",
-          false
-        );
+        $("#all_small_uncharged")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", false);
+      }
+    });
+
+    $("input[name=aa]").click(function() {
+      if ($(this).is(":checked")) {
+        $(this)
+          .parent()
+          .find("input[name=codons]:not(:disabled)")
+          .prop("checked", true);
+      } else {
+        $(this)
+          .parent()
+          .find("input[name=codons]:not(:disabled)")
+          .prop("checked", false);
       }
     });
   }
 
   function uploadUsageTable() {
-    document
-      .getElementById("custom_codon_usage")
-      .addEventListener("change", readFile, false);
+    let custom_codon_usage = document.querySelector("#custom_codon_usage");
 
+    if (!custom_codon_usage) return;
+
+    custom_codon_usage.addEventListener("change", readFile, false);
     if ($("#custom_usage").is(":checked")) {
       $("#custom_table").show();
     }
