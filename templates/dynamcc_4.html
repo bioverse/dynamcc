@@ -2,6 +2,11 @@
 
 <script type="text/javascript" src="/static/js/js.cookie.js"></script>
 
+{% if error %}
+<script>
+  alert("{{ error }}");
+</script>
+{% end %}
 <script type="text/javascript">
   function ShowHide() {
     if ($("#custom_usage").is(":checked")) {
@@ -295,6 +300,9 @@
                     value=""
                     style="margin-right:10px;"
                     required
+                    pattern="[a.g.c.t|A.G.C.T]{3}"
+                    minlength="3"
+                    maxlength="3"
                   />
                 </div>
               </div>
@@ -482,7 +490,8 @@
                               style="margin-right:10px;"
                             />
                             <label>W</label>
-                            {% module Template("codons_list.html", aa='W', codons=usage_table['W']) %}
+                            {% module Template("codons_list.html", aa='W',
+                            codons=usage_table['W']) %}
                           </div>
                           <div class="col-sm-3">
                             <input
@@ -492,7 +501,8 @@
                               style="margin-right:10px;"
                             />
                             <label>F</label>
-                            {% module Template("codons_list.html", aa='F', codons=usage_table['F']) %}
+                            {% module Template("codons_list.html", aa='F',
+                            codons=usage_table['F']) %}
                           </div>
                           <div class="col-sm-3">
                             <input
@@ -502,7 +512,8 @@
                               style="margin-right:10px;"
                             />
                             <label>Y</label>
-                            {% module Template("codons_list.html", aa='Y', codons=usage_table['Y']) %}
+                            {% module Template("codons_list.html", aa='Y',
+                            codons=usage_table['Y']) %}
                           </div>
                         </div>
                       </div>
@@ -525,7 +536,8 @@
                                 style="margin-right:10px;"
                               />
                               <label>M</label>
-                              {% module Template("codons_list.html", aa='M', codons=usage_table['M']) %}
+                              {% module Template("codons_list.html", aa='M',
+                              codons=usage_table['M']) %}
                             </div>
                             <div class="col-sm-3">
                               <input
@@ -535,7 +547,8 @@
                                 style="margin-right:10px;"
                               />
                               <label>I</label>
-                              {% module Template("codons_list.html", aa='I', codons=usage_table['I']) %}
+                              {% module Template("codons_list.html", aa='I',
+                              codons=usage_table['I']) %}
                             </div>
                             <div class="col-sm-3">
                               <input
@@ -545,7 +558,8 @@
                                 style="margin-right:10px;"
                               />
                               <label>P</label>
-                              {% module Template("codons_list.html", aa='P', codons=usage_table['P']) %}
+                              {% module Template("codons_list.html", aa='P',
+                              codons=usage_table['P']) %}
                             </div>
                             <div class="col-sm-3">
                               <input
@@ -555,7 +569,8 @@
                                 style="margin-right:10px;"
                               />
                               <label>V</label>
-                              {% module Template("codons_list.html", aa='V', codons=usage_table['V']) %}
+                              {% module Template("codons_list.html", aa='V',
+                              codons=usage_table['V']) %}
                             </div>
                           </div>
                           <div class="row" style="margin-left:0;">
@@ -587,7 +602,8 @@
                                   style="margin-right:10px;"
                                 />
                                 <label>A</label>
-                                {% module Template("codons_list.html", aa='A', codons=usage_table['A']) %}
+                                {% module Template("codons_list.html", aa='A',
+                                codons=usage_table['A']) %}
                               </div>
                               <div class="col-sm-3">
                                 <input
@@ -597,7 +613,8 @@
                                   style="margin-right:10px;"
                                 />
                                 <label>G</label>
-                                {% module Template("codons_list.html", aa='G', codons=usage_table['G']) %}
+                                {% module Template("codons_list.html", aa='G',
+                                codons=usage_table['G']) %}
                               </div>
                             </div>
                           </div>
@@ -636,7 +653,8 @@
                               style="margin-right:10px;"
                             />
                             <label>D</label>
-                            {% module Template("codons_list.html", aa='D', codons=usage_table['D']) %}
+                            {% module Template("codons_list.html", aa='D',
+                            codons=usage_table['D']) %}
                           </div>
                           <div class="col-sm-3">
                             <input
@@ -646,7 +664,8 @@
                               style="margin-right:10px;"
                             />
                             <label>E</label>
-                            {% module Template("codons_list.html", aa='E', codons=usage_table['E']) %}
+                            {% module Template("codons_list.html", aa='E',
+                            codons=usage_table['E']) %}
                           </div>
                         </div>
                       </div>
@@ -668,7 +687,8 @@
                               style="margin-right:10px;"
                             />
                             <label>H</label>
-                            {% module Template("codons_list.html", aa='H', codons=usage_table['H']) %}
+                            {% module Template("codons_list.html", aa='H',
+                            codons=usage_table['H']) %}
                           </div>
                           <div class="col-sm-3">
                             <input
@@ -678,7 +698,8 @@
                               style="margin-right:10px;"
                             />
                             <label>R</label>
-                            {% module Template("codons_list.html", aa='R', codons=usage_table['R']) %}
+                            {% module Template("codons_list.html", aa='R',
+                            codons=usage_table['R']) %}
                           </div>
                           <div class="col-sm-3">
                             <input
@@ -688,7 +709,8 @@
                               style="margin-right:10px;"
                             />
                             <label>K</label>
-                            {% module Template("codons_list.html", aa='K', codons=usage_table['K']) %}
+                            {% module Template("codons_list.html", aa='K',
+                            codons=usage_table['K']) %}
                           </div>
                         </div>
                       </div>
@@ -711,7 +733,8 @@
                                 style="margin-right:10px;"
                               />
                               <label>T</label>
-                              {% module Template("codons_list.html", aa='T', codons=usage_table['T']) %}
+                              {% module Template("codons_list.html", aa='T',
+                              codons=usage_table['T']) %}
                             </div>
                             <div class="col-sm-3">
                               <input
@@ -721,7 +744,8 @@
                                 style="margin-right:10px;"
                               />
                               <label>Q</label>
-                              {% module Template("codons_list.html", aa='Q', codons=usage_table['Q']) %}
+                              {% module Template("codons_list.html", aa='Q',
+                              codons=usage_table['Q']) %}
                             </div>
                             <div class="col-sm-3">
                               <input
@@ -731,7 +755,8 @@
                                 style="margin-right:10px;"
                               />
                               <label>N</label>
-                              {% module Template("codons_list.html", aa='N', codons=usage_table['N']) %}
+                              {% module Template("codons_list.html", aa='N',
+                              codons=usage_table['N']) %}
                             </div>
                           </div>
                           <div
@@ -755,7 +780,8 @@
                                   style="margin-right:10px;"
                                 />
                                 <label>C</label>
-                                {% module Template("codons_list.html", aa='C', codons=usage_table['C']) %}
+                                {% module Template("codons_list.html", aa='C',
+                                codons=usage_table['C']) %}
                               </div>
                               <div class="col-sm-3">
                                 <input
@@ -765,7 +791,8 @@
                                   style="margin-right:10px;"
                                 />
                                 <label>S</label>
-                                {% module Template("codons_list.html", aa='S', codons=usage_table['S']) %}
+                                {% module Template("codons_list.html", aa='S',
+                                codons=usage_table['S']) %}
                               </div>
                             </div>
                           </div>
