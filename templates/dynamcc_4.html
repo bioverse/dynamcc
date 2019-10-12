@@ -560,36 +560,21 @@
                         </div>
                         <div class="panel-body">
                           <div class="col-sm-3">
-                            <input
-                              type="checkbox"
-                              name="aa"
-                              value="W"
-                              style="margin-right:10px;"
-                            />
-                            <label>W</label>
-                            {% module Template("codons_list.html", aa='W',
+                            {% module Template("amino_acid_input.html",
+                            amino_acid='W', enabled=amino_acids['W']) %} {%
+                            module Template("codons_list.html", aa='W',
                             codons=usage_table['W']) %}
                           </div>
                           <div class="col-sm-3">
-                            <input
-                              type="checkbox"
-                              name="aa"
-                              value="F"
-                              style="margin-right:10px;"
-                            />
-                            <label>F</label>
-                            {% module Template("codons_list.html", aa='F',
+                            {% module Template("amino_acid_input.html",
+                            amino_acid='F', enabled=amino_acids['F']) %} {%
+                            module Template("codons_list.html", aa='F',
                             codons=usage_table['F']) %}
                           </div>
                           <div class="col-sm-3">
-                            <input
-                              type="checkbox"
-                              name="aa"
-                              value="Y"
-                              style="margin-right:10px;"
-                            />
-                            <label>Y</label>
-                            {% module Template("codons_list.html", aa='Y',
+                            {% module Template("amino_acid_input.html",
+                            amino_acid='Y', enabled=amino_acids['Y']) %} {%
+                            module Template("codons_list.html", aa='Y',
                             codons=usage_table['Y']) %}
                           </div>
                         </div>
@@ -606,60 +591,35 @@
                         <div class="panel-body">
                           <div class="row" style="margin-left:0;">
                             <div class="col-sm-3">
-                              <input
-                                type="checkbox"
-                                name="aa"
-                                value="M"
-                                style="margin-right:10px;"
-                              />
-                              <label>M</label>
-                              {% module Template("codons_list.html", aa='M',
+                              {% module Template("amino_acid_input.html",
+                              amino_acid='M', enabled=amino_acids['M']) %} {%
+                              module Template("codons_list.html", aa='M',
                               codons=usage_table['M']) %}
                             </div>
                             <div class="col-sm-3">
-                              <input
-                                type="checkbox"
-                                name="aa"
-                                value="I"
-                                style="margin-right:10px;"
-                              />
-                              <label>I</label>
-                              {% module Template("codons_list.html", aa='I',
+                              {% module Template("amino_acid_input.html",
+                              amino_acid='I', enabled=amino_acids['I']) %} {%
+                              module Template("codons_list.html", aa='I',
                               codons=usage_table['I']) %}
                             </div>
                             <div class="col-sm-3">
-                              <input
-                                type="checkbox"
-                                name="aa"
-                                value="P"
-                                style="margin-right:10px;"
-                              />
-                              <label>P</label>
-                              {% module Template("codons_list.html", aa='P',
+                              {% module Template("amino_acid_input.html",
+                              amino_acid='P', enabled=amino_acids['P']) %} {%
+                              module Template("codons_list.html", aa='P',
                               codons=usage_table['P']) %}
                             </div>
                             <div class="col-sm-3">
-                              <input
-                                type="checkbox"
-                                name="aa"
-                                value="V"
-                                style="margin-right:10px;"
-                              />
-                              <label>V</label>
-                              {% module Template("codons_list.html", aa='V',
+                              {% module Template("amino_acid_input.html",
+                              amino_acid='V', enabled=amino_acids['V']) %} {%
+                              module Template("codons_list.html", aa='V',
                               codons=usage_table['V']) %}
                             </div>
                           </div>
                           <div class="row" style="margin-left:0;">
                             <div class="col-sm-3">
-                              <input
-                                type="checkbox"
-                                name="aa"
-                                value="L"
-                                style="margin-right:10px;"
-                              />
-                              <label>L</label>
-                              {% module Template("codons_list.html", aa='L',
+                              {% module Template("amino_acid_input.html",
+                              amino_acid='L', enabled=amino_acids['L']) %} {%
+                              module Template("codons_list.html", aa='L',
                               codons=usage_table['L']) %}
                             </div>
                           </div>
@@ -674,25 +634,15 @@
                             </div>
                             <div class="panel-body">
                               <div class="col-sm-3">
-                                <input
-                                  type="checkbox"
-                                  name="aa"
-                                  value="A"
-                                  style="margin-right:10px;"
-                                />
-                                <label>A</label>
-                                {% module Template("codons_list.html", aa='A',
+                                {% module Template("amino_acid_input.html",
+                                amino_acid='A', enabled=amino_acids['A']) %} {%
+                                module Template("codons_list.html", aa='A',
                                 codons=usage_table['A']) %}
                               </div>
                               <div class="col-sm-3">
-                                <input
-                                  type="checkbox"
-                                  name="aa"
-                                  value="G"
-                                  style="margin-right:10px;"
-                                />
-                                <label>G</label>
-                                {% module Template("codons_list.html", aa='G',
+                                {% module Template("amino_acid_input.html",
+                                amino_acid='G', enabled=amino_acids['G']) %} {%
+                                module Template("codons_list.html", aa='G',
                                 codons=usage_table['G']) %}
                               </div>
                             </div>
@@ -725,25 +675,15 @@
                         </div>
                         <div class="panel-body">
                           <div class="col-sm-3">
-                            <input
-                              type="checkbox"
-                              name="aa"
-                              value="D"
-                              style="margin-right:10px;"
-                            />
-                            <label>D</label>
-                            {% module Template("codons_list.html", aa='D',
+                            {% module Template("amino_acid_input.html",
+                            amino_acid='D', enabled=amino_acids['D']) %} {%
+                            module Template("codons_list.html", aa='D',
                             codons=usage_table['D']) %}
                           </div>
                           <div class="col-sm-3">
-                            <input
-                              type="checkbox"
-                              name="aa"
-                              value="E"
-                              style="margin-right:10px;"
-                            />
-                            <label>E</label>
-                            {% module Template("codons_list.html", aa='E',
+                            {% module Template("amino_acid_input.html",
+                            amino_acid='E', enabled=amino_acids['E']) %} {%
+                            module Template("codons_list.html", aa='E',
                             codons=usage_table['E']) %}
                           </div>
                         </div>
@@ -759,36 +699,21 @@
                         </div>
                         <div class="panel-body">
                           <div class="col-sm-3">
-                            <input
-                              type="checkbox"
-                              name="aa"
-                              value="H"
-                              style="margin-right:10px;"
-                            />
-                            <label>H</label>
-                            {% module Template("codons_list.html", aa='H',
+                            {% module Template("amino_acid_input.html",
+                            amino_acid='H', enabled=amino_acids['H']) %} {%
+                            module Template("codons_list.html", aa='H',
                             codons=usage_table['H']) %}
                           </div>
                           <div class="col-sm-3">
-                            <input
-                              type="checkbox"
-                              name="aa"
-                              value="R"
-                              style="margin-right:10px;"
-                            />
-                            <label>R</label>
-                            {% module Template("codons_list.html", aa='R',
+                            {% module Template("amino_acid_input.html",
+                            amino_acid='R', enabled=amino_acids['R']) %} {%
+                            module Template("codons_list.html", aa='R',
                             codons=usage_table['R']) %}
                           </div>
                           <div class="col-sm-3">
-                            <input
-                              type="checkbox"
-                              name="aa"
-                              value="K"
-                              style="margin-right:10px;"
-                            />
-                            <label>K</label>
-                            {% module Template("codons_list.html", aa='K',
+                            {% module Template("amino_acid_input.html",
+                            amino_acid='K', enabled=amino_acids['K']) %} {%
+                            module Template("codons_list.html", aa='K',
                             codons=usage_table['K']) %}
                           </div>
                         </div>
@@ -805,36 +730,21 @@
                         <div class="panel-body">
                           <div class="row" style="margin-left:0;">
                             <div class="col-sm-3">
-                              <input
-                                type="checkbox"
-                                name="aa"
-                                value="T"
-                                style="margin-right:10px;"
-                              />
-                              <label>T</label>
-                              {% module Template("codons_list.html", aa='T',
+                              {% module Template("amino_acid_input.html",
+                              amino_acid='T', enabled=amino_acids['T']) %} {%
+                              module Template("codons_list.html", aa='T',
                               codons=usage_table['T']) %}
                             </div>
                             <div class="col-sm-3">
-                              <input
-                                type="checkbox"
-                                name="aa"
-                                value="Q"
-                                style="margin-right:10px;"
-                              />
-                              <label>Q</label>
-                              {% module Template("codons_list.html", aa='Q',
+                              {% module Template("amino_acid_input.html",
+                              amino_acid='Q', enabled=amino_acids['Q']) %} {%
+                              module Template("codons_list.html", aa='Q',
                               codons=usage_table['Q']) %}
                             </div>
                             <div class="col-sm-3">
-                              <input
-                                type="checkbox"
-                                name="aa"
-                                value="N"
-                                style="margin-right:10px;"
-                              />
-                              <label>N</label>
-                              {% module Template("codons_list.html", aa='N',
+                              {% module Template("amino_acid_input.html",
+                              amino_acid='N', enabled=amino_acids['N']) %} {%
+                              module Template("codons_list.html", aa='N',
                               codons=usage_table['N']) %}
                             </div>
                           </div>
@@ -852,25 +762,15 @@
                             </div>
                             <div class="panel-body">
                               <div class="col-sm-3">
-                                <input
-                                  type="checkbox"
-                                  name="aa"
-                                  value="C"
-                                  style="margin-right:10px;"
-                                />
-                                <label>C</label>
-                                {% module Template("codons_list.html", aa='C',
+                                {% module Template("amino_acid_input.html",
+                                amino_acid='C', enabled=amino_acids['C']) %} {%
+                                module Template("codons_list.html", aa='C',
                                 codons=usage_table['C']) %}
                               </div>
                               <div class="col-sm-3">
-                                <input
-                                  type="checkbox"
-                                  name="aa"
-                                  value="S"
-                                  style="margin-right:10px;"
-                                />
-                                <label>S</label>
-                                {% module Template("codons_list.html", aa='S',
+                                {% module Template("amino_acid_input.html",
+                                amino_acid='S', enabled=amino_acids['S']) %} {%
+                                module Template("codons_list.html", aa='S',
                                 codons=usage_table['S']) %}
                               </div>
                             </div>

@@ -332,6 +332,7 @@ class Dynamcc4Handler(RequestHandler):
 			Finding hamming distance from the usage table
 			"""
 			new_usage_table = defaultdict(list)
+			amino_acids = {}
 			for amino_acid in usage_table:
 				codons = usage_table[amino_acid]
 				distance_in_range = False
@@ -359,9 +360,10 @@ class Dynamcc4Handler(RequestHandler):
 
 					new_usage_table[amino_acid].append((codon[0], codon[1], distance_in_range, sibling_in_range))
 
-				print amino_acid, new_usage_table[amino_acid]
+				amino_acids[amino_acid] = any([_codon[2] for _codon in new_usage_table[amino_acid]])
+				print amino_acid, new_usage_table[amino_acid], amino_acids[amino_acid]
 
-			return self.render("dynamcc_4.html", error=None, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance, organism_name=organism_name, usage_table=new_usage_table, access_code=ACCESS_CODE)
+			return self.render("dynamcc_4.html", error=None, amino_acids=amino_acids, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance, organism_name=organism_name, usage_table=new_usage_table, access_code=ACCESS_CODE)
 
 		codons = self.get_arguments("codons")
 
