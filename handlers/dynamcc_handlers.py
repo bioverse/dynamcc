@@ -363,7 +363,7 @@ class Dynamcc4Handler(RequestHandler):
 				amino_acids[amino_acid] = any([_codon[2] for _codon in new_usage_table[amino_acid]])
 				print amino_acid, new_usage_table[amino_acid], amino_acids[amino_acid]
 
-			return self.render("dynamcc_4.html", error=None, amino_acids=amino_acids, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance, organism_name=organism_name, usage_table=new_usage_table, access_code=ACCESS_CODE)
+			return self.render("dynamcc_4.html", error=None, amino_acids=amino_acids, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance_label, organism_name=organism_name, usage_table=new_usage_table, access_code=ACCESS_CODE)
 
 		codons = self.get_arguments("codons")
 
