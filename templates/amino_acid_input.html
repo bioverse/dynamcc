@@ -1,0 +1,8 @@
+<input
+  type="checkbox"
+  name="aa"
+  value="{{ amino_acid }}"
+  {% if not enabled %} disabled readonly {% end %}
+  style="margin-right:10px;"
+/>
+<label {% if not enabled %} style="color: #c6c6c6" {% end %}>{{ amino_acid }}</label>
