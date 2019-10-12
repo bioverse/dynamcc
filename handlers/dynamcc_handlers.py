@@ -348,7 +348,7 @@ class Dynamcc4Handler(RequestHandler):
 
 					"""
 					Filter out possible codons from the list and
-					only preserve the highest usage value possible codon
+					only preserve the possible highest usage value codon
 					"""
 					sibling_in_range = False
 					if len(new_usage_table[amino_acid]):
