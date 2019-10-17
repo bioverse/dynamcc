@@ -32,7 +32,7 @@ import itertools
 from tornado.web import RequestHandler
 from src.DYNAMCC_0 import *
 from src.DYNAMCC_R import *
-from src.DYNAMCC_4 import *
+from src.DYNAMCC_D import *
 
 organism_mapping = {
 	"Ecoli": "ecoli.txt",
@@ -291,11 +291,11 @@ class ExploderHandler(RequestHandler):
 		            organism=organism_name, exploded_codons=exploded_codons, sorted_dict=sorted_dict)
 
 
-class Dynamcc4Handler(RequestHandler):
+class DynamccDHandler(RequestHandler):
 	def get(self):
 		access_code = self.get_argument("access_code", False)
 		if access_code == ACCESS_CODE:
-			self.render("dynamcc_4.html", step=None, error=None, access_code=ACCESS_CODE)
+			self.render("dynamcc_d.html", step=None, error=None, access_code=ACCESS_CODE)
 
 	def post(self):
 		access_code = self.get_argument("access_code", False)
@@ -312,7 +312,7 @@ class Dynamcc4Handler(RequestHandler):
 		verified_ncltd = all(verified_ncltds)
 
 		if not verified_ncltd or len(verified_ncltds) != 3:
-			return self.render("dynamcc_4.html", step=None, error="Invalid Codon", access_code=ACCESS_CODE)
+			return self.render("dynamcc_d.html", step=None, error="Invalid Codon", access_code=ACCESS_CODE)
 
 		if form_step == 2:
 			if "table" in self.request.files:
@@ -363,7 +363,7 @@ class Dynamcc4Handler(RequestHandler):
 				amino_acids[amino_acid] = any([_codon[2] for _codon in new_usage_table[amino_acid]])
 				print amino_acid, new_usage_table[amino_acid], amino_acids[amino_acid]
 
-			return self.render("dynamcc_4.html", error=None, amino_acids=amino_acids, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance_label, organism_name=organism_name, usage_table=new_usage_table, access_code=ACCESS_CODE)
+			return self.render("dynamcc_d.html", error=None, amino_acids=amino_acids, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance_label, organism_name=organism_name, usage_table=new_usage_table, access_code=ACCESS_CODE)
 
 		codons = self.get_arguments("codons")
 
@@ -419,4 +419,4 @@ class Dynamcc4Handler(RequestHandler):
 		codon_dict = util.BuildCodonDict(sorted_dict_codons)
 		print "codon_dict:", codon_dict
 
-		self.render("dynamcc_4_results.html", hamming_distance=hamming_distance_label, target_codon=target_codon, inline_codon_list=inline_codon_list, codon_dict=codon_dict, organism=organism_name, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict_codons, access_code=ACCESS_CODE)
+		self.render("dynamcc_d_results.html", hamming_distance=hamming_distance_label, target_codon=target_codon, inline_codon_list=inline_codon_list, codon_dict=codon_dict, organism=organism_name, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict_codons, access_code=ACCESS_CODE)

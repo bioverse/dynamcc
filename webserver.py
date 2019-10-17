@@ -41,9 +41,10 @@ from tornado.options import define, options, parse_command_line
 
 from handlers.base_handlers import (
     IndexHandler
-    )
+)
 from handlers.dynamcc_handlers import (
-    Dynamcc0Handler, DynamccRHandler, ExploderHandler, Dynamcc4Handler)
+    Dynamcc0Handler, DynamccRHandler, ExploderHandler, DynamccDHandler)
+
 
 class Application(tornado.web.Application):
     def __init__(self):
@@ -53,16 +54,16 @@ class Application(tornado.web.Application):
         RES_PATH = join(DIRNAME, "results")
         COOKIE_SECRET = b64encode(uuid4().bytes + uuid4().bytes)
         handlers = [
-                (r"/", IndexHandler),
-                (r"/results/(.*)", tornado.web.StaticFileHandler,
-                 {"path": RES_PATH}),
-                (r"/static/(.*)", tornado.web.StaticFileHandler,
-                 {"path": STATIC_PATH}),
-                (r"/dynamcc_0/", Dynamcc0Handler),
-                (r"/dynamcc_R/", DynamccRHandler),
-                (r"/exploder/", ExploderHandler),
-                (r"/dynamcc_4/", Dynamcc4Handler)
-                ]
+            (r"/", IndexHandler),
+            (r"/results/(.*)", tornado.web.StaticFileHandler,
+             {"path": RES_PATH}),
+            (r"/static/(.*)", tornado.web.StaticFileHandler,
+             {"path": STATIC_PATH}),
+            (r"/dynamcc_0/", Dynamcc0Handler),
+            (r"/dynamcc_R/", DynamccRHandler),
+            (r"/exploder/", ExploderHandler),
+            (r"/dynamcc_d/", DynamccDHandler)
+        ]
         settings = {
             "template_path": TEMPLATE_PATH,
             "debug": True,
