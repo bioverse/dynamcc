@@ -291,6 +291,7 @@ class DynamccDHandler(RequestHandler):
 		hamming_distance_label = self.get_argument("hamming_distance")
 		hamming_distance = 1 if hamming_distance_label == '1' else 2
 		target_codon = self.get_argument("target_codon")
+		target_codon_aa = self.get_argument("target_codon_aa", "")
 		form_step = int(self.get_argument("step", 0))
 		target_codon = target_codon.upper()
 
@@ -324,6 +325,7 @@ class DynamccDHandler(RequestHandler):
 				distance_in_range = False
 				for codon in codons:
 					if codon[0] == target_codon:
+						target_codon_aa = amino_acid
 						continue
 
 					if hamming_distance != 1:
@@ -349,7 +351,7 @@ class DynamccDHandler(RequestHandler):
 				amino_acids[amino_acid] = any([_codon[2] for _codon in new_usage_table[amino_acid]])
 				print amino_acid, new_usage_table[amino_acid], amino_acids[amino_acid]
 
-			return self.render("dynamcc_d.html", error=None, amino_acids=amino_acids, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance_label, organism_name=organism_name, usage_table=new_usage_table)
+			return self.render("dynamcc_d.html", error=None, target_codon_aa=target_codon_aa, amino_acids=amino_acids, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance_label, organism_name=organism_name, usage_table=new_usage_table)
 
 		codons = self.get_arguments("codons")
 
@@ -403,6 +405,6 @@ class DynamccDHandler(RequestHandler):
 		print "exploded_codons:", exploded_codons
 
 		codon_dict = util.BuildCodonDict(sorted_dict_codons)
-		print "codon_dict:", codon_dict
-
-		self.render("dynamcc_d_results.html", hamming_distance=hamming_distance_label, target_codon=target_codon, inline_codon_list=inline_codon_list, codon_dict=codon_dict, organism=organism_name, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict_codons)
+		print "codon_dict:", codon_dict, type(target_codon_aa)
+		
+		self.render("dynamcc_d_results.html", hamming_distance=hamming_distance_label, target_codon=target_codon, target_codon_aa=str(target_codon_aa), inline_codon_list=inline_codon_list, codon_dict=codon_dict, organism=organism_name, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict_codons)
