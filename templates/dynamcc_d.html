@@ -520,7 +520,7 @@
         <div class="row">
           <div class="col-sm-12">
             <h5>
-              Targeted codon: <em>{{ target_codon }}</em>
+              Targeted codon: <em>{{ target_codon }}</em> {%if target_codon_aa %} (<em>{{ target_codon_aa }}</em>) {% end %}
             </h5>
             <h5>
               Target hamming distance: <em>{{ hamming_distance }}</em>
@@ -790,6 +790,11 @@
         </div>
 
         <input type="hidden" name="target_codon" value="{{ target_codon }}" />
+        <input
+          type="hidden"
+          name="target_codon_aa"
+          value="{{ target_codon_aa }}"
+        />
         <input
           type="hidden"
           name="hamming_distance"
