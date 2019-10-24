@@ -351,7 +351,14 @@ class DynamccDHandler(RequestHandler):
 				amino_acids[amino_acid] = any([_codon[2] for _codon in new_usage_table[amino_acid]])
 				print amino_acid, new_usage_table[amino_acid], amino_acids[amino_acid]
 
-			return self.render("dynamcc_d.html", error=None, target_codon_aa=target_codon_aa, amino_acids=amino_acids, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance_label, organism_name=organism_name, usage_table=new_usage_table)
+			print new_usage_table
+
+			non_standard_aas = list(set(usage_table.keys()).difference(aa))
+			non_standard_usage_table = defaultdict(list)
+			if non_standard_aas:
+				non_standard_usage_table = { non_standard_aa: usage_table[non_standard_aa] for non_standard_aa in non_standard_aas }
+
+			return self.render("dynamcc_d.html", error=None, target_codon_aa=target_codon_aa, amino_acids=amino_acids, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance_label, organism_name=organism_name, usage_table=new_usage_table, ns_usage_table=non_standard_usage_table)
 
 		codons = self.get_arguments("codons")
 
