@@ -205,6 +205,22 @@
       }
     });
 
+    $("input[name=ns_aa]").click(function() {
+      if ($(this).is(":checked")) {
+        $("#all_ns_aa")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", true);
+      } else {
+        $("#all_ns_aa")
+          .find(
+            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+          )
+          .prop("checked", false);
+      }
+    });
+
     $("input[name=aa]").click(function() {
       if ($(this).is(":checked")) {
         $(this)
@@ -519,7 +535,9 @@
         <div class="row">
           <div class="col-sm-12">
             <h5>
-              Targeted codon: <em>{{ target_codon }}</em> {%if target_codon_aa %} (<em>{{ target_codon_aa }}</em>) {% end %}
+              Targeted codon: <em>{{ target_codon }}</em> {%if target_codon_aa
+              %} (<em>{{ target_codon_aa }}</em
+              >) {% end %}
             </h5>
             <h5>
               Target hamming distance: <em>{{ hamming_distance }}</em>
@@ -779,6 +797,30 @@
                     </div>
                   </div>
                 </div>
+
+                {% if ns_usage_table %}
+                <div class="row" style="margin-left:0;">
+                  <div class="panel panel-default col-sm-6" id="all_ns_aa">
+                    <div class="panel-heading">
+                      Non-Standard Amino Acids
+                      <input
+                        type="checkbox"
+                        name="ns_aa"
+                        style="margin-left:20px;"
+                      />
+                    </div>
+                    <div class="panel-body">
+                      {% for k, v in ns_usage_table.items() %}
+                      <div class="col-sm-3">
+                        {% module Template("amino_acid_input.html",
+                        amino_acid=k, enabled=amino_acids[k]) %}
+                        {% module Template("codons_list.html", aa=k, codons=v) %}
+                      </div>
+                      {% end %}
+                    </div>
+                  </div>
+                </div>
+                {% end %}
               </div>
             </div>
 
