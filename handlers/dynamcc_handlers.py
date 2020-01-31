@@ -293,7 +293,11 @@ class DynamccDHandler(RequestHandler):
 		target_codon = self.get_argument("target_codon")
 		target_codon_aa = self.get_argument("target_codon_aa", "")
 		form_step = int(self.get_argument("step", 0))
+		compression_method = self.get_argument("compression_method", False)
+		rank = int(self.get_argument("input_rank", 0))
 		target_codon = target_codon.upper()
+		ranking_codons = defaultdict(list)
+		new_ranking_codons = defaultdict(list)
 
 		verified_ncltds = [c in ALLOWED_NEUCLOTIDES for c in list(target_codon)];
 		verified_ncltd = all(verified_ncltds)
@@ -346,46 +350,58 @@ class DynamccDHandler(RequestHandler):
 								distance_in_range = False
 								sibling_in_range = True
 
+					if compression_method and (distance_in_range or sibling_in_range):
+						ranking_codons[amino_acid].append((codon[0], codon[1]))
+
 					new_usage_table[amino_acid].append((codon[0], codon[1], distance_in_range, sibling_in_range))
 
 				amino_acids[amino_acid] = any([_codon[2] for _codon in new_usage_table[amino_acid]])
-				print amino_acid, new_usage_table[amino_acid], amino_acids[amino_acid]
 
-			print new_usage_table
+			new_ranking_codons = RemoveCodonByRank(rank, ranking_codons)
 
 			non_standard_aas = list(set(usage_table.keys()).difference(aa))
 			non_standard_usage_table = defaultdict(list)
 			if non_standard_aas:
 				non_standard_usage_table = { non_standard_aa: new_usage_table[non_standard_aa] for non_standard_aa in non_standard_aas }
 
-			return self.render("dynamcc_d.html", error=None, target_codon_aa=target_codon_aa, amino_acids=amino_acids, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance_label, organism_name=organism_name, usage_table=new_usage_table, ns_usage_table=non_standard_usage_table)
+			if not compression_method:
+				return self.render("dynamcc_d.html", error=None, target_codon_aa=target_codon_aa, amino_acids=amino_acids, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance_label, organism_name=organism_name, usage_table=new_usage_table, ns_usage_table=non_standard_usage_table)
 
-		codons = self.get_arguments("codons")
+		codons = new_ranking_codons if compression_method else self.get_arguments("codons")
 
-		sorted_dict_codons = defaultdict(list)
-		for codon in codons:
-			inline_codon = str.split(str(codon), '_')
+		if compression_method:
+			sorted_dict_codons = new_ranking_codons
+		else:
+			sorted_dict_codons = defaultdict(list)
+			for codon in codons:
+				inline_codon = str.split(str(codon), '_')
 
-			sorted_dict_codons[ inline_codon[0] ].append((inline_codon[1],inline_codon[2]))
+				sorted_dict_codons[ inline_codon[0] ].append((inline_codon[1],inline_codon[2]))
 		
 		print sorted_dict_codons
 
 		rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
-		organism_name = self.get_argument("organism_name")
-
-		InUse_dict = ReformatUsageDict(sorted_dict_codons)
+		organism_name = self.get_argument("organism_name") if not compression_method else organism_name
 		codon_list = BestList(sorted_dict_codons)
-		in_use = FlagInUse(codon_list, InUse_dict)
-		best_compression = execute_algorithm(codon_list,in_use,rules_dict,inverse_dict)
+
+		if compression_method:
+			codon_order = sorted_dict_codons.keys()
+			codon_count = BuildCodonCount(sorted_dict_codons, codon_order)
+			best_compression = start_multiprocessing(sorted_dict_codons, rules_dict, 'R', codon_count, 0, processes=3)
+		else:
+			InUse_dict = ReformatUsageDict(sorted_dict_codons)
+			in_use = FlagInUse(codon_list, InUse_dict)
+			best_compression = execute_algorithm(codon_list,in_use,rules_dict,inverse_dict)
 
 		print "best_compression:", best_compression
 
 		inline_codon_list = codon_list
+		BestReducedList = best_compression['BestReducedList'] if compression_method else best_compression
 
 		## exploding codons
 		exploded_codons = {}
 		codon_list = []
-		for codon in best_compression:
+		for codon in BestReducedList:
 			exploded_codons[codon] = list(codon)
 			codon_list.append(list(codon))
 		exploded_codons_copy1 = {}

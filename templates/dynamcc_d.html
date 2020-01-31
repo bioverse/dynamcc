@@ -540,9 +540,9 @@
               <div class="panel-heading">Enter codon <a tabindex="0" role="button" id="rank_popover" data-toggle="popover" data-trigger="focus" title="Rank" data-content="This will use the set of available codons (as defined by the hamming distance), as well as the usage rank to achieve the best-compressed set of codons.">rank</a> cutoff:</div>
               <div class="panel-body">
                 <div class="col-sm-6">
-                  <input type="checkbox" value="rank" name="compression_method" id="rank" required>
+                  <input type="checkbox" value="rank" name="compression_method" id="rank">
                   <label>Rank</label>
-                  <input type="text" name="input_rank" id="input_rank">
+                  <input type="text" value="0" pattern="\d{1}" name="input_rank" id="input_rank">
                 </div>
               </div>
             </div>
