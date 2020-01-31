@@ -104,7 +104,7 @@ class Dynamcc0Handler(RequestHandler):
 			rank = True
 			Selection = 'R'
 			#threshold = 2
-			threshold = int(self.get_argument("input_rank"))
+			threshold = int(self.get_argument("input_rank") or 0)
 			print threshold
 			new_dict = RemoveCodonByRank(threshold, filtered_dict)
 		else:
@@ -292,14 +292,14 @@ class DynamccDHandler(RequestHandler):
 		hamming_distance = 1 if hamming_distance_label == '1' else 2
 		target_codon = self.get_argument("target_codon")
 		target_codon_aa = self.get_argument("target_codon_aa", "")
-		form_step = int(self.get_argument("step", 0))
+		form_step = int(self.get_argument("step", 0) or 0)
 		compression_method = self.get_argument("compression_method", False)
-		rank = int(self.get_argument("input_rank", 0))
+		rank = int(self.get_argument("input_rank") or 0)
 		target_codon = target_codon.upper()
 		ranking_codons = defaultdict(list)
 		new_ranking_codons = defaultdict(list)
 
-		verified_ncltds = [c in ALLOWED_NEUCLOTIDES for c in list(target_codon)];
+		verified_ncltds = [c in ALLOWED_NEUCLOTIDES for c in list(target_codon)]
 		verified_ncltd = all(verified_ncltds)
 
 		if not verified_ncltd or len(verified_ncltds) != 3:
