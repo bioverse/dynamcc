@@ -294,7 +294,7 @@ class DynamccDHandler(RequestHandler):
 		target_codon_aa = self.get_argument("target_codon_aa", "")
 		form_step = int(self.get_argument("step", 0) or 0)
 		compression_method = self.get_argument("compression_method", False)
-		rank = int(self.get_argument("input_rank") or 0)
+		rank = int(self.get_argument("input_rank")) if self.get_argument("input_rank", 0) else 0
 		target_codon = target_codon.upper()
 		ranking_codons = defaultdict(list)
 		new_ranking_codons = defaultdict(list)
@@ -385,6 +385,7 @@ class DynamccDHandler(RequestHandler):
 		codon_list = BestList(sorted_dict_codons)
 
 		if compression_method:
+			del sorted_dict_codons['X']
 			codon_order = sorted_dict_codons.keys()
 			codon_count = BuildCodonCount(sorted_dict_codons, codon_order)
 			best_compression = start_multiprocessing(sorted_dict_codons, rules_dict, 'R', codon_count, 0, processes=3)
