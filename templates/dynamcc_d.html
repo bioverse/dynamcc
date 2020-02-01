@@ -7,6 +7,11 @@
   alert("{{ error }}");
 </script>
 {% end %}
+<style>
+  #input_rank {
+    display: none;
+  }
+</style>
 <script type="text/javascript">
   function ShowHide() {
     $(function () {
@@ -16,18 +21,11 @@
       $('[data-toggle="popover"]').popover()
     })
 
-    document.getElementById("input_rank").style.display = 'none';
-
-    const submitBtn = $('button[type="submit"]');
-    const defaultText = submitBtn.text();
-    
     $("#rank").change(function() {
       if ($(this).is(':checked')) {
-        $("#input_rank").show();
-        submitBtn.text("Compress Automatically");
+        $("#input_rank, #compress-auto").show();
       } else {
-        $("#input_rank").hide();
-        submitBtn.text(defaultText);
+        $("#input_rank, #compress-auto").hide();
       }
     });
 
@@ -540,9 +538,16 @@
               <div class="panel-heading">Enter codon <a tabindex="0" role="button" id="rank_popover" data-toggle="popover" data-trigger="focus" title="Rank" data-content="This will use the set of available codons (as defined by the hamming distance), as well as the usage rank to achieve the best-compressed set of codons.">rank</a> cutoff:</div>
               <div class="panel-body">
                 <div class="col-sm-6">
-                  <input type="checkbox" value="rank" name="compression_method" id="rank">
-                  <label>Rank</label>
-                  <input type="text" pattern="\d{1}" name="input_rank" id="input_rank">
+                  <div>
+                    <input type="checkbox" value="rank" id="rank">
+                    <label>Rank</label>
+                    <input type="text" pattern="\d{1}" name="input_rank" id="input_rank">
+                  </div>
+                  <div id="compress-auto" style="display: none">
+                    <button type="submit" class="btn btn-primary" value="Compress Rank" name="compression_method">
+                      Compress Automatically
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
