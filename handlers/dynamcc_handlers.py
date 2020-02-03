@@ -293,7 +293,8 @@ class DynamccDHandler(RequestHandler):
 		target_codon = self.get_argument("target_codon")
 		target_codon_aa = self.get_argument("target_codon_aa", "")
 		form_step = int(self.get_argument("step", 0) or 0)
-		compression_method = self.get_argument("compression_method", False)
+		compression_method = self.get_argument("compression_method", 'manual')
+		compress_auto = True if compression_method == 'auto' else False
 		rank = int(self.get_argument("input_rank")) if self.get_argument("input_rank", 0) else 0
 		target_codon = target_codon.upper()
 		ranking_codons = defaultdict(list)
@@ -350,7 +351,7 @@ class DynamccDHandler(RequestHandler):
 								distance_in_range = False
 								sibling_in_range = True
 
-					if compression_method and (distance_in_range or sibling_in_range):
+					if compress_auto and (distance_in_range or sibling_in_range):
 						ranking_codons[amino_acid].append((codon[0], codon[1]))
 
 					new_usage_table[amino_acid].append((codon[0], codon[1], distance_in_range, sibling_in_range))
@@ -364,12 +365,12 @@ class DynamccDHandler(RequestHandler):
 			if non_standard_aas:
 				non_standard_usage_table = { non_standard_aa: new_usage_table[non_standard_aa] for non_standard_aa in non_standard_aas }
 
-			if not compression_method:
+			if not compress_auto:
 				return self.render("dynamcc_d.html", error=None, target_codon_aa=target_codon_aa, amino_acids=amino_acids, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance_label, organism_name=organism_name, usage_table=new_usage_table, ns_usage_table=non_standard_usage_table)
 
-		codons = new_ranking_codons if compression_method else self.get_arguments("codons")
+		codons = new_ranking_codons if compress_auto else self.get_arguments("codons")
 
-		if compression_method:
+		if compress_auto:
 			sorted_dict_codons = new_ranking_codons
 		else:
 			sorted_dict_codons = defaultdict(list)
@@ -381,10 +382,10 @@ class DynamccDHandler(RequestHandler):
 		print sorted_dict_codons
 
 		rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
-		organism_name = self.get_argument("organism_name") if not compression_method else organism_name
+		organism_name = self.get_argument("organism_name") if not compress_auto else organism_name
 		codon_list = BestList(sorted_dict_codons)
 
-		if compression_method:
+		if compress_auto:
 			del sorted_dict_codons['X']
 			codon_order = sorted_dict_codons.keys()
 			codon_count = BuildCodonCount(sorted_dict_codons, codon_order)
@@ -397,7 +398,7 @@ class DynamccDHandler(RequestHandler):
 		print "best_compression:", best_compression
 
 		inline_codon_list = codon_list
-		BestReducedList = best_compression['BestReducedList'] if compression_method else best_compression
+		BestReducedList = best_compression['BestReducedList'] if compress_auto else best_compression
 
 		## exploding codons
 		exploded_codons = {}
