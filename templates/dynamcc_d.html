@@ -8,25 +8,35 @@
 </script>
 {% end %}
 <style>
-  #input_rank {
+  #compress-auto {
     display: none;
   }
 </style>
 <script type="text/javascript">
   function ShowHide() {
+    const step1SubmitBtn = $('#submit-step-1');
+
     $(function () {
       $('[data-toggle="tooltip"]').tooltip()
-    })
+    });
     $(function () {
       $('[data-toggle="popover"]').popover()
-    })
+    });
 
-    $("#rank").change(function() {
-      if ($(this).is(':checked')) {
-        $("#input_rank, #compress-auto").show();
+    $("input[name='compression_method']").change(function() {
+      if ($(this).val() === 'auto') {
+        step1SubmitBtn.prop('disabled', true);
+        $("#compress-auto").show();
       } else {
-        $("#input_rank, #compress-auto").hide();
+        $("#compress-auto").hide();
+        step1SubmitBtn.prop('disabled', false);
       }
+    });
+
+    $('input[name="input_rank"]').on('input', function() {
+      const currVal = parseInt($(this).val());
+      const truthy = currVal && currVal > 0 && currVal < 7;
+      step1SubmitBtn.prop('disabled', !truthy);
     });
 
     if ($("#custom_usage").is(":checked")) {
@@ -535,29 +545,31 @@
               </div>
             </div>
             <div class="panel panel-default">
-              <div class="panel-heading">Enter codon <a tabindex="0" role="button" id="rank_popover" data-toggle="popover" data-trigger="focus" title="Rank" data-content="This will use the set of available codons (as defined by the hamming distance), as well as the usage rank to achieve the best-compressed set of codons.">rank</a> cutoff:</div>
+              <div class="panel-heading">Select compress approach</div>
               <div class="panel-body">
                 <div class="col-sm-6">
                   <div>
-                    <input type="checkbox" value="rank" id="rank">
-                    <label>Rank</label>
-                    <input type="text" pattern="\d{1}" name="input_rank" id="input_rank">
+                    <label>
+                      <input type="radio" name="compression_method" value="auto">
+                      Automatic
+                    </label>
+                    <span id="compress-auto">
+                      Please enter minimal usage rank value (1-6):<br>
+                      <input type="text" pattern="\d{1}" name="input_rank">
+                    </span>
                   </div>
-                  <div id="compress-auto" style="display: none">
-                    <button type="submit" class="btn btn-primary" value="Compress Rank" name="compression_method">
-                      Compress Automatically
-                    </button>
+                </div>
+                <div class="col-sm-6">
+                  <div>
+                    <label>
+                      <input type="radio" name="compression_method" checked value="manual">
+                      Manual selection of codons and amino acids
+                    </label>
                   </div>
                 </div>
               </div>
             </div>
-            <button
-              type="submit"
-              style="margin-bottom: 20px;"
-              class="btn btn-default"
-            >
-              Find codons and amino acids
-            </button>
+            <button type="submit" style="margin-bottom: 20px;" class="btn btn-default" id="submit-step-1">Compress</button>
             <input type="hidden" name="step" value="2" />
           </div>
         </div>
