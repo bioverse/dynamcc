@@ -386,7 +386,9 @@ class DynamccDHandler(RequestHandler):
 		codon_list = BestList(sorted_dict_codons)
 
 		if compress_auto:
-			del sorted_dict_codons['X']
+			if 'X' in sorted_dict_codons:
+				del sorted_dict_codons['X']
+
 			codon_order = sorted_dict_codons.keys()
 			codon_count = BuildCodonCount(sorted_dict_codons, codon_order)
 			best_compression = start_multiprocessing(sorted_dict_codons, rules_dict, 'R', codon_count, 0, processes=3)
@@ -432,4 +434,4 @@ class DynamccDHandler(RequestHandler):
 		codon_dict = util.BuildCodonDict(sorted_dict_codons)
 		print "codon_dict:", codon_dict, type(target_codon_aa)
 		
-		self.render("dynamcc_d_results.html", hamming_distance=hamming_distance_label, target_codon=target_codon, target_codon_aa=str(target_codon_aa), inline_codon_list=inline_codon_list, codon_dict=codon_dict, organism=organism_name, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict_codons)
+		self.render("dynamcc_d_results.html", rank=rank, usage=False, threshold_value=str(rank), hamming_distance=hamming_distance_label, target_codon=target_codon, target_codon_aa=str(target_codon_aa), inline_codon_list=inline_codon_list, codon_dict=codon_dict, organism=organism_name, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict_codons)

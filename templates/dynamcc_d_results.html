@@ -27,7 +27,7 @@ function ExplodeCodons() {
 	//console.log(codon_usage);
 	
 	var html = '<table border="1">';
-	html += '<th style="padding:10px;">Compressed Codon</th><th style="padding:10px;">Exploded Codons</th><th style="padding:10px;">Usage</th><th style="padding:10px;">Amino Acid</th>'
+	html += '<th style="padding:10px;">Compressed Codon</th><th style="padding:10px;">Exploded Codons</th><th style="padding:10px;">Rank</th><th style="padding:10px;">Usage</th><th style="padding:10px;">Amino Acid</th>'
 	
 	for (var key in exploded_codons) 
 	{
@@ -38,6 +38,13 @@ function ExplodeCodons() {
 		{
 			html += exploded_codons[key][i];
 			html += '<br>';	
+		}
+		html += '</td>';
+		html += '<td style="padding:10px;">';
+		for (i = 0; i < exploded_codons[key].length; i++)
+		{
+			html += codon_rank[exploded_codons[key][i]];
+			html += '<br>';
 		}
 		html += '</td>';
 		html += '<td style="padding:10px;">';
