@@ -299,6 +299,8 @@ class DynamccDHandler(RequestHandler):
 		target_codon = target_codon.upper()
 		ranking_codons = defaultdict(list)
 		new_ranking_codons = defaultdict(list)
+		usage_table = False
+		organism_name = ''
 
 		verified_ncltds = [c in ALLOWED_NEUCLOTIDES for c in list(target_codon)]
 		verified_ncltd = all(verified_ncltds)
@@ -317,6 +319,9 @@ class DynamccDHandler(RequestHandler):
 					organism_name = organism_names[seletect_organism]
 				else:
 					pass
+
+			if usage_table == False or not organism_name:
+				return self.render("dynamcc_d.html", step=None, error="Invalid Organism")
 
 			print "target_codon: %s\nhamming distance: %d\norganism: %s" % (target_codon, hamming_distance, organism_name)
 
