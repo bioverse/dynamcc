@@ -330,13 +330,17 @@ class DynamccDHandler(RequestHandler):
 			"""
 			new_usage_table = defaultdict(list)
 			amino_acids = {}
+			skip_aa = False
+
 			for amino_acid in usage_table:
 				codons = usage_table[amino_acid]
-				distance_in_range = False
+				skip_aa = False
+
 				for codon in codons:
 					if codon[0] == target_codon:
 						target_codon_aa = amino_acid
-						continue
+						skip_aa = True
+						break
 
 					if hamming_distance != 1:
 						distance_in_range = TargetHammingDistance(codon[0], target_codon, 2)
@@ -361,7 +365,8 @@ class DynamccDHandler(RequestHandler):
 
 					new_usage_table[amino_acid].append((codon[0], codon[1], distance_in_range, sibling_in_range))
 
-				amino_acids[amino_acid] = any([_codon[2] for _codon in new_usage_table[amino_acid]])
+				if not skip_aa:
+					amino_acids[amino_acid] = any([_codon[2] for _codon in new_usage_table[amino_acid]])
 
 			new_ranking_codons = RemoveCodonByRank(rank, ranking_codons)
 
