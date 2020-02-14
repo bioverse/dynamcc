@@ -4,897 +4,939 @@
 
 {% if error %}
 <script>
-  alert("{{ error }}");
+    alert("{{ error }}");
 </script>
 {% end %}
 <style>
-  #compress-auto {
-    display: none;
-  }
+    #compress-auto {
+        display: none;
+    }
 </style>
 <script type="text/javascript">
-  function ShowHide() {
-    const step1SubmitBtn = $('#submit-step-1');
+    function ShowHide() {
+        const step1SubmitBtn = $('#submit-step-1');
 
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip()
-    });
-    $(function () {
-      $('[data-toggle="popover"]').popover()
-    });
-
-    $("input[name='compression_method']").change(function() {
-      if ($(this).val() === 'auto') {
-        step1SubmitBtn.prop('disabled', true);
-        $("#compress-auto").show();
-      } else {
-        $("#compress-auto").hide();
-        step1SubmitBtn.prop('disabled', false);
-      }
-    });
-
-    $('input[name="input_rank"]').on('input', function() {
-      const currVal = parseInt($(this).val());
-      const truthy = currVal && currVal > 0 && currVal < 7;
-      step1SubmitBtn.prop('disabled', !truthy);
-    });
-
-    if ($("#custom_usage").is(":checked")) {
-      $("#custom_table").show();
-      if ($("input:file").val()) {
-        CheckforNewAA();
-      }
-    }
-
-    $("input[name=usage_table]").click(function() {
-      if ($("input[name=usage_table]:checked").val() != "custom") {
-        $("#additional_aa").empty();
-        //$("#bad_input").hide();
-        //$("#submit_message").hide();
-        $("#custom_codon_usage")
-          .wrap("<form>")
-          .closest("form")
-          .get(0)
-          .reset();
-        $("#custom_codon_usage").unwrap();
-        $("form").submit(function(event) {
-          $(this)
-            .unbind("submit")
-            .submit();
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
         });
-      } else {
-        $("input:file").change(function() {
-          Cookies.remove("checkboxValues");
-          CheckforNewAA();
-          if ($("input:file").val()) {
-            console.log("file loaded");
-          }
+        $(function () {
+            $('[data-toggle="popover"]').popover()
         });
-      }
-    });
 
-    $("input[name=hydrophobic]").click(function() {
-      if ($(this).is(":checked")) {
-        $("#all_hydrophobic")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", true);
-        $("input[name=aromatic]").prop("checked", true);
-        $("input[name=nonpolar]").prop("checked", true);
-        $("input[name=small]").prop("checked", true);
-      } else {
-        $("#all_hydrophobic")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", false);
-        $("input[name=aromatic]").prop("checked", false);
-        $("input[name=nonpolar]").prop("checked", false);
-        $("input[name=small]").prop("checked", false);
-      }
-    });
-
-    $("input[name=aromatic]").click(function() {
-      if ($(this).is(":checked")) {
-        $("#all_aromatic")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", true);
-      } else {
-        $("#all_aromatic")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", false);
-      }
-    });
-
-    $("input[name=nonpolar]").click(function() {
-      if ($(this).is(":checked")) {
-        $("#all_nonpolar")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", true);
-        $("input[name=small]").prop("checked", true);
-      } else {
-        $("#all_nonpolar")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", false);
-        $("input[name=small]").prop("checked", false);
-      }
-    });
-
-    $("input[name=small]").click(function() {
-      if ($(this).is(":checked")) {
-        $("#all_small")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", true);
-      } else {
-        $("#all_small")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", false);
-      }
-    });
-
-    $("input[name=hydrophilic]").click(function() {
-      if ($(this).is(":checked")) {
-        $("#all_hydrophilic")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", true);
-        $("input[name=negative]").prop("checked", true);
-        $("input[name=positive]").prop("checked", true);
-        $("input[name=uncharged]").prop("checked", true);
-        $("input[name=small_uncharged]").prop("checked", true);
-      } else {
-        $("#all_hydrophilic")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", false);
-        $("input[name=negative]").prop("checked", false);
-        $("input[name=positive]").prop("checked", false);
-        $("input[name=uncharged]").prop("checked", false);
-        $("input[name=small_uncharged]").prop("checked", false);
-      }
-    });
-
-    $("input[name=negative]").click(function() {
-      if ($(this).is(":checked")) {
-        $("#all_negative")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", true);
-      } else {
-        $("#all_negative")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", false);
-      }
-    });
-
-    $("input[name=positive]").click(function() {
-      if ($(this).is(":checked")) {
-        $("#all_positive")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", true);
-      } else {
-        $("#all_positive")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", false);
-      }
-    });
-
-    $("input[name=uncharged]").click(function() {
-      if ($(this).is(":checked")) {
-        $("#all_uncharged")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", true);
-        $("input[name=small_uncharged]").prop("checked", true);
-      } else {
-        $("#all_uncharged")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", false);
-        $("input[name=small_uncharged]").prop("checked", false);
-      }
-    });
-
-    $("input[name=small_uncharged]").click(function() {
-      if ($(this).is(":checked")) {
-        $("#all_small_uncharged")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", true);
-      } else {
-        $("#all_small_uncharged")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", false);
-      }
-    });
-
-    $("input[name=ns_aa]").click(function() {
-      if ($(this).is(":checked")) {
-        $("#all_ns_aa")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", true);
-      } else {
-        $("#all_ns_aa")
-          .find(
-            "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
-          )
-          .prop("checked", false);
-      }
-    });
-
-    $("input[name=aa]").click(function() {
-      if ($(this).is(":checked")) {
-        $(this)
-          .parent()
-          .find("input[name=codons]:not(:disabled)")
-          .prop("checked", true);
-      } else {
-        $(this)
-          .parent()
-          .find("input[name=codons]:not(:disabled)")
-          .prop("checked", false);
-      }
-    });
-  }
-
-  function uploadUsageTable() {
-    let custom_codon_usage = document.querySelector("#custom_codon_usage");
-
-    if (!custom_codon_usage) return;
-
-    custom_codon_usage.addEventListener("change", readFile, false);
-    if ($("#custom_usage").is(":checked")) {
-      $("#custom_table").show();
-    }
-  }
-
-  function readFile(event) {
-    if (window.FileReader) {
-      var files = event.target.files;
-      var file = files[0];
-      var reader = new FileReader();
-      var error_message =
-        "The file you entered is not formatted correctly. Please use the Example Input as a template. Fields are tab-separated, and there is an empty line at the end of the file. Note that the first line is ignored.";
-      reader.readAsText(file);
-      reader.onload = function() {
-        var lines = this.result.split("\n");
-        if (lines[lines.length - 1] != "") {
-          $("form").submit(function(event) {
-            event.preventDefault();
-          });
-          alert(error_message);
-        }
-        for (var line = 1; line < lines.length - 1; line++) {
-          var tokens = lines[line].split("\t");
-          //console.log(tokens.length);
-          if (tokens.length != 3 || tokens[0].length != 3 || isNaN(tokens[2])) {
-            $("form").submit(function(event) {
-              event.preventDefault();
-            });
-            alert(error_message);
-          } else {
-            //console.log(tokens);
-          }
-        }
-        return lines;
-      };
-    } else {
-      alert(
-        "Your Browser does not support uploading files on this site. Please use Chrome, Firefox, or Safari."
-      );
-    }
-  }
-
-  function CheckforNewAA() {
-    $("#additional_aa").empty();
-    var input = document.getElementById("custom_codon_usage");
-    var fReader = new FileReader();
-    var myFile = fReader.readAsText(input.files[0]);
-    fReader.onloadend = function(event) {
-      var custom_usage_hash = {};
-      var lines = this.result.split("\n");
-      for (var line = 1; line < lines.length - 1; line++) {
-        var tokens = lines[line].split("\t");
-        var amino_acid = tokens[1];
-        var codon = tokens[0];
-        var usage = parseFloat(tokens[2]);
-        if (_.has(custom_usage_hash, amino_acid)) {
-          custom_usage_hash[amino_acid].push([codon, usage]);
-        } else {
-          custom_usage_hash[amino_acid] = [[codon, usage]];
-        }
-      }
-      var default_keys = [];
-      _.each(ecoli, function(val, key) {
-        default_keys.push(key);
-      });
-      var custom_keys = [];
-      _.each(custom_usage_hash, function(val, key) {
-        custom_keys.push(key);
-      });
-      var additional_keys = _.difference(custom_keys, default_keys);
-      if (additional_keys.length > 0) {
-        for (var i = 0; i < additional_keys.length; i++) {
-          var new_aa = additional_keys[i];
-          $("#additional_aa").append(
-            '<input type="checkbox" id="' +
-              new_aa +
-              '" name="aa" value="' +
-              new_aa +
-              '" style="margin:0px 10px 0px 20px;" >'
-          );
-          var checkboxValues = repopulateCheckboxes();
-          for (var key in checkboxValues) {
-            if (key == new_aa && checkboxValues[key] == true) {
-              $("#" + new_aa).prop("checked", true);
-            } else if (key == new_aa && checkboxValues[key] == false) {
-              $("#" + new_aa).prop("checked", false);
+        $("input[name='compression_method']").change(function () {
+            if ($(this).val() === 'auto') {
+                step1SubmitBtn.prop('disabled', true);
+                $("#compress-auto").show();
+            } else {
+                $("#compress-auto").hide();
+                step1SubmitBtn.prop('disabled', false);
             }
-          }
-          $("#additional_aa").append("<label>" + new_aa + "</label>");
+        });
+
+        $('input[name="input_rank"]').on('input', function () {
+            const currVal = parseInt($(this).val());
+            const truthy = currVal && currVal > 0 && currVal < 7;
+            step1SubmitBtn.prop('disabled', !truthy);
+        });
+
+        if ($("#custom_usage").is(":checked")) {
+            $("#custom_table").show();
+            if ($("input:file").val()) {
+                CheckforNewAA();
+            }
         }
-        $("#additional_aa").show();
-      }
-    };
-  }
 
-  function SaveState() {
-    $(":checkbox").on("change", function() {
-      var checkboxValues = {};
-      $(":checkbox").each(function() {
-        checkboxValues[this.value] = this.checked;
-      });
-      Cookies.set("checkboxValues", checkboxValues);
-    });
-  }
+        $("input[name=usage_table]").click(function () {
+            if ($("input[name=usage_table]:checked").val() != "custom") {
+                $("#additional_aa").empty();
+                //$("#bad_input").hide();
+                //$("#submit_message").hide();
+                $("#custom_codon_usage")
+                    .wrap("<form>")
+                    .closest("form")
+                    .get(0)
+                    .reset();
+                $("#custom_codon_usage").unwrap();
+                $("form").submit(function (event) {
+                    $(this)
+                        .unbind("submit")
+                        .submit();
+                });
+            } else {
+                $("input:file").change(function () {
+                    Cookies.remove("checkboxValues");
+                    CheckforNewAA();
+                    if ($("input:file").val()) {
+                        console.log("file loaded");
+                    }
+                });
+            }
+        });
 
-  function repopulateCheckboxes() {
-    var checkboxValues = Cookies.getJSON("checkboxValues");
-    console.log(checkboxValues);
-    if (checkboxValues) {
-      Object.keys(checkboxValues).forEach(function(element) {
-        var checked = checkboxValues[element];
-      });
+        $("input[name=hydrophobic]").click(function () {
+            if ($(this).is(":checked")) {
+                $("#all_hydrophobic")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", true);
+                $("input[name=aromatic]").prop("checked", true);
+                $("input[name=nonpolar]").prop("checked", true);
+                $("input[name=small]").prop("checked", true);
+            } else {
+                $("#all_hydrophobic")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", false);
+                $("input[name=aromatic]").prop("checked", false);
+                $("input[name=nonpolar]").prop("checked", false);
+                $("input[name=small]").prop("checked", false);
+            }
+        });
+
+        $("input[name=aromatic]").click(function () {
+            if ($(this).is(":checked")) {
+                $("#all_aromatic")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", true);
+            } else {
+                $("#all_aromatic")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", false);
+            }
+        });
+
+        $("input[name=nonpolar]").click(function () {
+            if ($(this).is(":checked")) {
+                $("#all_nonpolar")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", true);
+                $("input[name=small]").prop("checked", true);
+            } else {
+                $("#all_nonpolar")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", false);
+                $("input[name=small]").prop("checked", false);
+            }
+        });
+
+        $("input[name=small]").click(function () {
+            if ($(this).is(":checked")) {
+                $("#all_small")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", true);
+            } else {
+                $("#all_small")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", false);
+            }
+        });
+
+        $("input[name=hydrophilic]").click(function () {
+            if ($(this).is(":checked")) {
+                $("#all_hydrophilic")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", true);
+                $("input[name=negative]").prop("checked", true);
+                $("input[name=positive]").prop("checked", true);
+                $("input[name=uncharged]").prop("checked", true);
+                $("input[name=small_uncharged]").prop("checked", true);
+            } else {
+                $("#all_hydrophilic")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", false);
+                $("input[name=negative]").prop("checked", false);
+                $("input[name=positive]").prop("checked", false);
+                $("input[name=uncharged]").prop("checked", false);
+                $("input[name=small_uncharged]").prop("checked", false);
+            }
+        });
+
+        $("input[name=negative]").click(function () {
+            if ($(this).is(":checked")) {
+                $("#all_negative")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", true);
+            } else {
+                $("#all_negative")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", false);
+            }
+        });
+
+        $("input[name=positive]").click(function () {
+            if ($(this).is(":checked")) {
+                $("#all_positive")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", true);
+            } else {
+                $("#all_positive")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", false);
+            }
+        });
+
+        $("input[name=uncharged]").click(function () {
+            if ($(this).is(":checked")) {
+                $("#all_uncharged")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", true);
+                $("input[name=small_uncharged]").prop("checked", true);
+            } else {
+                $("#all_uncharged")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", false);
+                $("input[name=small_uncharged]").prop("checked", false);
+            }
+        });
+
+        $("input[name=small_uncharged]").click(function () {
+            if ($(this).is(":checked")) {
+                $("#all_small_uncharged")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", true);
+            } else {
+                $("#all_small_uncharged")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", false);
+            }
+        });
+
+        $("input[name=ns_aa]").click(function () {
+            if ($(this).is(":checked")) {
+                $("#all_ns_aa")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", true);
+            } else {
+                $("#all_ns_aa")
+                    .find(
+                        "input[name=aa]:not(:disabled), input[name=codons]:not(:disabled)"
+                    )
+                    .prop("checked", false);
+            }
+        });
+
+        $("input[name=aa]").click(function () {
+            if ($(this).is(":checked")) {
+                $(this)
+                    .parent()
+                    .find("input[name=codons]:not(:disabled)")
+                    .prop("checked", true);
+            } else {
+                $(this)
+                    .parent()
+                    .find("input[name=codons]:not(:disabled)")
+                    .prop("checked", false);
+            }
+        });
     }
-    return checkboxValues;
-  }
+
+    function uploadUsageTable() {
+        let custom_codon_usage = document.querySelector("#custom_codon_usage");
+
+        if (!custom_codon_usage) return;
+
+        custom_codon_usage.addEventListener("change", readFile, false);
+        if ($("#custom_usage").is(":checked")) {
+            $("#custom_table").show();
+        }
+    }
+
+    function readFile(event) {
+        if (window.FileReader) {
+            var files = event.target.files;
+            var file = files[0];
+            var reader = new FileReader();
+            var error_message =
+                "The file you entered is not formatted correctly. Please use the Example Input as a template. Fields are tab-separated, and there is an empty line at the end of the file. Note that the first line is ignored.";
+            reader.readAsText(file);
+            reader.onload = function () {
+                var lines = this.result.split("\n");
+                if (lines[lines.length - 1] != "") {
+                    $("form").submit(function (event) {
+                        event.preventDefault();
+                    });
+                    alert(error_message);
+                }
+                for (var line = 1; line < lines.length - 1; line++) {
+                    var tokens = lines[line].split("\t");
+                    //console.log(tokens.length);
+                    if (tokens.length != 3 || tokens[0].length != 3 || isNaN(tokens[2])) {
+                        $("form").submit(function (event) {
+                            event.preventDefault();
+                        });
+                        alert(error_message);
+                    } else {
+                        //console.log(tokens);
+                    }
+                }
+                return lines;
+            };
+        } else {
+            alert(
+                "Your Browser does not support uploading files on this site. Please use Chrome, Firefox, or Safari."
+            );
+        }
+    }
+
+    function CheckforNewAA() {
+        $("#additional_aa").empty();
+        var input = document.getElementById("custom_codon_usage");
+        var fReader = new FileReader();
+        var myFile = fReader.readAsText(input.files[0]);
+        fReader.onloadend = function (event) {
+            var custom_usage_hash = {};
+            var lines = this.result.split("\n");
+            for (var line = 1; line < lines.length - 1; line++) {
+                var tokens = lines[line].split("\t");
+                var amino_acid = tokens[1];
+                var codon = tokens[0];
+                var usage = parseFloat(tokens[2]);
+                if (_.has(custom_usage_hash, amino_acid)) {
+                    custom_usage_hash[amino_acid].push([codon, usage]);
+                } else {
+                    custom_usage_hash[amino_acid] = [[codon, usage]];
+                }
+            }
+            var default_keys = [];
+            _.each(ecoli, function (val, key) {
+                default_keys.push(key);
+            });
+            var custom_keys = [];
+            _.each(custom_usage_hash, function (val, key) {
+                custom_keys.push(key);
+            });
+            var additional_keys = _.difference(custom_keys, default_keys);
+            if (additional_keys.length > 0) {
+                for (var i = 0; i < additional_keys.length; i++) {
+                    var new_aa = additional_keys[i];
+                    $("#additional_aa").append(
+                        '<input type="checkbox" id="' +
+                        new_aa +
+                        '" name="aa" value="' +
+                        new_aa +
+                        '" style="margin:0px 10px 0px 20px;" >'
+                    );
+                    var checkboxValues = repopulateCheckboxes();
+                    for (var key in checkboxValues) {
+                        if (key == new_aa && checkboxValues[key] == true) {
+                            $("#" + new_aa).prop("checked", true);
+                        } else if (key == new_aa && checkboxValues[key] == false) {
+                            $("#" + new_aa).prop("checked", false);
+                        }
+                    }
+                    $("#additional_aa").append("<label>" + new_aa + "</label>");
+                }
+                $("#additional_aa").show();
+            }
+        };
+    }
+
+    function SaveState() {
+        $(":checkbox").on("change", function () {
+            var checkboxValues = {};
+            $(":checkbox").each(function () {
+                checkboxValues[this.value] = this.checked;
+            });
+            Cookies.set("checkboxValues", checkboxValues);
+        });
+    }
+
+    function repopulateCheckboxes() {
+        var checkboxValues = Cookies.getJSON("checkboxValues");
+        console.log(checkboxValues);
+        if (checkboxValues) {
+            Object.keys(checkboxValues).forEach(function (element) {
+                var checked = checkboxValues[element];
+            });
+        }
+        return checkboxValues;
+    }
 </script>
 
 {%end%} {% block content%}
 <body onload="ShowHide();uploadUsageTable();SaveState();">
-  <div>
+<div>
     <div class="row" style="margin-bottom:30px;">
-      <h3>DYNAMCC_D</h3>
+        <h3>DYNAMCC_D</h3>
     </div>
 
     <div>
-      {% if step != 2 %}
-      <form enctype="multipart/form-data" method="post" action="/dynamcc_d/">
-        <div class="row">
-          <div class="col-sm-12">
-            <h4>Selecting distance (library type) and organism</h4>
-            <div class="panel panel-default">
-              <div class="panel-heading">Target Codon:</div>
-              <div class="panel-body">
-                <div class="col-sm-1">
-                  <input
-                    type="text"
-                    name="target_codon"
-                    value=""
-                    style="margin-right:10px;"
-                    required
-                    pattern="[a.g.c.t|A.G.C.T]{3}"
-                    minlength="3"
-                    maxlength="3"
-                  />
+        {% if step != 2 %}
+        <form enctype="multipart/form-data" method="post" action="/dynamcc_d/">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h4>Selecting distance (library type) and organism</h4>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Target Codon:</div>
+                        <div class="panel-body">
+                            <div class="col-sm-1">
+                                <input
+                                        type="text"
+                                        name="target_codon"
+                                        value=""
+                                        style="margin-right:10px;"
+                                        required
+                                        pattern="[a.g.c.t|A.G.C.T]{3}"
+                                        minlength="3"
+                                        maxlength="3"
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-        </div>
 
-        <div class="row">
-          <div class="col-sm-12">
-            <div class="panel panel-default">
-              <div class="panel-heading">Target hamming distance in bases:</div>
-              <div class="panel-body">
-                <div class="col-sm-6">
-                  <input
-                    type="radio"
-                    id="hamming_distance_1"
-                    name="hamming_distance"
-                    value="1"
-                    style="margin-right:10px;"
-                    required
-                  />
-                  <label class="side-wrapper" for="hamming_distance_1">
-                    <span class="side-value">1</span>
-                    <span class="side-label"
-                      >access to 9 codons relevant to naturally occuring
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Target hamming distance in bases:</div>
+                        <div class="panel-body">
+                            <div class="col-sm-6">
+                                <input
+                                        type="radio"
+                                        id="hamming_distance_1"
+                                        name="hamming_distance"
+                                        value="1"
+                                        style="margin-right:10px;"
+                                        required
+                                />
+                                <label class="side-wrapper" for="hamming_distance_1">
+                                    <span class="side-value">1</span>
+                                    <span class="side-label"
+                                    >access to 9 codons relevant to naturally occuring
                       mutations</span
-                    >
-                  </label>
-                </div>
-                <div class="col-sm-6">
-                  <input
-                    type="radio"
-                    id="hamming_distance_2_3"
-                    name="hamming_distance"
-                    value="2+3"
-                    style="margin-right:10px;"
-                    required
-                  />
-                  <label class="side-wrapper" for="hamming_distance_2_3">
-                    <span class="side-value">2+3</span>
-                    <span class="side-label"
-                      >access to 54 codons relevant for protein
+                                    >
+                                </label>
+                            </div>
+                            <div class="col-sm-6">
+                                <input
+                                        type="radio"
+                                        id="hamming_distance_2_3"
+                                        name="hamming_distance"
+                                        value="2+3"
+                                        style="margin-right:10px;"
+                                        required
+                                />
+                                <label class="side-wrapper" for="hamming_distance_2_3">
+                                    <span class="side-value">2+3</span>
+                                    <span class="side-label"
+                                    >access to 54 codons relevant for protein
                       engineering</span
-                    >
-                  </label>
+                                    >
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-        </div>
 
-        <div class="row">
-          <div class="col-sm-12">
-            <div class="panel panel-default">
-              <div class="panel-heading">Choose your organism:</div>
-              <div class="panel-body">
-                <div class="col-sm-4">
-                  <input
-                    type="radio"
-                    name="usage_table"
-                    value="Ecoli"
-                    style="margin-right:10px;"
-                    required
-                  />
-                  <label><em>E. coli</em></label>
-                </div>
-                <div class="col-sm-4">
-                  <input
-                    type="radio"
-                    name="usage_table"
-                    value="yeast"
-                    style="margin-right:10px;"
-                  />
-                  <label>yeast</label>
-                </div>
-                <div class="col-sm-4">
-                  <input
-                    type="radio"
-                    name="usage_table"
-                    value="human"
-                    style="margin-right:10px;"
-                  />
-                  <label>human</label>
-                </div>
-                <div class="col-sm-4">
-                  <input
-                    type="radio"
-                    name="usage_table"
-                    value="mouse"
-                    style="margin-right:10px;"
-                  />
-                  <label>mouse</label>
-                </div>
-                <div class="col-sm-4">
-                  <input
-                    type="radio"
-                    name="usage_table"
-                    value="Dmel"
-                    style="margin-right:10px;"
-                  />
-                  <label><em>D. melanogaster</em></label>
-                </div>
-                <div class="col-sm-4">
-                  <input
-                    type="radio"
-                    name="usage_table"
-                    value="Cele"
-                    style="margin-right:10px;"
-                  />
-                  <label><em>C. elegans</em></label>
-                </div>
-                <div class="col-sm-6">
-                  <input
-                    id="custom_usage"
-                    type="radio"
-                    name="usage_table"
-                    value="custom"
-                    style="margin-right:10px;"
-                  />
-                  <label>Upload custom usage table</label>
-                  <div id="custom_table" style="display:none">
-                    <input type="file" name="table" id="custom_codon_usage" />
-                    <a target="_blank" href="/static/txt/UsageTableExample.txt"
-                      >Example Input</a
-                    >
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="panel panel-default">
-              <div class="panel-heading">Select compress approach</div>
-              <div class="panel-body">
-                <div class="col-sm-6">
-                  <div>
-                    <label>
-                      <input type="radio" name="compression_method" value="auto">
-                      Automatic
-                    </label>
-                    <span id="compress-auto">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Choose your organism:</div>
+                        <div class="panel-body">
+                            <div class="col-sm-4">
+                                <input
+                                        type="radio"
+                                        name="usage_table"
+                                        value="Ecoli"
+                                        style="margin-right:10px;"
+                                        required
+                                />
+                                <label><em>E. coli</em></label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input
+                                        type="radio"
+                                        name="usage_table"
+                                        value="yeast"
+                                        style="margin-right:10px;"
+                                />
+                                <label>yeast</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input
+                                        type="radio"
+                                        name="usage_table"
+                                        value="human"
+                                        style="margin-right:10px;"
+                                />
+                                <label>human</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input
+                                        type="radio"
+                                        name="usage_table"
+                                        value="mouse"
+                                        style="margin-right:10px;"
+                                />
+                                <label>mouse</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input
+                                        type="radio"
+                                        name="usage_table"
+                                        value="Dmel"
+                                        style="margin-right:10px;"
+                                />
+                                <label><em>D. melanogaster</em></label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input
+                                        type="radio"
+                                        name="usage_table"
+                                        value="Cele"
+                                        style="margin-right:10px;"
+                                />
+                                <label><em>C. elegans</em></label>
+                            </div>
+                            <div class="col-sm-6">
+                                <input
+                                        id="custom_usage"
+                                        type="radio"
+                                        name="usage_table"
+                                        value="custom"
+                                        style="margin-right:10px;"
+                                />
+                                <label>Upload custom usage table</label>
+                                <div id="custom_table" style="display:none">
+                                    <input type="file" name="table" id="custom_codon_usage"/>
+                                    <a target="_blank" href="/static/txt/UsageTableExample.txt"
+                                    >Example Input</a
+                                    >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Select compress approach</div>
+                        <div class="panel-body">
+                            <div class="col-sm-6">
+                                <div>
+                                    <label>
+                                        <input type="radio" name="compression_method" value="auto">
+                                        Automatic
+                                    </label>
+                                    <span id="compress-auto">
                       Please enter minimal usage rank value (1-6):<br>
                       <input type="text" pattern="\d{1}" name="input_rank">
                     </span>
-                  </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div>
+                                    <label>
+                                        <input type="radio" name="compression_method" checked value="manual">
+                                        Manual selection of codons and amino acids
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" style="margin-bottom: 20px;" class="btn btn-default" id="submit-step-1">
+                        Compress
+                    </button>
+                    <input type="hidden" name="step" value="2"/>
                 </div>
-                <div class="col-sm-6">
-                  <div>
-                    <label>
-                      <input type="radio" name="compression_method" checked value="manual">
-                      Manual selection of codons and amino acids
-                    </label>
-                  </div>
-                </div>
-              </div>
             </div>
-            <button type="submit" style="margin-bottom: 20px;" class="btn btn-default" id="submit-step-1">Compress</button>
-            <input type="hidden" name="step" value="2" />
-          </div>
-        </div>
-      </form>
+        </form>
 
-      {% else %}
-      <form
-        enctype="application/x-www-form-urlencoded"
-        method="post"
-        action="/dynamcc_d/"
-      >
-        <div class="row">
-          <div class="col-sm-12">
-            <h5>
-              Targeted codon: <em>{{ target_codon }}</em> {%if target_codon_aa
-              %} (<em>{{ target_codon_aa }}</em
-              >) {% end %}
-            </h5>
-            <h5>
-              Target hamming distance: <em>{{ hamming_distance }}</em>
-            </h5>
-            <h5>
-              Selected organism usage table: <em>{{ organism_name }}</em>
-            </h5>
+        {% else %}
+        <form
+                enctype="application/x-www-form-urlencoded"
+                method="post"
+                action="/dynamcc_d/"
+        >
+            <div class="row">
+                <div class="col-sm-12">
+                    <h5>
+                        Targeted codon: <em>{{ target_codon }}</em> {%if target_codon_aa
+                        %} (<em>{{ target_codon_aa }}</em
+                    >) {% end %}
+                    </h5>
+                    <h5>
+                        Target hamming distance: <em>{{ hamming_distance }}</em>
+                    </h5>
+                    <h5>
+                        Selected organism usage table: <em>{{ organism_name }}</em>
+                    </h5>
 
-            <h4>Selecting codons for compression:</h4>
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                Choose amino acids to keep in the pool:
-              </div>
-              <div class="panel-body">
-                <div class="row" style="margin-left:0;">
-                  <div
-                    class="panel panel-default col-sm-6"
-                    id="all_hydrophobic"
-                  >
-                    <div class="panel-heading">
-                      Hydrophobic
-                      <input
-                        type="checkbox"
-                        name="hydrophobic"
-                        style="margin-left:20px;"
-                      />
+                    <h4>Selecting codons for compression:</h4>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Choose amino acids to keep in the pool:
+                        </div>
+                        <div class="panel-body">
+                            <div class="row" style="margin-left:0;">
+                                <div
+                                        class="panel panel-default col-sm-6"
+                                        id="all_hydrophobic"
+                                >
+                                    <div class="panel-heading">
+                                        Hydrophobic
+                                        <input
+                                                type="checkbox"
+                                                name="hydrophobic"
+                                                style="margin-left:20px;"
+                                        />
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="panel panel-default" id="all_aromatic">
+                                            <div class="panel-heading">
+                                                aromatic
+                                                <input
+                                                        type="checkbox"
+                                                        name="aromatic"
+                                                        style="margin-left:20px;"
+                                                />
+                                            </div>
+                                            <div class="panel-body">
+                                                {% if target_codon_aa is not 'W' %}
+                                                <div class="col-sm-3">
+                                                    {% module Template("amino_acid_input.html",
+                                                    amino_acid='W', enabled=amino_acids['W']) %} {%
+                                                    module Template("codons_list.html", aa='W',
+                                                    codons=usage_table['W']) %}
+                                                </div>
+                                                {% end %}
+                                                {% if target_codon_aa is not 'F' %}
+                                                <div class="col-sm-3">
+                                                    {% module Template("amino_acid_input.html",
+                                                    amino_acid='F', enabled=amino_acids['F']) %} {%
+                                                    module Template("codons_list.html", aa='F',
+                                                    codons=usage_table['F']) %}
+                                                </div>
+                                                {% end %}
+                                                {% if target_codon_aa is not 'Y' %}
+                                                <div class="col-sm-3">
+                                                    {% module Template("amino_acid_input.html",
+                                                    amino_acid='Y', enabled=amino_acids['Y']) %} {%
+                                                    module Template("codons_list.html", aa='Y',
+                                                    codons=usage_table['Y']) %}
+                                                </div>
+                                                {% end %}
+                                            </div>
+                                        </div>
+                                        <div class="panel panel-default" id="all_nonpolar">
+                                            <div class="panel-heading">
+                                                non-polar aliphatic
+                                                <input
+                                                        type="checkbox"
+                                                        name="nonpolar"
+                                                        style="margin-left:20px;"
+                                                />
+                                            </div>
+                                            <div class="panel-body">
+                                                <div class="row" style="margin-left:0;">
+                                                    {% if target_codon_aa is not 'M' %}
+                                                    <div class="col-sm-3">
+                                                        {% module Template("amino_acid_input.html",
+                                                        amino_acid='M', enabled=amino_acids['M']) %} {%
+                                                        module Template("codons_list.html", aa='M',
+                                                        codons=usage_table['M']) %}
+                                                    </div>
+                                                    {% end %}
+                                                    {% if target_codon_aa is not 'I' %}
+                                                    <div class="col-sm-3">
+                                                        {% module Template("amino_acid_input.html",
+                                                        amino_acid='I', enabled=amino_acids['I']) %} {%
+                                                        module Template("codons_list.html", aa='I',
+                                                        codons=usage_table['I']) %}
+                                                    </div>
+                                                    {% end %}
+                                                    {% if target_codon_aa is not 'P' %}
+                                                    <div class="col-sm-3">
+                                                        {% module Template("amino_acid_input.html",
+                                                        amino_acid='P', enabled=amino_acids['P']) %} {%
+                                                        module Template("codons_list.html", aa='P',
+                                                        codons=usage_table['P']) %}
+                                                    </div>
+                                                    {% end %}
+                                                    {% if target_codon_aa is not 'V' %}
+                                                    <div class="col-sm-3">
+                                                        {% module Template("amino_acid_input.html",
+                                                        amino_acid='V', enabled=amino_acids['V']) %} {%
+                                                        module Template("codons_list.html", aa='V',
+                                                        codons=usage_table['V']) %}
+                                                    </div>
+                                                    {% end %}
+                                                </div>
+                                                <div class="row" style="margin-left:0;">
+                                                    {% if target_codon_aa is not 'L' %}
+                                                    <div class="col-sm-3">
+                                                        {% module Template("amino_acid_input.html",
+                                                        amino_acid='L', enabled=amino_acids['L']) %} {%
+                                                        module Template("codons_list.html", aa='L',
+                                                        codons=usage_table['L']) %}
+                                                    </div>
+                                                    {% end %}
+                                                </div>
+                                                <div class="panel panel-default" id="all_small">
+                                                    <div class="panel-heading">
+                                                        small
+                                                        <input
+                                                                type="checkbox"
+                                                                name="small"
+                                                                style="margin-left:20px;"
+                                                        />
+                                                    </div>
+                                                    <div class="panel-body">
+                                                        {% if target_codon_aa is not 'A' %}
+                                                        <div class="col-sm-3">
+                                                            {% module Template("amino_acid_input.html",
+                                                            amino_acid='A', enabled=amino_acids['A']) %} {%
+                                                            module Template("codons_list.html", aa='A',
+                                                            codons=usage_table['A']) %}
+                                                        </div>
+                                                        {% end %}
+                                                        {% if target_codon_aa is not 'G' %}
+                                                        <div class="col-sm-3">
+                                                            {% module Template("amino_acid_input.html",
+                                                            amino_acid='G', enabled=amino_acids['G']) %} {%
+                                                            module Template("codons_list.html", aa='G',
+                                                            codons=usage_table['G']) %}
+                                                        </div>
+                                                        {% end %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                        class="panel panel-default col-sm-6"
+                                        id="all_hydrophilic"
+                                >
+                                    <div class="panel-heading">
+                                        Hydrophilic
+                                        <input
+                                                type="checkbox"
+                                                name="hydrophilic"
+                                                style="margin-left:20px;"
+                                        />
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="panel panel-default" id="all_negative">
+                                            <div class="panel-heading">
+                                                negatively charged, acidic
+                                                <input
+                                                        type="checkbox"
+                                                        name="negative"
+                                                        style="margin-left:20px;"
+                                                />
+                                            </div>
+                                            <div class="panel-body">
+                                                {% if target_codon_aa is not 'D' %}
+                                                <div class="col-sm-3">
+                                                    {% module Template("amino_acid_input.html",
+                                                    amino_acid='D', enabled=amino_acids['D']) %} {%
+                                                    module Template("codons_list.html", aa='D',
+                                                    codons=usage_table['D']) %}
+                                                </div>
+                                                {% end %}
+                                                {% if target_codon_aa is not 'E' %}
+                                                <div class="col-sm-3">
+                                                    {% module Template("amino_acid_input.html",
+                                                    amino_acid='E', enabled=amino_acids['E']) %} {%
+                                                    module Template("codons_list.html", aa='E',
+                                                    codons=usage_table['E']) %}
+                                                </div>
+                                                {% end %}
+                                            </div>
+                                        </div>
+                                        <div class="panel panel-default" id="all_positive">
+                                            <div class="panel-heading">
+                                                positively charged, basic
+                                                <input
+                                                        type="checkbox"
+                                                        name="positive"
+                                                        style="margin-left:20px;"
+                                                />
+                                            </div>
+                                            <div class="panel-body">
+                                                {% if target_codon_aa is not 'H' %}
+                                                <div class="col-sm-3">
+                                                    {% module Template("amino_acid_input.html",
+                                                    amino_acid='H', enabled=amino_acids['H']) %} {%
+                                                    module Template("codons_list.html", aa='H',
+                                                    codons=usage_table['H']) %}
+                                                </div>
+                                                {% end %}
+                                                {% if target_codon_aa is not 'R' %}
+                                                <div class="col-sm-3">
+                                                    {% module Template("amino_acid_input.html",
+                                                    amino_acid='R', enabled=amino_acids['R']) %} {%
+                                                    module Template("codons_list.html", aa='R',
+                                                    codons=usage_table['R']) %}
+                                                </div>
+                                                {% end %}
+                                                {% if target_codon_aa is not 'K' %}
+                                                <div class="col-sm-3">
+                                                    {% module Template("amino_acid_input.html",
+                                                    amino_acid='K', enabled=amino_acids['K']) %} {%
+                                                    module Template("codons_list.html", aa='K',
+                                                    codons=usage_table['K']) %}
+                                                </div>
+                                                {% end %}
+                                            </div>
+                                        </div>
+                                        <div class="panel panel-default" id="all_uncharged">
+                                            <div class="panel-heading">
+                                                polar uncharged
+                                                <input
+                                                        type="checkbox"
+                                                        name="uncharged"
+                                                        style="margin-left:20px;"
+                                                />
+                                            </div>
+                                            <div class="panel-body">
+                                                <div class="row" style="margin-left:0;">
+                                                    {% if target_codon_aa is not 'T' %}
+                                                    <div class="col-sm-3">
+                                                        {% module Template("amino_acid_input.html",
+                                                        amino_acid='T', enabled=amino_acids['T']) %} {%
+                                                        module Template("codons_list.html", aa='T',
+                                                        codons=usage_table['T']) %}
+                                                    </div>
+                                                    {% end %}
+                                                    {% if target_codon_aa is not 'Q' %}
+                                                    <div class="col-sm-3">
+                                                        {% module Template("amino_acid_input.html",
+                                                        amino_acid='Q', enabled=amino_acids['Q']) %} {%
+                                                        module Template("codons_list.html", aa='Q',
+                                                        codons=usage_table['Q']) %}
+                                                    </div>
+                                                    {% end %}
+                                                    {% if target_codon_aa is not 'N' %}
+                                                    <div class="col-sm-3">
+                                                        {% module Template("amino_acid_input.html",
+                                                        amino_acid='N', enabled=amino_acids['N']) %} {%
+                                                        module Template("codons_list.html", aa='N',
+                                                        codons=usage_table['N']) %}
+                                                    </div>
+                                                    {% end %}
+                                                </div>
+                                                <div
+                                                        class="panel panel-default"
+                                                        id="all_small_uncharged"
+                                                >
+                                                    <div class="panel-heading">
+                                                        small
+                                                        <input
+                                                                type="checkbox"
+                                                                name="small_uncharged"
+                                                                style="margin-left:20px;"
+                                                        />
+                                                    </div>
+                                                    <div class="panel-body">
+                                                        {% if target_codon_aa is not 'C' %}
+                                                        <div class="col-sm-3">
+                                                            {% module Template("amino_acid_input.html",
+                                                            amino_acid='C', enabled=amino_acids['C']) %} {%
+                                                            module Template("codons_list.html", aa='C',
+                                                            codons=usage_table['C']) %}
+                                                        </div>
+                                                        {% end %}
+                                                        {% if target_codon_aa is not 'S' %}
+                                                        <div class="col-sm-3">
+                                                            {% module Template("amino_acid_input.html",
+                                                            amino_acid='S', enabled=amino_acids['S']) %} {%
+                                                            module Template("codons_list.html", aa='S',
+                                                            codons=usage_table['S']) %}
+                                                        </div>
+                                                        {% end %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% if ns_usage_table %}
+                            <div class="row" style="margin-left:0;">
+                                <div class="panel panel-default col-sm-6" id="all_ns_aa">
+                                    <div class="panel-heading">
+                                        Non-Standard Amino Acids
+                                        <input
+                                                type="checkbox"
+                                                name="ns_aa"
+                                                style="margin-left:20px;"
+                                        />
+                                    </div>
+                                    <div class="panel-body">
+                                        {% for k, v in ns_usage_table.items() %}
+                                        <div class="col-sm-3">
+                                            {% module Template("amino_acid_input.html",
+                                            amino_acid=k, enabled=amino_acids[k]) %}
+                                            {% module Template("codons_list.html", aa=k, codons=v) %}
+                                        </div>
+                                        {% end %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% end %}
+                        </div>
                     </div>
-                    <div class="panel-body">
-                      <div class="panel panel-default" id="all_aromatic">
-                        <div class="panel-heading">
-                          aromatic
-                          <input
-                            type="checkbox"
-                            name="aromatic"
-                            style="margin-left:20px;"
-                          />
-                        </div>
-                        <div class="panel-body">
-                          <div class="col-sm-3">
-                            {% module Template("amino_acid_input.html",
-                            amino_acid='W', enabled=amino_acids['W']) %} {%
-                            module Template("codons_list.html", aa='W',
-                            codons=usage_table['W']) %}
-                          </div>
-                          <div class="col-sm-3">
-                            {% module Template("amino_acid_input.html",
-                            amino_acid='F', enabled=amino_acids['F']) %} {%
-                            module Template("codons_list.html", aa='F',
-                            codons=usage_table['F']) %}
-                          </div>
-                          <div class="col-sm-3">
-                            {% module Template("amino_acid_input.html",
-                            amino_acid='Y', enabled=amino_acids['Y']) %} {%
-                            module Template("codons_list.html", aa='Y',
-                            codons=usage_table['Y']) %}
-                          </div>
-                        </div>
-                      </div>
-                      <div class="panel panel-default" id="all_nonpolar">
-                        <div class="panel-heading">
-                          non-polar aliphatic
-                          <input
-                            type="checkbox"
-                            name="nonpolar"
-                            style="margin-left:20px;"
-                          />
-                        </div>
-                        <div class="panel-body">
-                          <div class="row" style="margin-left:0;">
-                            <div class="col-sm-3">
-                              {% module Template("amino_acid_input.html",
-                              amino_acid='M', enabled=amino_acids['M']) %} {%
-                              module Template("codons_list.html", aa='M',
-                              codons=usage_table['M']) %}
-                            </div>
-                            <div class="col-sm-3">
-                              {% module Template("amino_acid_input.html",
-                              amino_acid='I', enabled=amino_acids['I']) %} {%
-                              module Template("codons_list.html", aa='I',
-                              codons=usage_table['I']) %}
-                            </div>
-                            <div class="col-sm-3">
-                              {% module Template("amino_acid_input.html",
-                              amino_acid='P', enabled=amino_acids['P']) %} {%
-                              module Template("codons_list.html", aa='P',
-                              codons=usage_table['P']) %}
-                            </div>
-                            <div class="col-sm-3">
-                              {% module Template("amino_acid_input.html",
-                              amino_acid='V', enabled=amino_acids['V']) %} {%
-                              module Template("codons_list.html", aa='V',
-                              codons=usage_table['V']) %}
-                            </div>
-                          </div>
-                          <div class="row" style="margin-left:0;">
-                            <div class="col-sm-3">
-                              {% module Template("amino_acid_input.html",
-                              amino_acid='L', enabled=amino_acids['L']) %} {%
-                              module Template("codons_list.html", aa='L',
-                              codons=usage_table['L']) %}
-                            </div>
-                          </div>
-                          <div class="panel panel-default" id="all_small">
-                            <div class="panel-heading">
-                              small
-                              <input
-                                type="checkbox"
-                                name="small"
-                                style="margin-left:20px;"
-                              />
-                            </div>
-                            <div class="panel-body">
-                              <div class="col-sm-3">
-                                {% module Template("amino_acid_input.html",
-                                amino_acid='A', enabled=amino_acids['A']) %} {%
-                                module Template("codons_list.html", aa='A',
-                                codons=usage_table['A']) %}
-                              </div>
-                              <div class="col-sm-3">
-                                {% module Template("amino_acid_input.html",
-                                amino_acid='G', enabled=amino_acids['G']) %} {%
-                                module Template("codons_list.html", aa='G',
-                                codons=usage_table['G']) %}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    class="panel panel-default col-sm-6"
-                    id="all_hydrophilic"
-                  >
-                    <div class="panel-heading">
-                      Hydrophilic
-                      <input
-                        type="checkbox"
-                        name="hydrophilic"
-                        style="margin-left:20px;"
-                      />
-                    </div>
-                    <div class="panel-body">
-                      <div class="panel panel-default" id="all_negative">
-                        <div class="panel-heading">
-                          negatively charged, acidic
-                          <input
-                            type="checkbox"
-                            name="negative"
-                            style="margin-left:20px;"
-                          />
-                        </div>
-                        <div class="panel-body">
-                          <div class="col-sm-3">
-                            {% module Template("amino_acid_input.html",
-                            amino_acid='D', enabled=amino_acids['D']) %} {%
-                            module Template("codons_list.html", aa='D',
-                            codons=usage_table['D']) %}
-                          </div>
-                          <div class="col-sm-3">
-                            {% module Template("amino_acid_input.html",
-                            amino_acid='E', enabled=amino_acids['E']) %} {%
-                            module Template("codons_list.html", aa='E',
-                            codons=usage_table['E']) %}
-                          </div>
-                        </div>
-                      </div>
-                      <div class="panel panel-default" id="all_positive">
-                        <div class="panel-heading">
-                          positively charged, basic
-                          <input
-                            type="checkbox"
-                            name="positive"
-                            style="margin-left:20px;"
-                          />
-                        </div>
-                        <div class="panel-body">
-                          <div class="col-sm-3">
-                            {% module Template("amino_acid_input.html",
-                            amino_acid='H', enabled=amino_acids['H']) %} {%
-                            module Template("codons_list.html", aa='H',
-                            codons=usage_table['H']) %}
-                          </div>
-                          <div class="col-sm-3">
-                            {% module Template("amino_acid_input.html",
-                            amino_acid='R', enabled=amino_acids['R']) %} {%
-                            module Template("codons_list.html", aa='R',
-                            codons=usage_table['R']) %}
-                          </div>
-                          <div class="col-sm-3">
-                            {% module Template("amino_acid_input.html",
-                            amino_acid='K', enabled=amino_acids['K']) %} {%
-                            module Template("codons_list.html", aa='K',
-                            codons=usage_table['K']) %}
-                          </div>
-                        </div>
-                      </div>
-                      <div class="panel panel-default" id="all_uncharged">
-                        <div class="panel-heading">
-                          polar uncharged
-                          <input
-                            type="checkbox"
-                            name="uncharged"
-                            style="margin-left:20px;"
-                          />
-                        </div>
-                        <div class="panel-body">
-                          <div class="row" style="margin-left:0;">
-                            <div class="col-sm-3">
-                              {% module Template("amino_acid_input.html",
-                              amino_acid='T', enabled=amino_acids['T']) %} {%
-                              module Template("codons_list.html", aa='T',
-                              codons=usage_table['T']) %}
-                            </div>
-                            <div class="col-sm-3">
-                              {% module Template("amino_acid_input.html",
-                              amino_acid='Q', enabled=amino_acids['Q']) %} {%
-                              module Template("codons_list.html", aa='Q',
-                              codons=usage_table['Q']) %}
-                            </div>
-                            <div class="col-sm-3">
-                              {% module Template("amino_acid_input.html",
-                              amino_acid='N', enabled=amino_acids['N']) %} {%
-                              module Template("codons_list.html", aa='N',
-                              codons=usage_table['N']) %}
-                            </div>
-                          </div>
-                          <div
-                            class="panel panel-default"
-                            id="all_small_uncharged"
-                          >
-                            <div class="panel-heading">
-                              small
-                              <input
-                                type="checkbox"
-                                name="small_uncharged"
-                                style="margin-left:20px;"
-                              />
-                            </div>
-                            <div class="panel-body">
-                              <div class="col-sm-3">
-                                {% module Template("amino_acid_input.html",
-                                amino_acid='C', enabled=amino_acids['C']) %} {%
-                                module Template("codons_list.html", aa='C',
-                                codons=usage_table['C']) %}
-                              </div>
-                              <div class="col-sm-3">
-                                {% module Template("amino_acid_input.html",
-                                amino_acid='S', enabled=amino_acids['S']) %} {%
-                                module Template("codons_list.html", aa='S',
-                                codons=usage_table['S']) %}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+
+                    <button type="submit" class="btn btn-default">
+                        Compress Codons
+                    </button>
                 </div>
-
-                {% if ns_usage_table %}
-                <div class="row" style="margin-left:0;">
-                  <div class="panel panel-default col-sm-6" id="all_ns_aa">
-                    <div class="panel-heading">
-                      Non-Standard Amino Acids
-                      <input
-                        type="checkbox"
-                        name="ns_aa"
-                        style="margin-left:20px;"
-                      />
-                    </div>
-                    <div class="panel-body">
-                      {% for k, v in ns_usage_table.items() %}
-                      <div class="col-sm-3">
-                        {% module Template("amino_acid_input.html",
-                        amino_acid=k, enabled=amino_acids[k]) %}
-                        {% module Template("codons_list.html", aa=k, codons=v) %}
-                      </div>
-                      {% end %}
-                    </div>
-                  </div>
-                </div>
-                {% end %}
-              </div>
             </div>
 
-            <button type="submit" class="btn btn-default">
-              Compress Codons
-            </button>
-          </div>
-        </div>
-
-        <input type="hidden" name="target_codon" value="{{ target_codon }}" />
-        <input
-          type="hidden"
-          name="target_codon_aa"
-          value="{{ target_codon_aa }}"
-        />
-        <input
-          type="hidden"
-          name="hamming_distance"
-          value="{{ hamming_distance }}"
-        />
-        <input type="hidden" name="organism_name" value="{{ organism_name }}" />
-      </form>
-      {% end %}
+            <input type="hidden" name="target_codon" value="{{ target_codon }}"/>
+            <input
+                    type="hidden"
+                    name="target_codon_aa"
+                    value="{{ target_codon_aa }}"
+            />
+            <input
+                    type="hidden"
+                    name="hamming_distance"
+                    value="{{ hamming_distance }}"
+            />
+            <input type="hidden" name="organism_name" value="{{ organism_name }}"/>
+        </form>
+        {% end %}
     </div>
-  </div>
+</div>
 </body>
 
 {%end%}
