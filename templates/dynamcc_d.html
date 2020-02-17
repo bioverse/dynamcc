@@ -638,30 +638,24 @@
                                                 />
                                             </div>
                                             <div class="panel-body">
-                                                {% if target_codon_aa is not 'W' %}
                                                 <div class="col-sm-3">
                                                     {% module Template("amino_acid_input.html",
-                                                    amino_acid='W', enabled=amino_acids['W']) %} {%
+                                                    amino_acid='W', enabled=amino_acids) %} {%
                                                     module Template("codons_list.html", aa='W',
-                                                    codons=usage_table['W']) %}
+                                                    codons=usage_table) %}
                                                 </div>
-                                                {% end %}
-                                                {% if target_codon_aa is not 'F' %}
                                                 <div class="col-sm-3">
                                                     {% module Template("amino_acid_input.html",
-                                                    amino_acid='F', enabled=amino_acids['F']) %} {%
+                                                    amino_acid='F', enabled=amino_acids) %} {%
                                                     module Template("codons_list.html", aa='F',
-                                                    codons=usage_table['F']) %}
+                                                    codons=usage_table) %}
                                                 </div>
-                                                {% end %}
-                                                {% if target_codon_aa is not 'Y' %}
                                                 <div class="col-sm-3">
                                                     {% module Template("amino_acid_input.html",
-                                                    amino_acid='Y', enabled=amino_acids['Y']) %} {%
+                                                    amino_acid='Y', enabled=amino_acids) %} {%
                                                     module Template("codons_list.html", aa='Y',
-                                                    codons=usage_table['Y']) %}
+                                                    codons=usage_table) %}
                                                 </div>
-                                                {% end %}
                                             </div>
                                         </div>
                                         <div class="panel panel-default" id="all_nonpolar">
@@ -675,48 +669,38 @@
                                             </div>
                                             <div class="panel-body">
                                                 <div class="row" style="margin-left:0;">
-                                                    {% if target_codon_aa is not 'M' %}
                                                     <div class="col-sm-3">
                                                         {% module Template("amino_acid_input.html",
-                                                        amino_acid='M', enabled=amino_acids['M']) %} {%
+                                                        amino_acid='M', enabled=amino_acids) %} {%
                                                         module Template("codons_list.html", aa='M',
-                                                        codons=usage_table['M']) %}
+                                                        codons=usage_table) %}
                                                     </div>
-                                                    {% end %}
-                                                    {% if target_codon_aa is not 'I' %}
                                                     <div class="col-sm-3">
                                                         {% module Template("amino_acid_input.html",
-                                                        amino_acid='I', enabled=amino_acids['I']) %} {%
+                                                        amino_acid='I', enabled=amino_acids) %} {%
                                                         module Template("codons_list.html", aa='I',
-                                                        codons=usage_table['I']) %}
+                                                        codons=usage_table) %}
                                                     </div>
-                                                    {% end %}
-                                                    {% if target_codon_aa is not 'P' %}
                                                     <div class="col-sm-3">
                                                         {% module Template("amino_acid_input.html",
-                                                        amino_acid='P', enabled=amino_acids['P']) %} {%
+                                                        amino_acid='P', enabled=amino_acids) %} {%
                                                         module Template("codons_list.html", aa='P',
-                                                        codons=usage_table['P']) %}
+                                                        codons=usage_table) %}
                                                     </div>
-                                                    {% end %}
-                                                    {% if target_codon_aa is not 'V' %}
                                                     <div class="col-sm-3">
                                                         {% module Template("amino_acid_input.html",
-                                                        amino_acid='V', enabled=amino_acids['V']) %} {%
+                                                        amino_acid='V', enabled=amino_acids) %} {%
                                                         module Template("codons_list.html", aa='V',
-                                                        codons=usage_table['V']) %}
+                                                        codons=usage_table) %}
                                                     </div>
-                                                    {% end %}
                                                 </div>
                                                 <div class="row" style="margin-left:0;">
-                                                    {% if target_codon_aa is not 'L' %}
                                                     <div class="col-sm-3">
                                                         {% module Template("amino_acid_input.html",
-                                                        amino_acid='L', enabled=amino_acids['L']) %} {%
+                                                        amino_acid='L', enabled=amino_acids) %} {%
                                                         module Template("codons_list.html", aa='L',
-                                                        codons=usage_table['L']) %}
+                                                        codons=usage_table) %}
                                                     </div>
-                                                    {% end %}
                                                 </div>
                                                 <div class="panel panel-default" id="all_small">
                                                     <div class="panel-heading">
@@ -728,22 +712,18 @@
                                                         />
                                                     </div>
                                                     <div class="panel-body">
-                                                        {% if target_codon_aa is not 'A' %}
                                                         <div class="col-sm-3">
                                                             {% module Template("amino_acid_input.html",
-                                                            amino_acid='A', enabled=amino_acids['A']) %} {%
+                                                            amino_acid='A', enabled=amino_acids) %} {%
                                                             module Template("codons_list.html", aa='A',
-                                                            codons=usage_table['A']) %}
+                                                            codons=usage_table) %}
                                                         </div>
-                                                        {% end %}
-                                                        {% if target_codon_aa is not 'G' %}
                                                         <div class="col-sm-3">
                                                             {% module Template("amino_acid_input.html",
-                                                            amino_acid='G', enabled=amino_acids['G']) %} {%
+                                                            amino_acid='G', enabled=amino_acids) %} {%
                                                             module Template("codons_list.html", aa='G',
-                                                            codons=usage_table['G']) %}
+                                                            codons=usage_table) %}
                                                         </div>
-                                                        {% end %}
                                                     </div>
                                                 </div>
                                             </div>
@@ -773,22 +753,18 @@
                                                 />
                                             </div>
                                             <div class="panel-body">
-                                                {% if target_codon_aa is not 'D' %}
                                                 <div class="col-sm-3">
                                                     {% module Template("amino_acid_input.html",
-                                                    amino_acid='D', enabled=amino_acids['D']) %} {%
+                                                    amino_acid='D', enabled=amino_acids) %} {%
                                                     module Template("codons_list.html", aa='D',
-                                                    codons=usage_table['D']) %}
+                                                    codons=usage_table) %}
                                                 </div>
-                                                {% end %}
-                                                {% if target_codon_aa is not 'E' %}
                                                 <div class="col-sm-3">
                                                     {% module Template("amino_acid_input.html",
-                                                    amino_acid='E', enabled=amino_acids['E']) %} {%
+                                                    amino_acid='E', enabled=amino_acids) %} {%
                                                     module Template("codons_list.html", aa='E',
-                                                    codons=usage_table['E']) %}
+                                                    codons=usage_table) %}
                                                 </div>
-                                                {% end %}
                                             </div>
                                         </div>
                                         <div class="panel panel-default" id="all_positive">
@@ -801,30 +777,24 @@
                                                 />
                                             </div>
                                             <div class="panel-body">
-                                                {% if target_codon_aa is not 'H' %}
                                                 <div class="col-sm-3">
                                                     {% module Template("amino_acid_input.html",
-                                                    amino_acid='H', enabled=amino_acids['H']) %} {%
+                                                    amino_acid='H', enabled=amino_acids) %} {%
                                                     module Template("codons_list.html", aa='H',
-                                                    codons=usage_table['H']) %}
+                                                    codons=usage_table) %}
                                                 </div>
-                                                {% end %}
-                                                {% if target_codon_aa is not 'R' %}
                                                 <div class="col-sm-3">
                                                     {% module Template("amino_acid_input.html",
-                                                    amino_acid='R', enabled=amino_acids['R']) %} {%
+                                                    amino_acid='R', enabled=amino_acids) %} {%
                                                     module Template("codons_list.html", aa='R',
-                                                    codons=usage_table['R']) %}
+                                                    codons=usage_table) %}
                                                 </div>
-                                                {% end %}
-                                                {% if target_codon_aa is not 'K' %}
                                                 <div class="col-sm-3">
                                                     {% module Template("amino_acid_input.html",
-                                                    amino_acid='K', enabled=amino_acids['K']) %} {%
+                                                    amino_acid='K', enabled=amino_acids) %} {%
                                                     module Template("codons_list.html", aa='K',
-                                                    codons=usage_table['K']) %}
+                                                    codons=usage_table) %}
                                                 </div>
-                                                {% end %}
                                             </div>
                                         </div>
                                         <div class="panel panel-default" id="all_uncharged">
@@ -838,30 +808,24 @@
                                             </div>
                                             <div class="panel-body">
                                                 <div class="row" style="margin-left:0;">
-                                                    {% if target_codon_aa is not 'T' %}
                                                     <div class="col-sm-3">
                                                         {% module Template("amino_acid_input.html",
-                                                        amino_acid='T', enabled=amino_acids['T']) %} {%
+                                                        amino_acid='T', enabled=amino_acids) %} {%
                                                         module Template("codons_list.html", aa='T',
-                                                        codons=usage_table['T']) %}
+                                                        codons=usage_table) %}
                                                     </div>
-                                                    {% end %}
-                                                    {% if target_codon_aa is not 'Q' %}
                                                     <div class="col-sm-3">
                                                         {% module Template("amino_acid_input.html",
-                                                        amino_acid='Q', enabled=amino_acids['Q']) %} {%
+                                                        amino_acid='Q', enabled=amino_acids) %} {%
                                                         module Template("codons_list.html", aa='Q',
-                                                        codons=usage_table['Q']) %}
+                                                        codons=usage_table) %}
                                                     </div>
-                                                    {% end %}
-                                                    {% if target_codon_aa is not 'N' %}
                                                     <div class="col-sm-3">
                                                         {% module Template("amino_acid_input.html",
-                                                        amino_acid='N', enabled=amino_acids['N']) %} {%
+                                                        amino_acid='N', enabled=amino_acids) %} {%
                                                         module Template("codons_list.html", aa='N',
-                                                        codons=usage_table['N']) %}
+                                                        codons=usage_table) %}
                                                     </div>
-                                                    {% end %}
                                                 </div>
                                                 <div
                                                         class="panel panel-default"
@@ -876,22 +840,18 @@
                                                         />
                                                     </div>
                                                     <div class="panel-body">
-                                                        {% if target_codon_aa is not 'C' %}
                                                         <div class="col-sm-3">
                                                             {% module Template("amino_acid_input.html",
-                                                            amino_acid='C', enabled=amino_acids['C']) %} {%
+                                                            amino_acid='C', enabled=amino_acids) %} {%
                                                             module Template("codons_list.html", aa='C',
-                                                            codons=usage_table['C']) %}
+                                                            codons=usage_table) %}
                                                         </div>
-                                                        {% end %}
-                                                        {% if target_codon_aa is not 'S' %}
                                                         <div class="col-sm-3">
                                                             {% module Template("amino_acid_input.html",
-                                                            amino_acid='S', enabled=amino_acids['S']) %} {%
+                                                            amino_acid='S', enabled=amino_acids) %} {%
                                                             module Template("codons_list.html", aa='S',
-                                                            codons=usage_table['S']) %}
+                                                            codons=usage_table) %}
                                                         </div>
-                                                        {% end %}
                                                     </div>
                                                 </div>
                                             </div>

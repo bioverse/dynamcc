@@ -294,11 +294,10 @@ class DynamccDHandler(RequestHandler):
 		target_codon_aa = self.get_argument("target_codon_aa", "")
 		form_step = int(self.get_argument("step", 0) or 0)
 		compression_method = self.get_argument("compression_method", 'manual')
-		compress_auto = True if compression_method == 'auto' else False
+		compress_auto = compression_method == 'auto'
 		rank = int(self.get_argument("input_rank")) if self.get_argument("input_rank", 0) else 0
 		target_codon = target_codon.upper()
 		ranking_codons = defaultdict(list)
-		new_ranking_codons = defaultdict(list)
 		usage_table = False
 		organism_name = ''
 
@@ -330,17 +329,19 @@ class DynamccDHandler(RequestHandler):
 			"""
 			new_usage_table = defaultdict(list)
 			amino_acids = {}
-			skip_aa = False
+
+			if not target_codon_aa:
+				target_codon_aa = GetAAfromCodon(usage_table, target_codon)
 
 			for amino_acid in usage_table:
 				codons = usage_table[amino_acid]
-				skip_aa = False
 
 				for codon in codons:
+					"""
+					SKIP targeted codon from the amino acid
+					"""
 					if codon[0] == target_codon:
-						target_codon_aa = amino_acid
-						skip_aa = True
-						break
+						continue
 
 					if hamming_distance != 1:
 						distance_in_range = TargetHammingDistance(codon[0], target_codon, 2)
@@ -356,19 +357,35 @@ class DynamccDHandler(RequestHandler):
 					sibling_in_range = False
 					if len(new_usage_table[amino_acid]):
 						for _codon in new_usage_table[amino_acid]:
-							if _codon[2] == True and distance_in_range == True:
+							"""
+							If a codon from the amino acid list is already in range,
+							we pretend rest of the codons as not in the hamming distance.
+							This is because only the highest usage value codon should be in range
+							and checked on front site.
+							"""
+							if _codon[2] and distance_in_range:
 								distance_in_range = False
 								sibling_in_range = True
+
+					new_usage_table[amino_acid].append((codon[0], codon[1], distance_in_range, sibling_in_range))
 
 					if compress_auto and (distance_in_range or sibling_in_range):
 						ranking_codons[amino_acid].append((codon[0], codon[1]))
 
-					new_usage_table[amino_acid].append((codon[0], codon[1], distance_in_range, sibling_in_range))
+				"""
+				Enable checkbox for amino acid if any one codon is in distance
+				"""
+				amino_acids[amino_acid] = any([codon[2] for codon in new_usage_table[amino_acid]])
 
-				if not skip_aa:
-					amino_acids[amino_acid] = any([_codon[2] for _codon in new_usage_table[amino_acid]])
-
-			new_ranking_codons = RemoveCodonByRank(rank, ranking_codons)
+			"""
+			If automation is manual and it's original amino acid
+			keep all checkboxes unchecked
+			"""
+			if amino_acids[target_codon_aa] and not compress_auto:
+				amino_acids[target_codon_aa] = True
+				new_usage_table[target_codon_aa] = [(codon[0], codon[1], False, True) for (i, codon) in enumerate(new_usage_table[target_codon_aa])]
+			elif amino_acids[target_codon_aa] and compress_auto:
+				del amino_acids[target_codon_aa], new_usage_table[target_codon_aa]
 
 			non_standard_aas = list(set(usage_table.keys()).difference(aa))
 			non_standard_usage_table = defaultdict(list)
@@ -378,6 +395,7 @@ class DynamccDHandler(RequestHandler):
 			if not compress_auto:
 				return self.render("dynamcc_d.html", error=None, target_codon_aa=target_codon_aa, amino_acids=amino_acids, step=form_step, target_codon=target_codon, hamming_distance=hamming_distance_label, organism_name=organism_name, usage_table=new_usage_table, ns_usage_table=non_standard_usage_table)
 
+		new_ranking_codons = RemoveCodonByRank(rank, ranking_codons)
 		codons = new_ranking_codons if compress_auto else self.get_arguments("codons")
 
 		if compress_auto:
@@ -443,5 +461,5 @@ class DynamccDHandler(RequestHandler):
 
 		codon_dict = util.BuildCodonDict(sorted_dict_codons)
 		print "codon_dict:", codon_dict, type(target_codon_aa)
-		
+
 		self.render("dynamcc_d_results.html", rank=rank, usage=False, threshold_value=str(rank), hamming_distance=hamming_distance_label, target_codon=target_codon, target_codon_aa=str(target_codon_aa), inline_codon_list=inline_codon_list, codon_dict=codon_dict, organism=organism_name, best_compression=best_compression, length=len(best_compression), exploded_codons=exploded_codons, sorted_dict=sorted_dict_codons)
