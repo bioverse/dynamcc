@@ -62,7 +62,7 @@ def HammingDistance(codonA, codonB):
 
 
 def TargetHammingDistance(codonA, codonB, distance):
-    """Check if targetted hamming distance is in range between two Codons
+    """Check if targeted hamming distance is in range between two Codons
 
     Parameters
     ----------
@@ -90,3 +90,29 @@ def TargetHammingDistance(codonA, codonB, distance):
         return True
 
     return False
+
+
+def GetAAfromCodon(table, codon):
+    """Get Amino Acid from targeted codon from Usage Table
+
+    Parameters
+    ----------
+    table : dict[list]
+        Usage table
+
+    codon : str
+        Codon to search
+
+    Returns
+    -------
+    str
+        Amino Acid
+
+    """
+    for (k, vs) in table.items():
+        for v in vs:
+            if v[0] == codon:
+                return k
+
+    return None
+
