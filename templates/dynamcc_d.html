@@ -23,7 +23,15 @@
             $('[data-toggle="popover"]').popover()
         });
 
-        $("input[name='compression_method']").change(function () {
+        const $compressMethod = $("input[name='compression_method']");
+        $compressMethod.on('change', compress_method);
+        compress_method.call($("input[name='compression_method']:checked"));
+
+        const $inputRank = $('input[name="input_rank"]');
+        $inputRank.on('input', input_rank);
+        input_rank.call($inputRank);
+
+        function compress_method() {
             if ($(this).val() === 'auto') {
                 step1SubmitBtn.prop('disabled', true);
                 $("#compress-auto").show();
@@ -31,13 +39,16 @@
                 $("#compress-auto").hide();
                 step1SubmitBtn.prop('disabled', false);
             }
-        });
+        }
 
-        $('input[name="input_rank"]').on('input', function () {
+        function input_rank() {
+            if ($("input[name='compression_method']:checked").val() !== 'auto') {
+                return;
+            }
             const currVal = parseInt($(this).val());
             const truthy = currVal && currVal > 0 && currVal < 7;
             step1SubmitBtn.prop('disabled', !truthy);
-        });
+        }
 
         if ($("#custom_usage").is(":checked")) {
             $("#custom_table").show();
@@ -562,7 +573,7 @@
                             <div class="col-sm-6">
                                 <div>
                                     <label>
-                                        <input type="radio" name="compression_method" checked value="manual">
+                                        <input type="radio" name="compression_method" checked="checked" value="manual">
                                         Manual selection of codons and amino acids
                                     </label>
                                 </div>
