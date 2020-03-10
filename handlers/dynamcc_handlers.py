@@ -385,7 +385,7 @@ class DynamccDHandler(RequestHandler):
 				amino_acids[target_codon_aa] = True
 				new_usage_table[target_codon_aa] = [(codon[0], codon[1], False, True) for (i, codon) in enumerate(new_usage_table[target_codon_aa])]
 			elif amino_acids[target_codon_aa] and compress_auto:
-				del amino_acids[target_codon_aa], new_usage_table[target_codon_aa]
+				del amino_acids[target_codon_aa], new_usage_table[target_codon_aa], ranking_codons[target_codon_aa]
 
 			non_standard_aas = list(set(usage_table.keys()).difference(aa))
 			non_standard_usage_table = defaultdict(list)
