@@ -419,7 +419,7 @@ class DynamccDHandler(RequestHandler):
 
 			codon_order = sorted_dict_codons.keys()
 			codon_count = BuildCodonCount(sorted_dict_codons, codon_order)
-			best_compression = start_multiprocessing(sorted_dict_codons, rules_dict, 'R', codon_count, 0, processes=3)
+			best_compression = start_multiprocessing(sorted_dict_codons, rules_dict, 'R', codon_count, 0, processes=1)
 		else:
 			InUse_dict = ReformatUsageDict(sorted_dict_codons)
 			in_use = FlagInUse(codon_list, InUse_dict)
