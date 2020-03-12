@@ -250,7 +250,7 @@ def start_multiprocessing(new_dict, rules_dict, selection, codon_count, redundan
         return
 
     worker_array = []
-    output_queue = multiprocessing.Queue(maxsize=3)
+    output_queue = multiprocessing.Queue()
     for thread in range(0,processes):
         input_queue = multiprocessing.Queue()
         w = CodonWorker(input_queue, output_queue, new_dict, rules_dict, selection, redundancy)
@@ -284,12 +284,16 @@ def start_multiprocessing(new_dict, rules_dict, selection, codon_count, redundan
 
         reduced_list = result['BestReducedList']
         total_ratio = result['Ratio']
+        reduced_size = result['ReduceSize']
 
-        if selection == 'R' and  len(reduced_list) < BestReduceSize or (len(reduced_list) == BestReduceSize and total_ratio < BestRatio):
+        if selection == 'R' and  reduced_size < BestReduceSize or (reduced_size == BestReduceSize and total_ratio < BestRatio):
             best_result = result
 
-        elif selection == 'U' and len(reduced_list) < BestReduceSize or (len(reduced_list) == BestReduceSize and total_ratio > BestRatio):
+        elif selection == 'U' and reduced_size < BestReduceSize or (reduced_size == BestReduceSize and total_ratio > BestRatio):
             best_result = result
+
+        BestReduceSize = best_result['ReduceSize']
+        BestRatio = best_result['Ratio']
 
     for key in best_result:
 
@@ -301,7 +305,7 @@ def main():
 
     sorted_dict = util.BuildUsageDict('ecoli.txt')
     rules_dict, inverse_dict = util.BuildRulesDict('rules.txt')
-    
+
     selection = ['X','A']
 
     filtered_dict = util.EditUsageDict(selection, sorted_dict)
