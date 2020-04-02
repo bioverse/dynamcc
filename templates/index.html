@@ -30,8 +30,18 @@ For example: to include all amino acids, without any stop codon, optimized for <
 Additionally, we have provided the capability to "explode" a set of compressed codons:<br><br>
 
 <u><a href="/dynamcc_d/"><strong>DYNAMCC_D</strong></a></u>:
-Here the user can define the Hamming distance between the wild type codon and the mutated ones. The aim of this algorithm is to further reduce library size, while still presenting relevant results. The rationale is that it has been shown by us and others that in many protein engineering studies the best performing mutant, (or the highest peak in the mutational landscape) requires more than a single base change in the codon1,2. Alternatively, researchers who are interested in SNP research, such as in the case of cancer and other genetic diseases, may want to design their libraries to include a single base change only.
-<br><br>
+Here the user can define the Hamming distance between the wild type codon and the mutated ones. The aim of this algorithm is to further reduce library size, while still presenting relevant results. The rationale is that it has been shown by us and others that in many protein engineering studies the best performing mutant, (or the highest peak in the mutational landscape) requires more than a single base change in the codon. Alternatively, researchers who are interested in SNP research, such as in the case of cancer and other genetic diseases, may want to design their libraries to include a single base change only.
+	<br>
+Further reading:
+<ol>
+	<li>Miyazaki, K. & Arnold, F. H. Exploring nonnatural evolutionary pathways by saturation mutagenesis: rapid improvement of protein function. J. Mol. Evol. 49, 716–720 (1999).
+		(link: <a href="https://link.springer.com/article/10.1007%2FPL00006593">https://link.springer.com/article/10.1007%2FPL00006593</a>)</li>
+	<li>Firnberg, E. & Ostermeier, M. The genetic code constrains yet facilitates Darwinian evolution. Nucleic Acids Res. 41, 7420–7428 (2013).
+		(link: <a href="https://academic.oup.com/nar/article/41/15/7420/2411381">https://academic.oup.com/nar/article/41/15/7420/2411381</a>)</li>
+	<li>Pines, G., Winkler, J. D., Pines, A. & Gill, R. T. Refactoring the Genetic Code for Increased Evolvability. MBio 8, e01654–17 (2017).
+	(link: <a href="https://mbio.asm.org/content/8/6/e01654-17">https://mbio.asm.org/content/8/6/e01654-17</a>)</li>
+	</ol>
+<br>
 
 <u><a href="/exploder/"><strong>Codon Exploder</strong></a></u>: This tools allows you to visualize the mapping of compressed codons to the corresponding collection of true codons. The usage and ranking of the "exploded codons" will be determined based on the selected organism and displayed in the output table.<br><br>
  
