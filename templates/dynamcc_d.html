@@ -872,11 +872,11 @@
                                         />
                                     </div>
                                     <div class="panel-body">
-                                        {% for k, v in ns_usage_table.items() %}
+                                        {% for amino_acid in ns_usage_table.keys() %}
                                         <div class="col-sm-3">
                                             {% module Template("amino_acid_input.html",
-                                            amino_acid=k, enabled=amino_acids[k]) %}
-                                            {% module Template("codons_list.html", aa=k, codons=v) %}
+                                            amino_acid=amino_acid, enabled=amino_acids) %}
+                                            {% module Template("codons_list.html", aa=amino_acid, codons=ns_usage_table) %}
                                         </div>
                                         {% end %}
                                     </div>
