@@ -225,3 +225,6 @@ a:focus {
   width: 130px;
   margin-left: 20px;
 }
+body.dynamcc_d .side-wrapper span.side-label {
+  width: auto;
+}
