@@ -6,7 +6,7 @@ backports-abc==0.5
 cffi==1.12.3
 chardet==3.0.4
 constantly==15.1.0
-cryptography==2.7
+cryptography==3.2
 enum34==1.1.6
 futures==3.3.0
 hyperlink==19.0.0
