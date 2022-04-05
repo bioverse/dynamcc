@@ -6,15 +6,14 @@
 <script type="text/javascript">
 
 function ShowHide() {
-
-	if ( $("#custom_usage").is(":checked") ) {
+    if ( $("#custom_usage").is(":checked") ) {
 	    $("#custom_table").show();
 	    if ( $("input:file").val() ) {
 	    	CheckforNewAA();
 	    }
 	}
 
-	$("input[name=usage_table]").click(function() {
+    $("input[name=usage_table]").click(function() {
 		if ( $("input[name=usage_table]:checked").val() != "custom" ) {
 			$("#additional_aa").empty();
 			//$("#bad_input").hide();
@@ -32,7 +31,7 @@ function ShowHide() {
 					console.log("file loaded");
 				}
 			});
-		} 
+		}
 	})
 
     $("input[name=hydrophobic]").click(function() {
@@ -135,7 +134,6 @@ function ShowHide() {
 	});
 }
 
-
 function uploadUsageTable() {
 	document.getElementById("custom_codon_usage").addEventListener("change", readFile, false);
 
@@ -177,7 +175,7 @@ function readFile(event) {
 	}
 	else {
 		alert("Your Browser does not support uploading files on this site. Please use Chrome, Firefox, or Safari.");
-	}	
+	}
 }
 
 function CheckforNewAA(){
@@ -211,8 +209,8 @@ function CheckforNewAA(){
 		if ( additional_keys.length > 0 ){
 			for ( var i = 0; i < additional_keys.length; i++ ){
 				var new_aa = additional_keys[i];
-				$("#additional_aa").append("<input type=\"checkbox\" id=\"" + 
-					new_aa + "\" name=\"aa\" value=\"" + 
+				$("#additional_aa").append("<input type=\"checkbox\" id=\"" +
+					new_aa + "\" name=\"aa\" value=\"" +
 					new_aa + "\" style=\"margin:0px 10px 0px 20px;\" >");
 				var checkboxValues = repopulateCheckboxes();
 				for ( var key in checkboxValues ){
@@ -259,7 +257,7 @@ function repopulateCheckboxes(){
 <body onload="ShowHide();uploadUsageTable();SaveState();">
 
 <div>
-<div class="row" style="margin-bottom:30px;">
+<div class="row">
   <h3>DYNAMCC_R</h3>
 </div>
 
@@ -270,15 +268,15 @@ function repopulateCheckboxes(){
 <div class="row">
 	<div class = "col-sm-12">
 	<div class="panel panel-default">
-		<div class="panel-heading">Codon Usage:</div>
+		<div class="panel-heading">Genetic Code:</div>
 		<div class="panel-body">
 			<div class="col-sm-4">
 				<input type="radio" name="usage_table" value="Ecoli" style="margin-right:10px;" required>
-				<label>Standard ( <em>E. coli</em> )</label>
+				<label>Standard</label>
 			</div>
 			<div class="col-sm-6">
 				<input id="custom_usage" type="radio" name="usage_table" value="custom" style="margin-right:10px;">
-				<label>Upload custom usage table</label>
+				<label>Upload custom genetic code</label>
 				<div id="custom_table" style="display:none">
 					<input type="file" name="table" id="custom_codon_usage">
 					<a href="/static/txt/UsageTableExample.txt">Example Input</a>
@@ -289,7 +287,6 @@ function repopulateCheckboxes(){
 	</div>
 </div>
 
-
 <div class="row">
 	<div class = "col-sm-12">
 	<div class="panel panel-default">
@@ -298,7 +295,7 @@ function repopulateCheckboxes(){
 		<input type="radio" name="keep_or_remove" value="keep" style="margin:0 5px 0 10px;">To keep in the pool
 		</div>
 		<div class="panel-body">
-			<div class="row" style="margin-left:0;">
+            <div class="row" style="margin-left:0;">
 				<div class="col-sm-6">
 					<input type="checkbox" name="aa" value="X" id="X" style="margin-right:10px;">
 					<label>STOP</label>
@@ -308,12 +305,12 @@ function repopulateCheckboxes(){
 			<div class="row" style="margin-left:0;">
 			<div class="panel panel-default col-sm-6" id="all_hydrophobic">
 				<div class="panel-heading">Hydrophobic
-					<input type="checkbox" name="hydrophobic" style="margin-left:20px;">
+				    <input type="checkbox" name="hydrophobic" style="margin-left:20px;">
 				</div>
 				<div class="panel-body">
 					<div class="panel panel-default" id="all_aromatic">
 						<div class="panel-heading">aromatic
-							<input type="checkbox" name="aromatic" style="margin-left:20px;">
+						    <input type="checkbox" name="aromatic" style="margin-left:20px;">
 						</div>
 						<div class="panel-body">
 							<div class="col-sm-2">
@@ -332,7 +329,7 @@ function repopulateCheckboxes(){
 					</div>
 					<div class="panel panel-default" id="all_nonpolar">
 						<div class="panel-heading">non-polar aliphatic
-							<input type="checkbox" name="nonpolar" style="margin-left:20px;">
+						    <input type="checkbox" name="nonpolar" style="margin-left:20px;">
 						</div>
 						<div class="panel-body">
 							<div class="row" style="margin-left:0;">
@@ -359,7 +356,7 @@ function repopulateCheckboxes(){
 							</div>
 							<div class="panel panel-default" id="all_small">
 								<div class="panel-heading">small
-									<input type="checkbox" name="small" style="margin-left:20px;">
+								    <input type="checkbox" name="small" style="margin-left:20px;">
 								</div>
 								<div class="panel-body">
 									<div class="col-sm-2">
@@ -378,12 +375,12 @@ function repopulateCheckboxes(){
 			</div>
 			<div class="panel panel-default col-sm-6" id="all_hydrophilic">
 				<div class="panel-heading">Hydrophilic
-					<input type="checkbox" name="hydrophilic" style="margin-left:20px;">
+				    <input type="checkbox" name="hydrophilic" style="margin-left:20px;">
 				</div>
 				<div class="panel-body">
 					<div class="panel panel-default" id="all_negative">
 						<div class="panel-heading">negatively charged, acidic
-							<input type="checkbox" name="negative" style="margin-left:20px;">
+						    <input type="checkbox" name="negative" style="margin-left:20px;">
 						</div>
 						<div class="panel-body">
 							<div class="col-sm-2">
@@ -398,7 +395,7 @@ function repopulateCheckboxes(){
 					</div>
 					<div class="panel panel-default" id="all_positive">
 						<div class="panel-heading">positively charged, basic
-							<input type="checkbox" name="positive" style="margin-left:20px;">
+						    <input type="checkbox" name="positive" style="margin-left:20px;">
 						</div>
 						<div class="panel-body">
 							<div class="col-sm-2">
@@ -417,7 +414,7 @@ function repopulateCheckboxes(){
 					</div>
 					<div class="panel panel-default" id="all_uncharged">
 						<div class="panel-heading">polar uncharged
-							<input type="checkbox" name="uncharged" style="margin-left:20px;">
+						    <input type="checkbox" name="uncharged" style="margin-left:20px;">
 						</div>
 						<div class="panel-body">
 							<div class="row" style="margin-left:0;">
@@ -434,9 +431,9 @@ function repopulateCheckboxes(){
 								<label>N</label>
 							</div>
 							</div>
-							<div class="panel panel-default" id="all_uncharged_small">
+							<div class="panel panel-default" id="all_small_uncharged">
 								<div class="panel-heading">small
-									<input type="checkbox" name="small_uncharged" style="margin-left:20px;">
+								    <input type="checkbox" name="small_uncharged" style="margin-left:20px;">
 								</div>
 								<div class="panel-body">
 									<div class="col-sm-2">
@@ -456,7 +453,7 @@ function repopulateCheckboxes(){
 			</div>
 		</div>
 	</div>
-	
+
 	<button type="submit" class="btn btn-default">Compress Codons</button>
 
 	</div>

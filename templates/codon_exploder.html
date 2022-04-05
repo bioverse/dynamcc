@@ -9,6 +9,7 @@ $(function () {
   $('[data-toggle="popover"]').popover()
 })
 
+
 function ShowHide() {
     if ( $("#custom_usage").is(":checked") ){
 	    $("#custom_table").show();
@@ -68,7 +69,7 @@ function GetUsage() {
 					checkUsage(maximum_usage);
 				}
 			}
-		} 
+		}
 	});
 }
 
@@ -155,7 +156,7 @@ function readFile(event) {
 	}
 	else {
 		alert("Your Browser does not support uploading files on this site. Please use Chrome, Firefox, or Safari.");
-	}	
+	}
 }
 
 </script>
@@ -187,7 +188,7 @@ function readFile(event) {
 <body onload="ShowHide();uploadUsageTable();">
 
 <div>
-<div class="row" style="margin-bottom:30px;">
+<div class="row">
   <h3>Codon Exploder</h3>
 </div>
 
@@ -251,7 +252,7 @@ function readFile(event) {
 			</div>
 		</div>
 	</div>
-	
+
 	<button type="submit" class="btn btn-default">Explode Codons</button>
 	</div>
 

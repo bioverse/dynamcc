@@ -11,26 +11,27 @@ $(function () {
   $('[data-toggle="popover"]').popover()
 })
 
+
 function ShowHide() {
 	document.getElementById("input_rank").style.display = 'none';
 	document.getElementById("input_usage").style.display = 'none';
 	document.getElementById("submit_message").style.display = 'none';
 	document.getElementById("bad_input").style.display = 'none';
 
-	//$("#additional_aa").hide();
-
 	$("#rank").click(function() {
-		$("#input_rank").show();
-		$("#input_usage").hide();
-		$("input_rank").prop("required", true);
-		$("input_usage").prop("required", false);
+		if ( $("#rank").is(":checked") ){
+		    $("#input_rank").show();
+		    $("#input_usage").hide();
+		    $("#input_rank").prop("required", true);
+		    $("#input_usage").prop("required", false);
+		}
 	});
 
-	$("#usage").click(function() {
+    $("#usage").click(function() {
 		$("#input_rank").hide();
 		$("#input_usage").show();
 		$("#input_usage").prop("required", true);
-		$("input_rank").prop("required", false);
+		$("#input_rank").prop("required", false);
 		if ( $("#usage").is(":checked") ) {
 			GetUsage();
 			$("input[name=aa]").bind("change", function() {
@@ -52,7 +53,7 @@ function ShowHide() {
 		$("#input_rank").hide();
 		$("#input_usage").show();
 		$("#input_usage").prop("required", true);
-		$("input_rank").prop("required", false);
+		$("#input_rank").prop("required", false);
 		$("input[name=aa]").bind("change", function() {
 			GetUsage();
 		});
@@ -77,11 +78,11 @@ function ShowHide() {
 	if ( $("#rank").is(":checked") ) {
 		$("#input_rank").show();
 		$("#input_usage").hide();
-		$("input_rank").prop("required", true);
-		$("input_usage").prop("required", false);
+		$("#input_rank").prop("required", true);
+		$("#input_usage").prop("required", false);
 	}
 
-	if ( $("#custom_usage").is(":checked") ) {
+    if ( $("#custom_usage").is(":checked") ) {
 	    $("#custom_table").show();
 	    if ( $("input:file").val() ) {
 	    	CheckforNewAA();
@@ -89,7 +90,7 @@ function ShowHide() {
 	    }
 	}
 
-	$("input[name=usage_table]").click(function() {
+    $("input[name=usage_table]").click(function() {
 		if ( $("input[name=usage_table]:checked").val() != "custom" ) {
 			$("#additional_aa").empty();
 			GetUsage();
@@ -97,9 +98,9 @@ function ShowHide() {
 			$("#submit_message").hide();
 			$("#custom_codon_usage").wrap("<form>").closest("form").get(0).reset();
 			$("#custom_codon_usage").unwrap();
-			$("form").submit(function(event) {
-				$(this).unbind('submit').submit();
-			});
+			//$("form").submit(function(event) {
+			//	$(this).unbind('submit').submit();
+			//});
 		} else {
 			$("input:file").change(function () {
 				Cookies.remove('checkboxValues');
@@ -115,17 +116,27 @@ function ShowHide() {
 					});
 				}
 			});
-		} 
+		}
 	})
 
-
 	$("form").submit(function(event) {
-		if ( $("input[name=usage_table]:checked").val() != "custom" ) {
-			$(this).unbind('submit').submit();
+		//if ( $("input[name=usage_table]:checked").val() != "custom" ) {
+		//	$(this).unbind('submit').submit();
+		//	$("#submit_message").show();
+		//}
+		//$("#submit_message").show();
+		if ( $("#usage").is(':checked') && PassMaxUsage() ) {
 			$("#submit_message").show();
-			$("#bad_input").hide();
+			$(this).unbind('submit').submit();
 		}
 	});
+
+	//$("#form_submit").click(function() {
+	//    if ( $("#usage").is(':checked') && PassMaxUsage() ) {
+	//		$("#submit_message").show();
+	//		$(this).unbind('submit').submit();
+	//	}
+	//})
 
 	$("input[name=hydrophobic]").click(function() {
 		if ( $(this).is(":checked") ) {
@@ -278,7 +289,6 @@ function GetUsage() {
 			//SetMaxUsage(filtered_keepers);
 			var maximum_usage = SetMaxUsage(filtered_keepers);
 		}
-		console.log(maximum_usage);
 		return maximum_usage;
 	}
 }
@@ -294,9 +304,11 @@ function SetMaxUsage(filtered_keepers) {
 			$("#input_usage").removeClass("usage-input-warning");
 		}
 		$("#input_usage").attr("size", 20);
-		$("#input_usage").attr("placeholder", "max value: " + String(maximum_usage));
+		var reported_maximum_usage = maximum_usage - 0.01;
+		$("#input_usage").attr("placeholder", "max value: " + String(reported_maximum_usage));
 	}
-	return maximum_usage;
+	var reported_maximum_usage = maximum_usage - 0.01;
+	return reported_maximum_usage;
 }
 
 function CheckforNewAA(){
@@ -330,8 +342,8 @@ function CheckforNewAA(){
 		if ( additional_keys.length > 0 ){
 			for ( var i = 0; i < additional_keys.length; i++ ){
 				var new_aa = additional_keys[i];
-				$("#additional_aa").append("<input type=\"checkbox\" id=\"" + 
-					new_aa + "\" name=\"aa\" value=\"" + 
+				$("#additional_aa").append("<input type=\"checkbox\" id=\"" +
+					new_aa + "\" name=\"aa\" value=\"" +
 					new_aa + "\" style=\"margin:0px 10px 0px 20px;\" >");
 				var checkboxValues = repopulateCheckboxes();
 				for ( var key in checkboxValues ){
@@ -384,9 +396,29 @@ function swap(codon_array, firstIndex, secondIndex){
 	codon_array[secondIndex] = temp;
 }
 
+function PassMaxUsage() {
+    var maximum_usage = GetUsage();
+    if ( parseFloat($("#input_usage").val()) <= parseFloat(maximum_usage) ){
+        return true;
+    } else {
+        return false;
+    }
+}
 
 function checkUsage(maximum_usage) {
-	$("input[name=input_usage]").on("change", function() {
+	if( parseFloat($("#input_usage").val()) > parseFloat(maximum_usage) ) {
+			$("#usage_warning").text("Maximum Usage: " + maximum_usage).css("color", "red");
+			$("form").submit(function(event) {
+				event.preventDefault();
+			});
+			alert("Based on the amino acids you have selected, " + String(maximum_usage) + " is the maximum threshold for codon compression. You have entered a number larger than " + String(maximum_usage) + ", which would result in eliminating codons that have not been selected for removal during the compression process. Please enter a number less than " + String(maximum_usage));
+		}
+	else {
+	    if ( $("#input_usage").hasClass("usage-input-warning") ) {
+			$("#input_usage").removeClass("usage-input-warning");
+		}
+        $("form").unbind('submit');
+	 	$("input[name=input_usage]").on("change", function() {
 		if( parseFloat($(this).val()) > parseFloat(maximum_usage) ) {
 			$("#usage_warning").text("Maximum Usage: " + maximum_usage).css("color", "red");
 			$("form").submit(function(event) {
@@ -394,7 +426,8 @@ function checkUsage(maximum_usage) {
 			});
 			alert("Based on the amino acids you have selected, " + String(maximum_usage) + " is the maximum threshold for codon compression. You have entered a number larger than " + String(maximum_usage) + ", which would result in eliminating codons that have not been selected for removal during the compression process. Please enter a number less than " + String(maximum_usage));
 		}
-	});
+	    });
+	}
 }
 
 function uploadUsageTable() {
@@ -452,7 +485,7 @@ function readFile(event) {
 	}
 	else {
 		alert("Your Browser does not support uploading files on this site. Please use Chrome, Firefox, or Safari.");
-	}	
+	}
 }
 
 function SaveState() {
@@ -477,8 +510,6 @@ function repopulateCheckboxes(){
 	return checkboxValues;
 }
 
-//Cookies.remove('checkboxValues');
-
 </script>
 
 {%end%}
@@ -488,7 +519,7 @@ function repopulateCheckboxes(){
 <body onload="ShowHide();uploadUsageTable();SaveState();">
 
 <div>
-<div class="row" style="margin-bottom:30px;">
+<div class="row">
   <h3>DYNAMCC_0</h3>
 </div>
 
@@ -527,7 +558,7 @@ function repopulateCheckboxes(){
 			</div>
 			<div class="col-sm-6">
 				<input id="custom_usage" type="radio" name="usage_table" value="custom" style="margin-right:10px;">
-				<label>Upload custom usage table</label>
+				<label>Upload custom genetic code</label>
 				<div id="custom_table" style="display:none">
 					<input type="file" name="table" id="custom_codon_usage">
 					<a href="/static/txt/UsageTableExample.txt">Example Input</a>
@@ -542,15 +573,13 @@ function repopulateCheckboxes(){
 	<div class = "col-sm-12">
 	<div class="panel panel-default">
 		<div class="panel-heading">Choose amino acids:
-		<input type="radio" name="keep_or_remove" value="remove" style="margin:0 5px 0 10px;" required>
-		<label>To remove from the pool</label>
-		<input type="radio" name="keep_or_remove" value="keep" style="margin:0 5px 0 10px;">
-		<label>To keep in the pool</label>
+		<input type="radio" name="keep_or_remove" value="remove" style="margin:0 5px 0 10px;" required>To remove from the pool
+		<input type="radio" name="keep_or_remove" value="keep" style="margin:0 5px 0 10px;">To keep in the pool
 		</div>
 		<div class="panel-body">
 			<div class="row" style="margin-left:0;">
 				<div class="col-sm-6">
-					<input type="checkbox" name="aa" value="X" id="X" style="margin-right:10px;">
+					<input type="checkbox" name="aa" value="X" id="stop_test" style="margin-right:10px;">
 					<label>STOP</label>
 				</div>
 				<div class="col-sm-6" id="additional_aa"></div>
@@ -558,66 +587,66 @@ function repopulateCheckboxes(){
 			<div class="row" style="margin-left:0;">
 			<div class="panel panel-default col-sm-6" id="all_hydrophobic">
 				<div class="panel-heading">Hydrophobic
-					<input type="checkbox" name="hydrophobic" style="margin-left:20px;">
+				    <input type="checkbox" name="hydrophobic" style="margin-left:20px;">
 				</div>
 				<div class="panel-body">
 					<div class="panel panel-default" id="all_aromatic">
 						<div class="panel-heading">aromatic
-							<input type="checkbox" name="aromatic" style="margin-left:20px;">
+						    <input type="checkbox" name="aromatic" style="margin-left:20px;">
 						</div>
 						<div class="panel-body">
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="W" id="W" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="W" style="margin-right:10px;">
 								<label>W</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="F" id="F" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="F" style="margin-right:10px;">
 								<label>F</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="Y" id="Y" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="Y" style="margin-right:10px;">
 								<label>Y</label>
 							</div>
 						</div>
 					</div>
 					<div class="panel panel-default" id="all_nonpolar">
 						<div class="panel-heading">non-polar aliphatic
-							<input type="checkbox" name="nonpolar" style="margin-left:20px;">
+						    <input type="checkbox" name="nonpolar" style="margin-left:20px;">
 						</div>
 						<div class="panel-body">
 							<div class="row" style="margin-left:0;">
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="M" id="M" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="M" style="margin-right:10px;">
 								<label>M</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="P" id="P" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="P" style="margin-right:10px;">
 								<label>P</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="I" id="I" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="I" style="margin-right:10px;">
 								<label>I</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="L" id="L" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="L" style="margin-right:10px;">
 								<label>L</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="V" id="V" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="V" style="margin-right:10px;">
 								<label>V</label>
 							</div>
 							</div>
 							<div class="panel panel-default" id="all_small">
 								<div class="panel-heading">small
-									<input type="checkbox" name="small" style="margin-left:20px;">
+								    <input type="checkbox" name="small" style="margin-left:20px;">
 								</div>
 								<div class="panel-body">
 									<div class="col-sm-2">
-										<input type="checkbox" name="aa" value="A" id="A" style="margin-right:10px;">
+										<input type="checkbox" name="aa" value="A" style="margin-right:10px;">
 										<label>A</label>
 									</div>
 									<div class="col-sm-2">
-										<input type="checkbox" name="aa" value="G" id="G" style="margin-right:10px;">
+										<input type="checkbox" name="aa" value="G" style="margin-right:10px;">
 										<label>G</label>
 									</div>
 								</div>
@@ -628,73 +657,73 @@ function repopulateCheckboxes(){
 			</div>
 			<div class="panel panel-default col-sm-6" id="all_hydrophilic">
 				<div class="panel-heading">Hydrophilic
-					<input type="checkbox" name="hydrophilic" style="margin-left:20px;">
+				    <input type="checkbox" name="hydrophilic" style="margin-left:20px;">
 				</div>
 				<div class="panel-body">
 					<div class="panel panel-default" id="all_negative">
 						<div class="panel-heading">negatively charged, acidic
-							<input type="checkbox" name="negative" style="margin-left:20px;">
+						    <input type="checkbox" name="negative" style="margin-left:20px;">
 						</div>
 						<div class="panel-body">
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="D" id="D" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="D" style="margin-right:10px;">
 								<label>D</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="E" id="E" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="E" style="margin-right:10px;">
 								<label>E</label>
 							</div>
 						</div>
 					</div>
 					<div class="panel panel-default" id="all_positive">
 						<div class="panel-heading">positively charged, basic
-							<input type="checkbox" name="positive" style="margin-left:20px;">
+						    <input type="checkbox" name="positive" style="margin-left:20px;">
 						</div>
 						<div class="panel-body">
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="H" id="H" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="H" style="margin-right:10px;">
 								<label>H</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="R" id="R" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="R" style="margin-right:10px;">
 								<label>R</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="K" id="K" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="K" style="margin-right:10px;">
 								<label>K</label>
 							</div>
 						</div>
 					</div>
 					<div class="panel panel-default" id="all_uncharged">
 						<div class="panel-heading">polar uncharged
-							<input type="checkbox" name="uncharged" style="margin-left:20px;">
+						    <input type="checkbox" name="uncharged" style="margin-left:20px;">
 						</div>
 						<div class="panel-body">
 							<div class="row" style="margin-left:0;">
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="T" id="T" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="T" style="margin-right:10px;">
 								<label>T</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="Q" id="Q" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="Q" style="margin-right:10px;">
 								<label>Q</label>
 							</div>
 							<div class="col-sm-2">
-								<input type="checkbox" name="aa" value="N" id="N" style="margin-right:10px;">
+								<input type="checkbox" name="aa" value="N" style="margin-right:10px;">
 								<label>N</label>
 							</div>
 							</div>
 							<div class="panel panel-default" id="all_small_uncharged">
 								<div class="panel-heading">small
-									<input type="checkbox" name="small_uncharged" style="margin-left:20px;">
+								    <input type="checkbox" name="small_uncharged" style="margin-left:20px;">
 								</div>
 								<div class="panel-body">
 									<div class="col-sm-2">
-										<input type="checkbox" name="aa" value="C" id="C" style="margin-right:10px;">
+										<input type="checkbox" name="aa" value="C" style="margin-right:10px;">
 										<label>C</label>
 									</div>
 									<div class="col-sm-2">
-										<input type="checkbox" name="aa" value="S" id="S" style="margin-right:10px;">
+										<input type="checkbox" name="aa" value="S" style="margin-right:10px;">
 										<label>S</label>
 									</div>
 								</div>
@@ -708,7 +737,7 @@ function repopulateCheckboxes(){
 	</div>
 
 	<div class="panel panel-default">
-		<div class="panel-heading">Enter codon <a tabindex="0" role="button" id="rank_popover" data-toggle="popover" data-trigger="focus" title="Rank" data-content="And here's some amazing content. It's very engaging. Right?">rank</a> or <a tabindex="0" role="button" id="usage_popover" data-toggle="popover" data-trigger="focus" title="Usage" data-content="Different content goes here.">usage</a> cutoff:</div>
+		<div class="panel-heading">Enter codon <a tabindex="0" role="button" id="rank_popover" data-toggle="popover" data-trigger="focus" title="Rank" data-content="Codon 'rank' refers to the rank-order of the codon's usage. For example, the most frequently used codon for a particular amino acid will have a rank of 1. Please enter an integer value, and only codons with a rank-order less than or equal to this value will be considered during compression.">rank</a> or <a tabindex="0" role="button" id="usage_popover" data-toggle="popover" data-trigger="focus" title="Usage" data-content="Codon 'usage' refers to the fractional usage of the codon. For example, in E. coli the AAG codon has a usage of 0.23 while that of AAA has a usage fo 0.77. If you select this option, please input a fractional value as the lower bound. Only codons with usage greater than this value will be considered during compression.">usage</a> cutoff:</div>
 		<div class="panel-body">
 			<div class="col-sm-6">
 				<input type="radio" value="rank" name="compression_method" id="rank" required>
@@ -722,9 +751,9 @@ function repopulateCheckboxes(){
 				<span id="usage_warning"></span>
 			</div>
 		</div>
-	</div>	
+	</div>
 	<div class="row" style="margin-left:0px;">
-		<button type="submit" class="btn btn-default">Compress Codons</button>
+		<button type="submit" id="submit_button" class="btn btn-default">Compress Codons</button>
 		<span id="submit_message" style="color:black;">Processing...</span>
 		<span id="bad_input" style="color:red;">Your usage table is formatted incorrectly. Please use the <a href="/static/txt/UsageTableExample.txt">Example Input</a> as a template.</span>
 	</div>

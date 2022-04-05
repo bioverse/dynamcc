@@ -4,7 +4,7 @@
 
 function ExplodeCodons() {
 	var exploded_codons = {};
-	{% for codon in exploded_codons %} 
+	{% for codon in exploded_codons %}
 	exploded_codons.{{codon}} = [];
 		{% for item in exploded_codons[codon] %}
 		//console.log('{{item}}');
@@ -24,40 +24,40 @@ function ExplodeCodons() {
 	//console.log(exploded_codons);
 	//console.log(codon_rank);
 	//console.log(codon_usage);
-	
+
 	var html = '<table border="1">';
 	html += '<th style="padding:10px;">Compressed Codon</th><th style="padding:10px;">Exploded Codons</th><th style="padding:10px;">Rank</th><th style="padding:10px;">Usage</th><th style="padding:10px;">Amino Acid</th>'
-	
-	for (var key in exploded_codons) 
+
+	for (var key in exploded_codons)
 	{
 		html += '<tr>';
 		html += '<td style="padding:10px;">' + key + '</td>';
 		html += '<td style="padding:10px;">';
-		for (i = 0; i < exploded_codons[key].length; i++) 
+		for (i = 0; i < exploded_codons[key].length; i++)
 		{
 			html += exploded_codons[key][i];
-			html += '<br>';	
+			html += '<br>';
 		}
 		html += '</td>';
 		html += '<td style="padding:10px;">';
 		for (i = 0; i < exploded_codons[key].length; i++)
 		{
 			html += codon_rank[exploded_codons[key][i]];
-			html += '<br>';	
+			html += '<br>';
 		}
 		html += '</td>';
 		html += '<td style="padding:10px;">';
 		for (i = 0; i < exploded_codons[key].length; i++)
 		{
 			html += codon_usage[exploded_codons[key][i]];
-			html += '<br>';	
+			html += '<br>';
 		}
 		html += '</td>';
 		html += '<td style="padding:10px;">';
 		for (i = 0; i < exploded_codons[key].length; i++)
 		{
 			html += codon_aa_map[exploded_codons[key][i]];
-			html += '<br>';	
+			html += '<br>';
 		}
 		html += '</td>';
 		html += '</tr>';
@@ -77,14 +77,14 @@ function ExplodeCodons() {
 
 <body onload="ExplodeCodons();">
 
-<div class="row" style="margin-bottom:30px;">
+<div class="row">
   <h3>DYNAMCC_0</h3>
 </div>
 
 <div class= "row">
 
 <h5>Amino acids removed from the compressed codon pool: {% for aa in remove_aa %} {{aa}} {% end %}</h5>
-<h5>The resulting compressed codons are optimized for usage in <em>{{organism}}</em> and were selected based on a cutoff {% if rank == True %} rank of {% else %} usage of {% end %} {{ threshold_value }} </h5>
+<h5>The resulting compressed codons are optimized for usage in <em>{{organism}}</em> and were selected based on a cutoff {% if rank %} rank of {% else %} usage of {% end %} {{ threshold_value }} </h5>
 
 <div id="exploded_codons"></div>
 
